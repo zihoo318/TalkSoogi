@@ -21,10 +21,18 @@
             </intent-filter>
         </activity>
         <!---액티비티추가 -->
-<!--        <activity-->
-<!--            android:name=".fragmentPage9"-->
-<!--            android:exported="true">-->
-<!--        </activity>-->
+        <activity
+            android:name=".Page1Activity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".Page2Activity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".Page3Activity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".FragmentActivity"
             android:exported="true">
