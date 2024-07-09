@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        ////////////page7로 가기/////////
+        ////////////page7로 가기///////////
         val buttonOpenPage7 = findViewById<Button>(R.id.button_open_page7)
         buttonOpenPage7.setOnClickListener {
             val intent = Intent(this, FragmentActivity::class.java)
             startActivity(intent)
         }
-        //////////////////////////////
+        ////////////////////////////////
     }
 }
