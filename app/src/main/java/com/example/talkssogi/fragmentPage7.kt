@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
-import com.example.talkssogi.R
 import com.yourpackage.ui.main.ViewPagerAdapter
 //import me.relex.circleindicator.CircleIndicator3
 
@@ -20,7 +19,7 @@ class fragmentPage7 : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.page7, container, false)
+        val view = inflater.inflate(R.layout.fragment_page7, container, false)
 
         viewPager2 = view.findViewById(R.id.view_pager)
         //indicator = view.findViewById(R.id.ranking_indicator)  // CircleIndicator3의 id로 수정

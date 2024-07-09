@@ -15,7 +15,7 @@ class fragmentPage9 : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.page9, container, false)
+        val view = inflater.inflate(R.layout.fragment_page9, container, false)
 
         val buttonOpenCalendar = view.findViewById<Button>(R.id.button_open_calendar)
 
