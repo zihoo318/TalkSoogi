@@ -7,18 +7,19 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="74dp"
-        android:layout_height="72dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/smile" />
+        android:src="@drawable/undo" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="맞춤 분석"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -103,6 +104,19 @@
             android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/search_spinner"
             app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
+
+        <!--- 결과 보여줄 레이아웃 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="40dp"/>
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
