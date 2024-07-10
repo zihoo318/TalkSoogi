@@ -4,9 +4,9 @@ Branch 종류
 3. 개인 branch : 이름 이니셜로 사용(개인 작업 공간으로 사용)
 
 개인 작업 업로드 루틴(?)
-git add -A  
-git commit -m "커밋메시지"
-git push
+1. git add -A  
+2. git commit -m "커밋메시지"
+3. git push
 
 +) 했는데 내가 수정한 파일이 업로드가 안됐다
 
