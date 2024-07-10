@@ -1,5 +1,6 @@
 package com.example.talkssogi
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +24,8 @@ class fragmentPage5 : Fragment() {
         }
 
         option2.setOnClickListener {
-            (requireActivity() as FragmentActivity).replaceFragment(fragmentPage7())
+            val intent = Intent(requireContext(), Page7Activity::class.java)
+            startActivity(intent)
         }
 
         option4.setOnClickListener {

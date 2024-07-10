@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         ////////////page5로 가기/////////
-        val buttonOpenPage9 = findViewById<Button>(R.id.button_open_page5)
-        buttonOpenPage9.setOnClickListener {
+        val buttonOpenPage5 = findViewById<Button>(R.id.button_open_page5)
+        buttonOpenPage5.setOnClickListener {
             val intent = Intent(this, FragmentActivity::class.java)
             startActivity(intent)
         }
