@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
     <ImageView
         android:id="@+id/imageView"
@@ -78,8 +79,8 @@
 
         <Spinner
             android:id="@+id/search_spinner"
-            android:layout_width="125dp"
-            android:layout_height="27dp"
+            android:layout_width="140dp"
+            android:layout_height="30dp"
             android:layout_marginStart="36dp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toEndOf="@+id/until"
@@ -88,7 +89,7 @@
         <Spinner
             android:id="@+id/results_spinner"
             android:layout_width="235dp"
-            android:layout_height="27dp"
+            android:layout_height="30dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,23 +100,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="15dp"
             android:text="의"
             android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/search_spinner"
             app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
 
+        <ImageButton
+            android:id="@+id/create"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="85dp"
+            android:layout_marginTop="40dp"
+            android:src="@drawable/search"
+            app:layout_constraintStart_toEndOf="@+id/results_spinner"
+            app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
+
+
         <!--- 결과 보여줄 레이아웃 -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="420dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/results_spinner">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="400dp"
                 android:layout_height="400dp"
-                android:layout_gravity="bottom|center"
-                android:layout_marginBottom="40dp"/>
+                android:layout_gravity="center"
+                android:layout_marginBottom="40dp" />
+
+
         </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
