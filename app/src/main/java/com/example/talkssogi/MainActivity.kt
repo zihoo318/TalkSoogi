@@ -24,5 +24,19 @@ class MainActivity : AppCompatActivity() {
         }
         // 테스트를 위해 본인이 필요한 곳으로 가는 버튼을 만들어서 실행해보기!!!
 
+        // Page1Activity로 이동하는 버튼 설정
+        val buttonOpenPage1 = findViewById<Button>(R.id.button_open_page1)
+        buttonOpenPage1.setOnClickListener {
+            val intent = Intent(this, Page1Activity::class.java)
+            startActivity(intent)
+        }
+
+        // Page3Activity로 이동하는 버튼 설정
+        val buttonOpenPage3 = findViewById<Button>(R.id.button_open_page3)
+        buttonOpenPage3.setOnClickListener {
+            val intent = Intent(this, Page3Activity::class.java)
+            startActivity(intent)
+        }
+
     }
 }

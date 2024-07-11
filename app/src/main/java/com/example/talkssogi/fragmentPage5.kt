@@ -29,7 +29,7 @@ class fragmentPage5 : Fragment() {
         }
 
         option4.setOnClickListener {
-            (requireActivity() as FragmentActivity).replaceFragment(fragmentPage9())
+            (requireActivity() as FragmentActivity).replaceFragment(fragmentPage8())
         }
 
         return view

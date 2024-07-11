@@ -44,7 +44,7 @@
             android:background="@drawable/leaf_blue"
             android:gravity="center"
             android:text="발신자 예측 (RNN)"
-            app:layout_constraintBottom_toTopOf="@+id/imageView2"
+            app:layout_constraintBottom_toTopOf="@+id/imgResult"
             app:layout_constraintEnd_toStartOf="@+id/option_5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/option_2" />
@@ -69,14 +69,14 @@
             android:background="@drawable/leaf_orange"
             android:gravity="center"
             android:text="단어 사칙연산 게임 (word2vec)"
-            app:layout_constraintBottom_toTopOf="@+id/imageView2"
+            app:layout_constraintBottom_toTopOf="@+id/imgResult"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/option_3"
             app:layout_constraintTop_toBottomOf="@+id/option_4" />
 
         <!-- 하단에 화분이 + 말풍선 -->
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/imgResult"
             android:layout_width="0dp"
             android:layout_height="118dp"
             app:layout_constraintBottom_toBottomOf="parent"
