@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Page7Activity">
+    tools:context=".Page7_search_Activity">
 
     <!-- 상단 이미지뷰 및 텍스트뷰 -->
     <ImageView
@@ -18,7 +18,7 @@
         android:src="@drawable/undo" />
 
     <TextView
-        android:id="@+id/title_ranking"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_ranking"

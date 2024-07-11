@@ -34,15 +34,18 @@ class fragmentPage7 : Fragment() {
         // CircleIndicator3 설정
         indicator.setViewPager(viewPager2)
 
+        // 처음 페이지 제목 업데이트(앱 실행 시 첫 페이지 제목이 짤리는 현상 해결)
+        updateTextView(0)
+
         // 이전 버튼 클릭 리스너 설정
         view.findViewById<ImageButton>(R.id.button_previous).setOnClickListener {
-            val previousItem = if (viewPager2.currentItem - 1 >= 0) viewPager2.currentItem - 1 else 0
+            val previousItem = if (viewPager2.currentItem - 1 >= 0) viewPager2.currentItem - 1 else (viewPager2.adapter?.itemCount ?: 0) - 1
             viewPager2.setCurrentItem(previousItem, true)
         }
 
         // 다음 버튼 클릭 리스너 설정
         view.findViewById<ImageButton>(R.id.button_next).setOnClickListener {
-            val nextItem = if (viewPager2.currentItem + 1 < viewPager2.adapter?.itemCount ?: 0) viewPager2.currentItem + 1 else (viewPager2.adapter?.itemCount ?: 0) - 1
+            val nextItem = if (viewPager2.currentItem + 1 < viewPager2.adapter?.itemCount ?: 0) viewPager2.currentItem + 1 else 0
             viewPager2.setCurrentItem(nextItem, true)
         }
 
@@ -63,14 +66,13 @@ class fragmentPage7 : Fragment() {
         when (position) {
             0 -> textView.text = "가장 많이 메시지를 보낸 사람"
             1 -> textView.text = "가장 많은 사진을 보낸 사람"
-            2 -> textView.text = "가장 많은 이모티콘을 사용한 사람"
+            2 -> textView.text = "가장 많이 이모티콘을 사용한 사람"
             3 -> textView.text = "가장 긴 메시지를 보낸 사람"
             4 -> textView.text = "가장 많이 오타 내는 사람"
             5 -> textView.text = "가장 많이 태그된 사람"
-            6 -> textView.text = "가장 초성을 많이 사용한 사람"
+            6 -> textView.text = "가장 많이 초성을 사용한 사람"
             7 -> textView.text = "가장 다른 사람을 많이 언급한 사람"
-            8 -> textView.text = "가장 메시지를 삭제 많이 한 사람"
-            9 -> textView.text = "검색 기능을 이용하여 가장 그 단어를 많이 사용한 사람"
+            8 -> textView.text = "가장 많이 메시지를 삭제한 사람"
             // Add more cases as needed
         }
     }

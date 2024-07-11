@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FragmentPage7">
+    tools:context=".fragmentPage7">
 
     <!-- 이전 버튼, 인디케이터, 다음 버튼을 나란히 배치 -->
     <ImageButton
@@ -62,6 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:textSize="20sp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/view_pager"
         app:layout_constraintEnd_toStartOf="@+id/button_next"

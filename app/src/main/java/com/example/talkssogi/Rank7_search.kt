@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-class Rank7_4 : Fragment() {
+class Rank7_search : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.rank7_board, container, false)
+        return inflater.inflate(R.layout.page7_search, container, false)
     }
 }

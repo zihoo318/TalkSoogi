@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TalkSsogi</string>
     <string name="title_ranking">랭킹 분석</string>
+    <string name="ranking_1page">가장 많이 메시지를 보낸 사람</string>
 </resources>

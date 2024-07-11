@@ -11,6 +11,6 @@ class Rank7_3 : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.rank7_3, container, false)
+        return inflater.inflate(R.layout.rank7_board, container, false)
     }
 }
