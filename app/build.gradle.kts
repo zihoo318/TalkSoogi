@@ -33,6 +33,11 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    // page2에서 필요해서 추가함
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {

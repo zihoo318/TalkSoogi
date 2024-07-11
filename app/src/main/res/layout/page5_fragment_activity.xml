@@ -4,18 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FragmentActivity">
+    tools:context=".FragmentActivity"
+    android:background="#ffffff">
 
     <!-- 기존 옵션들을 포함할 ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        //뒤로가기 버튼
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/undo" />
+
         <!-- 왼쪽 세로로 나란하게 배치된 3개의 선택지 -->
         <TextView
             android:id="@+id/option_1"
             android:layout_width="158dp"
             android:layout_height="156dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="45dp"
             android:background="@drawable/leaf_yellow"
             android:gravity="center"
             android:text="워드 클라우드 생성"
@@ -28,6 +41,7 @@
             android:id="@+id/option_2"
             android:layout_width="158dp"
             android:layout_height="156dp"
+            android:layout_marginStart="16dp"
             android:background="@drawable/leaf_neon"
             android:gravity="center"
             android:text="랭킹"
@@ -41,6 +55,7 @@
             android:id="@+id/option_3"
             android:layout_width="158dp"
             android:layout_height="156dp"
+            android:layout_marginStart="16dp"
             android:background="@drawable/leaf_blue"
             android:gravity="center"
             android:text="발신자 예측 (RNN)"
@@ -54,6 +69,7 @@
             android:id="@+id/option_4"
             android:layout_width="158dp"
             android:layout_height="156dp"
+            android:layout_marginTop="75dp"
             android:background="@drawable/leaf_green"
             android:gravity="center"
             android:text="활동 분석"
@@ -66,6 +82,7 @@
             android:id="@+id/option_5"
             android:layout_width="158dp"
             android:layout_height="156dp"
+            android:layout_marginBottom="32dp"
             android:background="@drawable/leaf_orange"
             android:gravity="center"
             android:text="단어 사칙연산 게임 (word2vec)"
