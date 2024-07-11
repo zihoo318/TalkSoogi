@@ -7,8 +7,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class RecyclerViewAdapter_page9(private val itemList: List<ImageResponse>) :
-    RecyclerView.Adapter<RecyclerViewAdapter_page9.ViewHolder>() {
+class RecyclerViewAdapter(private val itemList: List<ImageResponse>) :
+    RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.item_image)
@@ -23,7 +23,7 @@ class RecyclerViewAdapter_page9(private val itemList: List<ImageResponse>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_layout_page9, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_layout, parent, false)
         return ViewHolder(view)
     }
 

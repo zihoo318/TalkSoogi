@@ -11,10 +11,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.talkssogi.R
 import java.util.Calendar
 
 data class ImageResponse(
@@ -37,7 +35,7 @@ class fragmentPage9 : Fragment() {
         val searchSpinner: Spinner = view.findViewById(R.id.search_spinner)
         val resultsSpinner: Spinner = view.findViewById(R.id.results_spinner)
         val searchbtn : ImageButton = view.findViewById(R.id.create) //검색
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView) //이미지 넣을 리싸이클러뷰
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView_graph) //이미지 넣을 리싸이클러뷰
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         // 뒤로가기 이미지 리스너
@@ -75,7 +73,7 @@ class fragmentPage9 : Fragment() {
             val imageUrl = R.drawable.test_img_page9 // 이미지 리소스 ID
             val testImageResponse = ImageResponse(imageUrl)
             val itemList = listOf(testImageResponse)
-            val adapter = RecyclerViewAdapter_page9(itemList)
+            val adapter = RecyclerViewAdapter(itemList)
             recyclerView.adapter = adapter
 
         }
@@ -96,7 +94,7 @@ class fragmentPage9 : Fragment() {
         val imageUrl = R.drawable.phone // 이미지 리소스 ID
         val testImageResponse = ImageResponse(imageUrl)
         val itemList = listOf(testImageResponse)
-        val adapter = RecyclerViewAdapter_page9(itemList)
+        val adapter = RecyclerViewAdapter(itemList)
         recyclerView.adapter = adapter
 
         return view
