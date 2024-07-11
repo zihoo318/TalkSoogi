@@ -16,6 +16,13 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // Page2Activity로 이동하는 버튼 설정
+        val buttonOpenPage2 = findViewById<Button>(R.id.button_open_page2)
+        buttonOpenPage2.setOnClickListener {
+            val intent = Intent(this, Page2Activity::class.java)
+            startActivity(intent)
+        }
+
         ////////////page5로 가기/////////
         val buttonOpenPage5 = findViewById<Button>(R.id.button_open_page5)
         buttonOpenPage5.setOnClickListener {

@@ -35,9 +35,10 @@ android {
     }
 
     // page2에서 필요해서 추가함
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
+
 }
 
 dependencies {

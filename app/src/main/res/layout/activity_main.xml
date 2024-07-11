@@ -8,6 +8,19 @@
     tools:context=".MainActivity">
 
     <!-- FragmentActivity로 이동하는 버튼 -->
+
+    <Button
+        android:id="@+id/button_open_page2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="184dp"
+        android:text="Open Page 2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/button_open_page5"
         android:layout_width="wrap_content"
