@@ -18,10 +18,6 @@ class fragmentPage5 : Fragment() {
         val option2 = view.findViewById<TextView>(R.id.option_2)
         val option4 = view.findViewById<TextView>(R.id.option_4)
 
-        option1.setOnClickListener {
-            (requireActivity() as FragmentActivity).replaceFragment(fragmentPage6())
-        }
-
         option2.setOnClickListener {
             (requireActivity() as FragmentActivity).replaceFragment(fragmentPage7())
         }
