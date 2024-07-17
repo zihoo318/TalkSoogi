@@ -4,12 +4,17 @@ import java.util.List;
 import java.util.Map;
 
 public class AnalysisResult {
+    private String chatroomName;
     private String[] memberNames;
     private Map<String, List<String>> basicActivityAnalysis;
     private String activityAnalysisImageUrl;
     private String wordCloudImageUrl;
     private Map<String, List<String>> basicRankingResults;
     private Map<String, List<String>> searchRankingResults;
+
+    public String getChatroomName() { return chatroomName; }
+
+    public void setChatroomName(String chatroomName) { this.chatroomName = chatroomName; }
 
     public String[] getMemberNames() {
         return memberNames;

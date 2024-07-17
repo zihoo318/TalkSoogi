@@ -22,4 +22,5 @@ public class User {
     public void addChatRoom(ChattingRoom room) {
         this.chatList.add(room);
     }
+
 }

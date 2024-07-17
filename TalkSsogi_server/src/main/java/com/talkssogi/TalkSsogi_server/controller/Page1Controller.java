@@ -1,6 +1,6 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
-import com.talkssogi.TalkSsogi_server.service.Page1Service;
+import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +17,17 @@ Page1Service랑 Page1Controller 만들기!!
 @RestController
 public class Page1Controller {
 
-    private final Page1Service page1Service;
+    private final UserService userService;
+
 
     @Autowired
-    public Page1Controller(Page1Service page1Service) {
-        this.page1Service = page1Service;
+    public Page1Controller(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/api/userIds")
     public ResponseEntity<List<String>> getAllUserIds() {
-        List<String> userIds = page1Service.getAllUserIds();
+        List<String> userIds = userService.getAllUserIds();
         return new ResponseEntity<>(userIds, HttpStatus.OK);
     }
 }
