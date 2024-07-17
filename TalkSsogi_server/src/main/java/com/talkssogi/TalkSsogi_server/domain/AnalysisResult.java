@@ -1,4 +1,4 @@
-package com.talkssogi.TalkSsogo_server.domain;
+package com.talkssogi.TalkSsogi_server.domain;
 
 import java.util.List;
 import java.util.Map;

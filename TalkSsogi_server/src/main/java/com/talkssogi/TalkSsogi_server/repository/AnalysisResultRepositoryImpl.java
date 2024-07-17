@@ -1,6 +1,6 @@
-package com.talkssogi.TalkSsogo_server.repository;
+package com.talkssogi.TalkSsogi_server.repository;
 
-import com.talkssogi.TalkSsogo_server.domain.AnalysisResult;
+import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 
 import java.util.ArrayList;
 import java.util.List;

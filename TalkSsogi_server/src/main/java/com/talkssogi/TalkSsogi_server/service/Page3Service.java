@@ -1,8 +1,8 @@
-package com.talkssogi.TalkSsogo_server.service;
+package com.talkssogi.TalkSsogi_server.service;
 
-import com.talkssogi.TalkSsogo_server.domain.ChattingRoom;
-import com.talkssogi.TalkSsogo_server.domain.User;
-import com.talkssogi.TalkSsogo_server.repository.UserRepository;
+import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.domain.User;
+import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

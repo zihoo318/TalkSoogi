@@ -1,4 +1,4 @@
-package com.talkssogi.TalkSsogo_server.controller;
+package com.talkssogi.TalkSsogi_server.controller;
 
 
 

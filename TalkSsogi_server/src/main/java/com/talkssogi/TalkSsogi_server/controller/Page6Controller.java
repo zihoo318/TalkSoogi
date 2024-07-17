@@ -1,13 +1,11 @@
-package com.talkssogi.TalkSsogo_server.controller;
+package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogo_server.service.Page6Service;
+import com.talkssogi.TalkSsogi_server.service.Page6Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /*
 page6Service에서 파이썬 코드를 실행해서 생성된 AnalysisResult의 wordCloudImageUrl을 전달하도록 할건데

@@ -1,6 +1,6 @@
-package com.talkssogi.TalkSsogo_server.repository;
+package com.talkssogi.TalkSsogi_server.repository;
 
-import com.talkssogi.TalkSsogo_server.domain.User;
+import com.talkssogi.TalkSsogi_server.domain.User;
 
 import java.util.List;
 

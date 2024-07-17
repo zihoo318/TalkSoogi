@@ -1,4 +1,4 @@
-package com.talkssogi.TalkSsogo_server.controller;
+package com.talkssogi.TalkSsogi_server.controller;
 
 
 //페이지2의 채팅방 목록에 번호 매겨서 스프링부트 유저 객체에 저장된 채팅방 배열의 번호를 갖게 해야됨

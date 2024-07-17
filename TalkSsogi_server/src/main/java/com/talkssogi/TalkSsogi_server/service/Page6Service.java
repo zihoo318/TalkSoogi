@@ -1,17 +1,10 @@
-package com.talkssogi.TalkSsogo_server.service;
+package com.talkssogi.TalkSsogi_server.service;
 
 
-import com.talkssogi.TalkSsogo_server.domain.AnalysisResult;
-import com.talkssogi.TalkSsogo_server.domain.ChattingRoom;
-import com.talkssogi.TalkSsogo_server.domain.User;
-import com.talkssogi.TalkSsogo_server.repository.ChattingRoomRepository;
-import com.talkssogi.TalkSsogo_server.repository.UserRepository;
+import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
+import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class Page6Service {

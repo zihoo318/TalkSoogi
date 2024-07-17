@@ -1,7 +1,7 @@
-package com.talkssogi.TalkSsogo_server.controller;
+package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogo_server.service.Page3Service;
+import com.talkssogi.TalkSsogi_server.service.Page3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

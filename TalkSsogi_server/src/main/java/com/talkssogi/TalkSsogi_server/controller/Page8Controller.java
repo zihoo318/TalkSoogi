@@ -1,4 +1,4 @@
-package com.talkssogi.TalkSsogo_server.controller;
+package com.talkssogi.TalkSsogi_server.controller;
 
 /*
 page8 서버에서 가져올 데이터
