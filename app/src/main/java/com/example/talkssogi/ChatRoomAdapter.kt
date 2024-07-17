@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class ChatRoom(val name: String, val profileImageResId: Int)
 
-class ChatRoomAdapter(private val chatRoomList: List<ChatRoom>) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
+class ChatRoomAdapter(private var chatRoomList: List<ChatRoom>) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
@@ -29,5 +29,10 @@ class ChatRoomAdapter(private val chatRoomList: List<ChatRoom>) : RecyclerView.A
     class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profileImage: ImageView = itemView.findViewById(R.id.profile_image)
         val chatRoomName: TextView = itemView.findViewById(R.id.chat_room_name)
+    }
+
+    fun submitList(newChatRooms: List<ChatRoom>) {
+        chatRoomList = newChatRooms
+        notifyDataSetChanged() // 데이터가 변경되었음을 어댑터에 알림
     }
 }
