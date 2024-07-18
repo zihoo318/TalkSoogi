@@ -2,10 +2,12 @@ package com.talkssogi.TalkSsogi_server.repository;
 
 
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 //임시 구현체
 public class ChattingRoomRepositoryImpl implements ChattingRoomRepository {
 
