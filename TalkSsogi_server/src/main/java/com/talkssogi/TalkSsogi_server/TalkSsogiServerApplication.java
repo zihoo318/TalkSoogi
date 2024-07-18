@@ -2,12 +2,13 @@ package com.talkssogi.TalkSsogi_server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication
-public class TalkSsogoServerApplication {
+@SpringBootApplication(exclude= DataSourceAutoConfiguration.class)
+public class TalkSsogiServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TalkSsogoServerApplication.class, args);
+		SpringApplication.run(TalkSsogiServerApplication.class, args);
 	}
 
 }
