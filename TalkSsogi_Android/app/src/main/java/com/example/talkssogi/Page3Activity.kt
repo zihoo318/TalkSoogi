@@ -59,6 +59,11 @@ class Page3Activity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK) {
             val fileUri = data?.data
             tvSelectedFile.text = fileUri?.path ?: "파일 선택 실패"
+
+            // 파일 업로드 완료 후 이전 Activity2로 복귀하는 코드
+            val intent = Intent()
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
     }
 

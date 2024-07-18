@@ -5,6 +5,13 @@ public class ChattingRoom {
     private int headcount;
     private AnalysisResult analysisResult;
 
+    public ChattingRoom(String filePath, int headcount) {
+        this.filePath = filePath;
+        this.headcount = headcount;
+        this.analysisResult = null; // AnalysisResult는 optional로 설정
+    }
+
+    // Getters and setters
     public String getFilePath() {
         return filePath;
     }

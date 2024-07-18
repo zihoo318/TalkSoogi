@@ -1,11 +1,13 @@
 package com.talkssogi.TalkSsogi_server.repository;
 
 import com.talkssogi.TalkSsogi_server.domain.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //임시 구현체
+@Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private List<User> userList = new ArrayList<>();

@@ -10,5 +10,7 @@ public interface AnalysisResultRepository {
     void save(AnalysisResult analysisResult);
 
     void delete(AnalysisResult analysisResult);
+
+    AnalysisResult findByUserId(String userId);
 }
 
