@@ -5,6 +5,7 @@ import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.nio.file.Paths;
 
 
 @Service
+@Transactional
 public class ChattingRoomService {
 
     private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로

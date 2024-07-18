@@ -1,7 +1,13 @@
 package com.talkssogi.TalkSsogi_server.domain;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "chattingroom")
 public class ChattingRoom {
-    private String filePath;
+    @Id
+    private String filePath; // filePath를 기본키로 설정
+
     private int headcount;
     private AnalysisResult analysisResult;
 

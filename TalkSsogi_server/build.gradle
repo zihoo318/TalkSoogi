@@ -28,6 +28,9 @@ dependencies {
 	//Multipart 파일 업로드 처리
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	//for test
+	runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
