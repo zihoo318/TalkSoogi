@@ -18,7 +18,7 @@ class Page2Activity : AppCompatActivity() {
     private val viewModel: MyViewModel by viewModels()
     private lateinit var bottomNavigationView : BottomNavigationView
 
-    private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이디
+    private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
