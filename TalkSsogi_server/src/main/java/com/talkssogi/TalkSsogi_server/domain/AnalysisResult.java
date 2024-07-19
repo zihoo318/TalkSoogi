@@ -1,18 +1,13 @@
 package com.talkssogi.TalkSsogi_server.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
-@Entity
-@Table(name = "analysisresult")
+@Component
 public class AnalysisResult {
-    @Id
-    private String chatroomName; // chatroomName을 기본키로 설정
-
+    private String chatroomName;
     private String[] memberNames;
     private Map<String, List<String>> basicActivityAnalysis;
     private String activityAnalysisImageUrl;
