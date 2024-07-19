@@ -29,8 +29,15 @@ public class Page7Controller {
     public Map<String, List<String>> getBasicRankingResults() {
         // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
         Map<String, List<String>> basicRankingResults = new HashMap<>();
-        basicRankingResults.put("주제1", List.of("이름1", "이름2", "이름3"));
-        basicRankingResults.put("주제2", List.of("이름A", "이름B", "이름C"));
+        basicRankingResults.put("주제1", List.of("조", "유", "진"));
+        basicRankingResults.put("주제2", List.of("강", "지", "후"));
+        basicRankingResults.put("주제3", List.of("정", "가", "을"));
+        basicRankingResults.put("주제4", List.of("강", "윤", "지"));
+        basicRankingResults.put("주제5", List.of("조", "마", "오"));
+        basicRankingResults.put("주제6", List.of("홍", "길", "동"));
+        basicRankingResults.put("주제7", List.of("김", "한", "성"));
+        basicRankingResults.put("주제8", List.of("차", "은", "우"));
+        basicRankingResults.put("주제9", List.of("이름A", "이름B", "이름C"));
         return basicRankingResults;
     }
 
