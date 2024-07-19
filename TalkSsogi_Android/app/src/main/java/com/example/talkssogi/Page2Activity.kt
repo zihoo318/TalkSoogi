@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+private lateinit var buttonOpenPage5: Button
 
 class Page2Activity : AppCompatActivity() {
 
@@ -23,7 +25,7 @@ class Page2Activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page2)
-
+        buttonOpenPage5 = findViewById(R.id.button_open_page5)
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -60,6 +62,12 @@ class Page2Activity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+
+        //////////page5로 가기/////////
+        buttonOpenPage5.setOnClickListener {
+            val intent = Intent(this, FragmentActivity::class.java)
+            startActivity(intent)
         }
 
     }
