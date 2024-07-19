@@ -3,12 +3,19 @@ package com.talkssogi.TalkSsogi_server.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "chattingroom")
 public class ChattingRoom {
     @Id
-    private String filePath; // filePath를 기본키로 설정
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //기본 키 값을 자동으로 증가
+    private Integer crNum;
 
+    private String filePath;
     private int headcount;
+
+    @ManyToOne //여러 ChattingRoom이 하나의 User와 관계
+    @JoinColumn(name = "user_id") //ChattingRoom 테이블에서 외래 키로 사용될 컬럼의 이름이 user_id
+    private User user;
+
+    @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AnalysisResult analysisResult;
 
     public ChattingRoom(String filePath, int headcount) {
