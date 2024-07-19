@@ -27,14 +27,11 @@ public class Page3Controller {
 
     private final ChattingRoomService chattingRoomService;
     private final UserService userService;
-    private final AnalysisResult analysisResult;
-
 
     @Autowired
-    public Page3Controller(ChattingRoomService chattingRoomService, UserService userService, AnalysisResult analysisResult) {
+    public Page3Controller(ChattingRoomService chattingRoomService, UserService userService) {
         this.chattingRoomService = chattingRoomService;
         this.userService = userService;
-        this.analysisResult = analysisResult;
     }
 
     @PostMapping("/api/uploadfile")
