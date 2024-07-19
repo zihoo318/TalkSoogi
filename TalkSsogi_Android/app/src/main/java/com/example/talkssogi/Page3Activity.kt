@@ -3,6 +3,8 @@ package com.example.talkssogi
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
@@ -22,8 +24,8 @@ class Page3Activity : AppCompatActivity() {
     private lateinit var tvSelectedFile: TextView
     private lateinit var imageView: ImageView
     private lateinit var textView: TextView
-    private lateinit var imageView3: ImageView
-    private lateinit var imageView2: ImageView
+    private lateinit var pot: ImageView
+    private lateinit var speech_bubble: ImageView
     private lateinit var btnUploadFile: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,12 +35,11 @@ class Page3Activity : AppCompatActivity() {
         // UI 요소의 참조를 가져옵니다.
         tvPeople = findViewById(R.id.tvPeople)
         etPeopleCount = findViewById(R.id.etPeopleCount)
-        btnPeople = findViewById(R.id.btnPeople)
         tvSelectedFile = findViewById(R.id.tvSelectedFile)
-        imageView = findViewById(R.id.imageView)
-        textView = findViewById(R.id.textView)
-        imageView3 = findViewById(R.id.imageView3)
-        imageView2 = findViewById(R.id.imageView2)
+        imageView = findViewById(R.id.undo_button)
+        textView = findViewById(R.id.title_analyze)
+        speech_bubble = findViewById(R.id.analyze_speech)
+        pot = findViewById(R.id.pot_page3)
         btnUploadFile = findViewById(R.id.btnUploadFile)
 
         // null 체크 추가
@@ -51,18 +52,22 @@ class Page3Activity : AppCompatActivity() {
 
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
-            openFileChooser()
             handlePeopleCount()
         }
 
-        // 확인 버튼 클릭 이벤트 설정
-        btnPeople.setOnClickListener {
-            handlePeopleCount()
-        }
+        // TextWatcher 설정(인원수가 수정될 때마다 바로 업데이트)
+        etPeopleCount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                handlePeopleCount()
+            }
+        })
 
         // 기타 초기화 작업 수행
         imageView.setImageResource(R.drawable.smile)
-        textView.text = "분석할 파일을 업로드하세요."
     }
 
     private fun checkForNulls() {
@@ -72,8 +77,8 @@ class Page3Activity : AppCompatActivity() {
         if (!::tvSelectedFile.isInitialized) Log.e("Page3Activity", "tvSelectedFile is null")
         if (!::imageView.isInitialized) Log.e("Page3Activity", "imageView is null")
         if (!::textView.isInitialized) Log.e("Page3Activity", "textView is null")
-        if (!::imageView3.isInitialized) Log.e("Page3Activity", "imageView3 is null")
-        if (!::imageView2.isInitialized) Log.e("Page3Activity", "imageView2 is null")
+        if (!::pot.isInitialized) Log.e("Page3Activity", "imageView3 is null")
+        if (!::speech_bubble.isInitialized) Log.e("Page3Activity", "imageView2 is null")
         if (!::btnUploadFile.isInitialized) Log.e("Page3Activity", "btnUploadFile is null")
     }
 

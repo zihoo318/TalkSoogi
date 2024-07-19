@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,29 +8,27 @@
     android:background="#ffffff">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="74dp"
-        android:layout_height="72dp"
+        android:id="@+id/undo_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/textView"
-        tools:srcCompat="@drawable/smile" />
+        android:src="@drawable/undo" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="200dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/title_analyze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="분석할 파일 업로드"
-        app:layout_constraintBottom_toBottomOf="@id/imageView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.14"
-        app:layout_constraintStart_toEndOf="@id/imageView"
-        app:layout_constraintTop_toTopOf="@id/imageView" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/analyze_speech"
+        app:layout_constraintStart_toEndOf="@+id/undo_button" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/analyze_speech"
         android:layout_width="280dp"
         android:layout_height="90dp"
         android:layout_marginStart="120dp"
@@ -38,94 +37,65 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/file_upload_q" />
 
+    <ImageView
+        android:id="@+id/pot_page3"
+        android:layout_width="289dp"
+        android:layout_height="329dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/analyze_speech"
+        app:srcCompat="@drawable/happy" />
+
     <TextView
         android:id="@+id/tvSelectedFile"
         android:layout_width="250dp"
         android:layout_height="35dp"
-        android:layout_marginStart="74dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/border"
         android:text="   Click to select file"
         android:textColor="#9b9897"
         android:textSize="17sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/btnUploadFile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- 지시문 TextView -->
-    <ImageButton
-        android:id="@+id/btnUploadFile"
-        android:layout_width="170dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="90dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/upload_file"
-        android:padding="16dp"
-        android:src="@drawable/upload"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.906" />
-
-    <!-- 인원 수 입력 필드 -->
-
-    <!-- 확인 버튼 -->
-
+        app:layout_constraintTop_toBottomOf="@+id/pot_page3" />
 
     <TextView
         android:id="@+id/tvPeople"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="608dp"
+        android:layout_marginTop="8dp"
         android:text="인원 수를 입력하세요:"
         android:textColor="#9b9897"
         android:textSize="17sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSelectedFile" />
 
-    <!-- 인원 수 입력 필드 -->
-
-    <!-- 확인 버튼 -->
     <EditText
         android:id="@+id/etPeopleCount"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="648dp"
+        android:layout_marginTop="8dp"
         android:hint="인원 수"
         android:inputType="number"
         android:padding="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnPeople"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="1.5" />
-
-
-    <ImageButton
-        android:id="@+id/btnPeople"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="48dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/upload_file"
-        android:src="@drawable/upload"
-        app:layout_constraintStart_toEndOf="@+id/etPeopleCount"
-        app:layout_constraintTop_toTopOf="@+id/etPeopleCount" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="289dp"
-        android:layout_height="329dp"
-        android:layout_marginBottom="76dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnUploadFile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/happy" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPeople" />
+
+    <ImageButton
+        android:id="@+id/btnUploadFile"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/upload_file"
+        android:padding="16dp"
+        android:src="@drawable/upload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etPeopleCount" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
