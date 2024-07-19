@@ -1,8 +1,11 @@
 package com.talkssogi.TalkSsogi_server.domain;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class AnalysisResult {
     private String chatroomName;
     private String[] memberNames;
