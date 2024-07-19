@@ -53,7 +53,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("androidx.activity:activity-ktx:1.4.0")
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    // Lifecycle ViewModel KTX(viewModelScope)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    // Fragment KTX(viewModels)
+    implementation(libs.fragment.ktx)
 
     // Glide (이미지 로드 라이브러리 - page9)
     implementation("com.github.bumptech.glide:glide:4.12.0")
