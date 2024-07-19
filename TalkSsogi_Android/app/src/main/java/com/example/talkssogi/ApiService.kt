@@ -3,6 +3,7 @@ package com.example.talkssogi
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -28,4 +29,10 @@ interface ApiService {
         @Query("userId") userID: String?,
         @Query("headcount") headcount : Int?
     ): Call<ResponseBody>
+
+    @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
+    suspend fun getBasicRankingResults(): Response<Map<String, List<String>>>
+
+    @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
+    suspend fun getSearchRankingResults(): Response<Map<String, List<String>>>
 }

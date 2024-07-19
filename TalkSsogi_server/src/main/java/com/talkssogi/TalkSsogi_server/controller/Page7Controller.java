@@ -1,5 +1,12 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /*
@@ -13,5 +20,26 @@ page7 서버에서 가져올 데이터
 ->컨트롤러에서 api만들어서 매핑(=basicRankingResults랑 searchRankingResults 따로 만들어야함)
 =>안드로이드 스튜디오에서 만든 코드 다시 보고 어떤 형태로 데이터를 넘겨줘야하는지 고려해서 api만들기
  */
+
+@RestController
+@RequestMapping("/api/rankings")
 public class Page7Controller {
+
+    @GetMapping("/basicRankingResults")
+    public Map<String, List<String>> getBasicRankingResults() {
+        // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
+        Map<String, List<String>> basicRankingResults = new HashMap<>();
+        basicRankingResults.put("주제1", List.of("이름1", "이름2", "이름3"));
+        basicRankingResults.put("주제2", List.of("이름A", "이름B", "이름C"));
+        return basicRankingResults;
+    }
+
+    @GetMapping("/searchRankingResults")
+    public Map<String, List<String>> getSearchRankingResults() {
+        // 여기에 검색 랭킹 결과를 생성하는 로직을 추가합니다.
+        Map<String, List<String>> searchRankingResults = new HashMap<>();
+        searchRankingResults.put("검색어1", List.of("이름1", "이름2", "이름3"));
+        searchRankingResults.put("검색어2", List.of("이름A", "이름B", "이름C"));
+        return searchRankingResults;
+    }
 }
