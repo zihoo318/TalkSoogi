@@ -52,6 +52,7 @@ class Page3Activity : AppCompatActivity() {
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
             openFileChooser()
+            handlePeopleCount()
         }
 
         // 확인 버튼 클릭 이벤트 설정
