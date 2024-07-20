@@ -17,6 +17,7 @@ class Page2Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page2)
 
+
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         chatRoomAdapter = ChatRoomAdapter(emptyList()) // 초기화는 빈 리스트로
