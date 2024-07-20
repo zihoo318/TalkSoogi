@@ -3,6 +3,10 @@ package com.example.talkssogi
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,36 +18,78 @@ class Page3Activity : AppCompatActivity() {
         const val REQUEST_CODE_SELECT_FILE = 1
     }
 
-    private lateinit var tvSelectedFile: TextView  // 멤버 변수로 선언
+    private lateinit var tvPeople: TextView
+    private lateinit var etPeopleCount: EditText
+    private lateinit var btnPeople: ImageButton
+    private lateinit var tvSelectedFile: TextView
+    private lateinit var imageView: ImageView
+    private lateinit var textView: TextView
+    private lateinit var pot: ImageView
+    private lateinit var speech_bubble: ImageView
+    private lateinit var btnUploadFile: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.page3_activity)  // page3.xml 레이아웃을 설정합니다.
+        setContentView(R.layout.page3_activity)
 
-        // ImageView, TextView, ImageButton, Button의 참조를 가져옵니다.
-        val imageView: ImageView = findViewById(R.id.imageView)
-        val textView: TextView = findViewById(R.id.textView)
-        val imageView3: ImageView = findViewById(R.id.BtnGotoPage9)
-        val imageView2: ImageView = findViewById(R.id.imgResult)
-        tvSelectedFile = findViewById(R.id.tvSelectedFile)  // 초기화
-        val btnUploadFile: ImageButton = findViewById(R.id.btnUploadFile)
+        // UI 요소의 참조를 가져옵니다.
+        tvPeople = findViewById(R.id.tvPeople)
+        etPeopleCount = findViewById(R.id.etPeopleCount)
+        tvSelectedFile = findViewById(R.id.tvSelectedFile)
+        imageView = findViewById(R.id.undo_button)
+        textView = findViewById(R.id.title_analyze)
+        speech_bubble = findViewById(R.id.analyze_speech)
+        pot = findViewById(R.id.pot_page3)
+        btnUploadFile = findViewById(R.id.btnUploadFile)
+
+        // null 체크 추가
+        checkForNulls()
 
         // tvSelectedFile 클릭 이벤트 설정
         tvSelectedFile.setOnClickListener {
             openFileChooser()
-            // 선택된 파일명으로 텍스트 바꾸는 과정 필요
-            // tvSelectedFile.text=선택한 파일이름
         }
 
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
-            openFileChooser()
-
+            handlePeopleCount()
         }
+
+        // TextWatcher 설정(인원수가 수정될 때마다 바로 업데이트)
+        etPeopleCount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                handlePeopleCount()
+            }
+        })
 
         // 기타 초기화 작업 수행
         imageView.setImageResource(R.drawable.smile)
-        textView.text = "분석할 파일을 업로드하세요."
+    }
+
+    private fun checkForNulls() {
+        if (!::tvPeople.isInitialized) Log.e("Page3Activity", "tvPeople is null")
+        if (!::etPeopleCount.isInitialized) Log.e("Page3Activity", "etPeopleCount is null")
+        if (!::btnPeople.isInitialized) Log.e("Page3Activity", "btnPeople is null")
+        if (!::tvSelectedFile.isInitialized) Log.e("Page3Activity", "tvSelectedFile is null")
+        if (!::imageView.isInitialized) Log.e("Page3Activity", "imageView is null")
+        if (!::textView.isInitialized) Log.e("Page3Activity", "textView is null")
+        if (!::pot.isInitialized) Log.e("Page3Activity", "imageView3 is null")
+        if (!::speech_bubble.isInitialized) Log.e("Page3Activity", "imageView2 is null")
+        if (!::btnUploadFile.isInitialized) Log.e("Page3Activity", "btnUploadFile is null")
+    }
+
+    private fun handlePeopleCount() {
+        val peopleCount = etPeopleCount.text.toString()
+        if (peopleCount.isNotEmpty()) {
+            // 인원 수 처리 로직 추가
+            tvPeople.text = "입력된 인원 수: $peopleCount"
+        } else {
+            tvPeople.text = "인원 수를 입력해주세요."
+        }
     }
 
     private fun openFileChooser() {
@@ -59,6 +105,11 @@ class Page3Activity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK) {
             val fileUri = data?.data
             tvSelectedFile.text = fileUri?.path ?: "파일 선택 실패"
+
+            // 파일 업로드 완료 후 이전 Activity2로 복귀하는 코드
+            val intent = Intent()
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
     }
 
