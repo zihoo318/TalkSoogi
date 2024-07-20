@@ -17,12 +17,17 @@ interface ApiService {
     @GET("/api/userIds") //페이지1에서 쓸 유저 아이디 목록
     fun getAllUserIds(): Call<UserIdResponse> // 업로드 성공 여부를 확인하기 위한 응답
 
+    @POST("/api/userId") //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
+    fun sendUserId(
+        @Query("userId") userId: String
+    ): Call<ResponseBody>
+
     @GET("/api/chatrooms") //채팅방 목록
     fun getChatRooms(
         @Query("ID") userID: String?
     ): Call<List<ChatRoom>> // 업로드 성공 여부를 확인하기 위한 응답
 
-    @Multipart
+    @Multipart //파일 전송
     @POST("/api/uploadfile")
     fun uploadFile(
         @Part file: MultipartBody.Part, // 업로드할 파일을 MultipartBody.Part 형식으로 전달

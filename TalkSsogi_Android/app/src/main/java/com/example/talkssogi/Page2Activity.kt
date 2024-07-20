@@ -17,8 +17,10 @@ class Page2Activity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var chatRoomAdapter: ChatRoomAdapter
-    private val viewModel: MyViewModel by viewModels()
     private lateinit var bottomNavigationView : BottomNavigationView
+    private val viewModel: MyViewModel by lazy {
+        (application as MyApplication).viewModel
+    }
 
     private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이
 
