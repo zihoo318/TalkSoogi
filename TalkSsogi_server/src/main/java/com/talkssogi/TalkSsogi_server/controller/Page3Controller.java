@@ -40,6 +40,7 @@ public class Page3Controller {
                                              @RequestParam("headcount") int headcount) {
         try {
             String result = chattingRoomService.handleFileUpload(file, userId, headcount);
+            userService.createChattingRoomForUser(userId,result, headcount);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());

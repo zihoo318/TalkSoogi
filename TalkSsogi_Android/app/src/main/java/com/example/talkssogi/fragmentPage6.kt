@@ -47,8 +47,8 @@ class fragmentPage6 : Fragment() {
 //            recyclerView.adapter = adapter
 
             // 일단 테스트용 코드
-            val imageUrl = R.drawable.test_img_page6 // 이미지 리소스 ID
-            val testImageResponse = ImageResponse(imageUrl)
+            val imageUrl = "https://example.com/test_img_page6.jpg" // 실제 URL로 변경해야 함
+            val testImageResponse = ImageURL(imageUrl)
             val itemList = listOf(testImageResponse)
 
             // 리싸이클러뷰 어댑터 초기화 (모든 프래그먼트에서 같은 어댑터를 사용)
@@ -66,8 +66,8 @@ class fragmentPage6 : Fragment() {
 
 
         // 초기 버튼 클릭 전에 보여질 리싸이클러뷰 아이템 설정 (테스트용 코드)
-        val imageUrlForRecyclerView = R.drawable.phone // 테스트 이미지 리소스 ID
-        val testImageResponseForRecyclerView = ImageResponse(imageUrlForRecyclerView)
+        val imageUrlForRecyclerView = "https://example.com/phone.jpg" // 실제 URL로 변경해야 함
+        val testImageResponseForRecyclerView = ImageURL(imageUrlForRecyclerView)
         val itemListForRecyclerView = listOf(testImageResponseForRecyclerView)
         val recyclerViewAdapter = RecyclerViewAdapter(itemListForRecyclerView)
         recyclerView.adapter = recyclerViewAdapter
