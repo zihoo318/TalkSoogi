@@ -3,6 +3,7 @@ package com.talkssogi.TalkSsogi_server.service;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
     @Autowired
     private UserRepository userRepository;

@@ -15,13 +15,13 @@ import androidx.lifecycle.ViewModelProvider
 
 class Page1Activity : AppCompatActivity() {
 
-    private lateinit var viewModel: MyViewModel
+    private val viewModel: MyViewModel by lazy {
+        ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(MyViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page1_activity) // activity_page1.xml 레이아웃을 설정
-
-        viewModel = ViewModelProvider(this).get(MyViewModel::class.java)
 
         // XML 레이아웃에서 View 객체를 찾는다
         val imageView: ImageView = findViewById(R.id.imageView)
@@ -76,6 +76,8 @@ class Page1Activity : AppCompatActivity() {
                 sharedPreferences.edit().putString("userToken", newID)
                     .apply() // "userToken" 키에 newID 저장
 
+                // 서버에 사용자 아이디 전송
+                viewModel.sendUserId(newID)
 
                 // 다음 화면으로 이동
                 goToNextActivity(newID)
