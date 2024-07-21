@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.viewModels
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+
 
 class fragmentPage8 : Fragment() {
+    private val rankingViewModel: RankingViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +40,27 @@ class fragmentPage8 : Fragment() {
             (requireActivity() as FragmentActivity).replaceFragment(fragmentPage9())
         }
 
+// 해결 안됨
+        // ViewModel 데이터 관찰
+        rankingViewModel.activityAnalysis.observe(viewLifecycleOwner, Observer { results ->
+            val displayText = buildString {
+                results.forEach { (key, value) ->
+                    append("$key:\n")
+                    value.forEach { item ->
+                        append("- $item\n")
+                    }
+                    append("\n")
+                }
+            }
+            textView.text = displayText
+        })
+
+
+
+        // 데이터 가져오기 요청
+        rankingViewModel.fetchRankingResults()
+
+        return view
         // 예시 설정: 필요한 경우 텍스트나 이미지를 설정
         // textView.text = "동적 콘텐츠"
         // imageView1.setImageResource(R.drawable.some_image)
@@ -42,6 +68,6 @@ class fragmentPage8 : Fragment() {
         // imageView3.setImageResource(R.drawable.some_image)
 
         // 프래그먼트의 뷰를 반환
-        return view
+
     }
 }

@@ -35,4 +35,8 @@ interface ApiService {
 
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
     suspend fun getSearchRankingResults(): Response<Map<String, List<String>>>
+
+
+    @GET("/api/basics/activityAnalysis")//페이지8에서 사용할 기본 정보 제공
+    suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
 }
