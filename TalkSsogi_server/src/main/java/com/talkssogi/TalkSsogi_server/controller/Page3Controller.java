@@ -1,7 +1,9 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogi_server.service.Page3Service;
+import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
+import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
+import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /*
 파일 업로드 및 채팅방 생성을 처리하는건 Page3Service
@@ -17,35 +22,27 @@ Page3Controller: 이 컨트롤러 클래스는 Page3Service에 핵심 로직을 
  */
 
 @RestController
+@RequestMapping("/api")
 public class Page3Controller {
 
-    private final Page3Service page3Service;
+    private final ChattingRoomService chattingRoomService;
+    private final UserService userService;
 
     @Autowired
-    public Page3Controller(Page3Service page3Service) {
-        this.page3Service = page3Service;
+    public Page3Controller(ChattingRoomService chattingRoomService, UserService userService) {
+        this.chattingRoomService = chattingRoomService;
+        this.userService = userService;
     }
 
-    @PostMapping("/api/upload")
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                                   @RequestParam("userId") String userId) {
+    @PostMapping("/uploadfile")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("userId") String userId,
+                                             @RequestParam("headcount") int headcount) {
         try {
-            String result = page3Service.handleFileUpload(file, userId);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            String result = chattingRoomService.handleFileUpload(file, userId, headcount);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (IOException e) {
-            return new ResponseEntity<>("Failed to upload file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/api/addChatRoom")
-    public ResponseEntity<String> addChatRoom(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("headcount") int headcount,
-                                              @RequestParam("userId") String userId) {
-        try {
-            String result = page3Service.addChatRoom(file, headcount, userId);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Failed to add chat room: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());
         }
     }
 }

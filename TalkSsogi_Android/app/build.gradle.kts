@@ -53,9 +53,22 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    // Lifecycle ViewModel KTX(viewModelScope)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    // Fragment KTX(viewModels)
+    implementation(libs.fragment.ktx)
 
     // Glide (이미지 로드 라이브러리 - page9)
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+    //api관련
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환을 위한 Gson Converter
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.2") // 로깅을 위한 Interceptor (선택 사항)
+
 
 }

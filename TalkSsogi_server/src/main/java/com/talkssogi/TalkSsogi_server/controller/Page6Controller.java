@@ -1,7 +1,11 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
+import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
+import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
+import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.Page6Service;
+import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +18,18 @@ page6Service에서 파이썬 코드를 실행해서 생성된 AnalysisResult의 
  */
 
 @RestController
-@RequestMapping("/api/page6")
+@RequestMapping("/api")
 public class Page6Controller {
 
-    private final Page6Service page6Service;
+    private final ChattingRoomService chattingRoomService;
+    private final UserService userService;
+    private final AnalysisResultService analysisResultService;
 
     @Autowired
-    public Page6Controller(Page6Service page6Service) {
-        this.page6Service = page6Service;
+    public Page6Controller(ChattingRoomService chattingRoomService, UserService userService, AnalysisResultService analysisResultService) {
+        this.chattingRoomService = chattingRoomService;
+        this.userService = userService;
+        this.analysisResultService = analysisResultService;
     }
 
 //    @GetMapping("/members/{chatRoomId}")
@@ -33,12 +41,12 @@ public class Page6Controller {
 //        return new ResponseEntity<>(members, HttpStatus.OK);
 //    }
 
-    @GetMapping("/wordCloudImageUrl/{chatRoomId}")
-    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Long chatRoomId) {
-        String wordCloudImageUrl = page6Service.getWordCloudImageUrl(chatRoomId);
-        if (wordCloudImageUrl == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(wordCloudImageUrl, HttpStatus.OK);
-    }
+//    @GetMapping("/api/wordCloudImageUrl/{chatRoomId}")
+//    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Long chatRoomId) {
+//        String wordCloudImageUrl = analysisResultService.findAnalysisResultByWordCloudImageUrl(chatRoomId);
+//        if (wordCloudImageUrl == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(wordCloudImageUrl, HttpStatus.OK);
+//    }
 }

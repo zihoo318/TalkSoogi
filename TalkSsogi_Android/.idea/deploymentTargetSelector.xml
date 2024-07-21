@@ -4,9 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-<<<<<<< HEAD
-=======
-        <DropdownSelection timestamp="2024-07-11T05:45:15.535234900Z">
+        <DropdownSelection timestamp="2024-07-18T12:12:33.504570900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\LG\.android\avd\talkssogi.avd" />
@@ -14,7 +12,6 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
->>>>>>> develop
       </SelectionState>
     </selectionStates>
   </component>

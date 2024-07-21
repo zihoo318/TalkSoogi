@@ -1,6 +1,9 @@
 package com.example.talkssogi
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
@@ -8,11 +11,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 class Page1Activity : AppCompatActivity() {
 
-    // 사용자가 입력한 ID를 저장할 리스트
-    private val usedIDs = mutableListOf<String>()
+    private val viewModel: MyViewModel by lazy {
+        ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(MyViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +33,11 @@ class Page1Activity : AppCompatActivity() {
         // EditText에 입력된 텍스트의 변화를 감지하는 TextWatcher 추가
         etID.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val inputID = s.toString() // 입력된 텍스트를 문자열로 가져옴
+                // 입력된 ID의 중복 여부를 확인하는 로직은 뷰모델의 LiveData를 통해 처리하도록 변경
+                val inputID = s.toString()
+                val userIdsLiveData = viewModel.getUserIdsLiveData()
                 if (inputID.isNotEmpty()) {
-                    if (usedIDs.contains(inputID)) {
+                    if (userIdsLiveData.value?.contains(inputID) == true) {
                         // 입력된 ID가 사용 중인 ID 목록에 포함되어 있는 경우
                         idConfirm2.visibility = TextView.VISIBLE // ID가 사용 중임을 나타내는 메시지 표시
                         idConfirm.visibility = TextView.GONE // ID가 사용 가능한 경우의 메시지 숨김
@@ -46,30 +53,48 @@ class Page1Activity : AppCompatActivity() {
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // 입력이 변경되기 전의 동작을 정의 (현재는 사용하지 않음)
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 입력이 변경되는 동안의 동작을 정의 (현재는 사용하지 않음)
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
         // "Upload File" 버튼 클릭 시 실행되는 리스너 설정
         btnUploadFile.setOnClickListener {
             val newID = etID.text.toString()
-            if (newID.isNotEmpty() && !usedIDs.contains(newID)) {
+            if (newID.isNotEmpty() && !(viewModel.userIds.value?.contains(newID) == true)) {
                 // 입력된 ID가 빈 값이 아니고, usedIDs 리스트에 포함되어 있지 않은 경우
-                usedIDs.add(newID) // ID를 usedIDs 리스트에 추가
+                viewModel.addUserId(newID) // ID를 usedIDs 리스트에 추가
                 etID.text.clear() // EditText의 텍스트를 비움
                 idConfirm.visibility = TextView.GONE // ID가 사용 가능한 경우의 메시지를 숨김
                 idConfirm2.visibility = TextView.GONE // ID가 사용 중임을 나타내는 메시지를 숨김
                 // ID가 추가되었다는 메시지를 표시할 수 있음 (예: Toast)
                 // Toast.makeText(this, "ID added", Toast.LENGTH_SHORT).show()
+
+
+                // Shared Preferences에 사용자 아이디 저장
+                // (메인액티비티에서 만든 변수 안에 값 넣기 -> 다음 앱 접속 땐 값이 있어서 바로 페이지2로 이동)
+                val sharedPreferences = getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString("userToken", newID)
+                    .apply() // "userToken" 키에 newID 저장
+
+                // 서버에 사용자 아이디 전송
+                viewModel.sendUserId(newID)
+
+                // 다음 화면으로 이동
+                goToNextActivity(newID)
             }
         }
 
         // 기타 초기화 작업
         imageView.setImageResource(R.drawable.happy) // 이미지 뷰에 smile2 이미지 설정
+    }
+
+    private fun goToNextActivity(userId: String) {
+        // 다음 화면으로 이동하는 Intent 생성
+        val intent = Intent(this, Page2Activity::class.java)  //페이지2로 가기
+        // 필요한 경우 아이디 정보를 Intent에 추가
+        intent.putExtra("userId", userId)
+        startActivity(intent)
+        // 현재 액티비티 종료
+        finish()
     }
 }
