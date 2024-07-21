@@ -23,4 +23,12 @@ public class AnalysisResultService {
     public AnalysisResult findAnalysisResultByWordCloudImageUrl(String wordCloudImageUrl) {
         return analysisResultRepository.findByWordCloudImageUrl(wordCloudImageUrl);
     }
+
+    public String findWordCloudImageUrlByChatRoomIdAndUserId(Integer chatRoomId, Integer userId) {
+        AnalysisResult analysisResult = analysisResultRepository.findByChattingRoom_CrNumAndChattingRoom_User_Id(chatRoomId, userId);
+        if (analysisResult != null) {
+            return analysisResult.getWordCloudImageUrl();
+        }
+        return null;
+    }
 }

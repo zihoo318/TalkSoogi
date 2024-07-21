@@ -25,6 +25,14 @@ public class ChattingRoom {
     }
 
     // Getters and setters
+    public Integer getCrNum() {
+        return crNum;
+    }
+
+    public void setCrNum(Integer crNum) {
+        this.crNum = crNum;
+    }
+
     public String getFilePath() {
         return filePath;
     }
@@ -47,5 +55,13 @@ public class ChattingRoom {
 
     public void setAnalysisResult(AnalysisResult analysisResult) {
         this.analysisResult = analysisResult;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

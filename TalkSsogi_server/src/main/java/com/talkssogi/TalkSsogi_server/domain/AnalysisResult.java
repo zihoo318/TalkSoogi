@@ -10,6 +10,10 @@ import java.util.Map;
 @Entity
 public class AnalysisResult {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Id
     private String chatroomName;
 
     @OneToOne //일대일
