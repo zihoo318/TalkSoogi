@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들
 class MyViewModel(application: Application) : AndroidViewModel(application) {
-    private val BASE_URL = "https://example.com" // 실제 API 호스트 URL로 대체해야 됨
+    private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
