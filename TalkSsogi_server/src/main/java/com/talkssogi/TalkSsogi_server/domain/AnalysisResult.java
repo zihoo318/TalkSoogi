@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
+@Table(name = "analysisresult")
 public class AnalysisResult {
     @Id
     private String chatroomName;

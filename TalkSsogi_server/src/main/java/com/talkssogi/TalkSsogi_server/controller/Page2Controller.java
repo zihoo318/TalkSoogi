@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,7 @@ page2 서버에서 가져올 데이터
 =>안드로이드 스튜디오에서 만든 코드 다시 보고 어떤 형태로 데이터를 넘겨줘야하는지 고려해서 api만들기
  */
 @RestController
+@RequestMapping("/api")
 public class Page2Controller {
 
     private final ChattingRoomService chattingRoomService;
@@ -45,7 +47,7 @@ public class Page2Controller {
         this.analysisResultService = analysisResultService;
     }
 
-    @GetMapping("/api/chatrooms")
+    @GetMapping("/chatrooms")
     public ResponseEntity<Map<String, Integer>> getChatRooms(@RequestParam String userID) {
         // 특정 사용자의 정보를 가져옵니다.
         User user = userService.findUserById(userID);

@@ -3,6 +3,7 @@ package com.talkssogi.TalkSsogi_server.domain;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "chattingroom")
 public class ChattingRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //기본 키 값을 자동으로 증가

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 
 @Entity
+@Table(name = "user")
 public class User {
 
     @Id //기본키

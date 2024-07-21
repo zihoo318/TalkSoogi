@@ -18,6 +18,7 @@ page6Service에서 파이썬 코드를 실행해서 생성된 AnalysisResult의 
  */
 
 @RestController
+@RequestMapping("/api")
 public class Page6Controller {
 
     private final ChattingRoomService chattingRoomService;

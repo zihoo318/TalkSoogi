@@ -22,7 +22,7 @@ Page3Controller: 이 컨트롤러 클래스는 Page3Service에 핵심 로직을 
  */
 
 @RestController
-@RequestMapping("/api/analysis")
+@RequestMapping("/api")
 public class Page3Controller {
 
     private final ChattingRoomService chattingRoomService;
@@ -34,7 +34,7 @@ public class Page3Controller {
         this.userService = userService;
     }
 
-    @PostMapping("/api/uploadfile")
+    @PostMapping("/uploadfile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
                                              @RequestParam("userId") String userId,
                                              @RequestParam("headcount") int headcount) {
