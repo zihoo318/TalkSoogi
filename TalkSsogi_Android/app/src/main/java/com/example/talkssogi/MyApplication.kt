@@ -23,6 +23,7 @@ class MyApplication : Application() {
 }
 
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들
+data class User(val userId: String) //유저 아이디 db저장을 위한 클래스
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
 
@@ -95,18 +96,20 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sendUserId(userId: String) { //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
-        apiService.sendUserId(userId).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+        apiService.sendUserId(User(userId)).enqueue(object : retrofit2.Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    // 성공적으로 서버에 아이디 전송
-                    // 예를 들어, 사용자에게 성공 메시지 표시 또는 다른 처리
+                    // 성공 처리
+                    println("User created successfully")
                 } else {
-                    // 오류 처리
+                    // 실패 처리
+                    println("Failed to create user: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                // 네트워크 오류 처리
+                // 네트워크 실패 처리
+                println("Network error: ${t.message}")
             }
         })
     }

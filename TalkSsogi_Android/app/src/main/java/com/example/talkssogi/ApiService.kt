@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -19,7 +20,7 @@ interface ApiService {
 
     @POST("/api/userId") //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
     fun sendUserId(
-        @Query("userId") userId: String
+        @Body user: User
     ): Call<ResponseBody>
 
     @GET("/api/chatrooms") //채팅방 목록

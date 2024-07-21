@@ -3,6 +3,7 @@ package com.talkssogi.TalkSsogi_server.controller;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,10 @@ public class Page1Controller {
     }
 
     @PostMapping("/userId")
-    public ResponseEntity<String> createUser(@RequestParam("userId") String userId) {
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+        // User 객체에서 userId 추출
+        String userId = user.getUserId();
+
         // 새로운 사용자 객체를 생성
         User newUser = new User(userId);
 
