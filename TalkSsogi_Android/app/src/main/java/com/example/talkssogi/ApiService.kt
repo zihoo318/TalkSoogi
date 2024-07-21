@@ -39,4 +39,15 @@ interface ApiService {
 
     @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
     suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
+
+    @GET("/members/{chatRoomId}") // 채팅방 멤버 목록 가져오기
+    fun getChattingRoomMembers(
+        @Path("chatRoomId") chatRoomId: Int
+    ): Call<List<String>>
+
+    @GET("/api/wordCloudImageUrl/{chatRoomId}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
+    fun getWordCloudImageUrl(
+        @Path("chatRoomId") chatRoomId: Int,
+        @Path("userId") userId: Int
+    ): Call<String>
 }
