@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 @Service
@@ -73,5 +74,13 @@ public class ChattingRoomService {
             // 채팅방 저장
             chattingRoomRepository.save(room);
         }
+    }
+
+    public List<String> getChattingRoomMembers(Integer chatRoomId) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(chatRoomId).orElse(null);
+        if (chattingRoom != null && chattingRoom.getAnalysisResult() != null) {
+            return chattingRoom.getAnalysisResult().getMemberNames();
+        }
+        return List.of();
     }
 }

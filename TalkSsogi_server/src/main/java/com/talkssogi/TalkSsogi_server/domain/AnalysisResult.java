@@ -11,6 +11,10 @@ import java.util.Map;
 @Table(name = "analysisresult")
 public class AnalysisResult {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Id
     private String chatroomName;
 
     @OneToOne //일대일
