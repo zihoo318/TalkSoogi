@@ -37,6 +37,6 @@ interface ApiService {
     suspend fun getSearchRankingResults(): Response<Map<String, List<String>>>
 
 
-    @GET("/api/basics/activityAnalysis")//페이지8에서 사용할 기본 정보 제공
+    @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
     suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
 }
