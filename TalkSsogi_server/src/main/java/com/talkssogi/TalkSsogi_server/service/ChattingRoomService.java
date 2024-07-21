@@ -57,18 +57,12 @@ public class ChattingRoomService {
             Path uploadPath = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
             // 파일 저장
             Files.write(uploadPath, file.getBytes());
-            // 새로운 채팅방 객체 생성
-            ChattingRoom newRoom = new ChattingRoom(uploadPath.toString(), headcount);
-            user.addChatRoom(newRoom);
-            // 채팅방 저장
-            chattingRoomRepository.save(newRoom);
-            // 파일 저장 후 반환할 응답 메시지 설정
-            return "파일 업로드 성공";
+            // 파일 저장 후 반환할 파일 경로를 반환
+            return uploadPath.toString();
         } catch (Exception e) {
             // 파일 저장 실패 시 예외 처리
             return "파일 업로드 실패: " + e.getMessage();
         }
-
     }
 
     public void updateAnalysisResult(String filePath, AnalysisResult result) {
