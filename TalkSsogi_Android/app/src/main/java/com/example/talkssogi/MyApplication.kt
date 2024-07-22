@@ -40,6 +40,15 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val _chatRoomList = MutableLiveData<List<ChatRoom>>() // 한 유저의 채팅방 목록
     val chatRoomList: LiveData<List<ChatRoom>>
         get() = _chatRoomList
+    //가을 추가 코드
+    private val _headcount = MutableLiveData<Int>() // 파일 업로드 버튼 클릭시 인원수
+    val headcount: LiveData<Int>
+        get() = _headcount
+
+    private val _fileUri = MutableLiveData<String>() // 파일 업로드 버튼 클릭시 파일 URI
+    val fileUri: LiveData<String>
+        get() = _fileUri
+//가을 추가 코드
 
     init {
         fetchUserIds() // 전체 유저 아이디 목록
@@ -117,5 +126,11 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     private fun getUserToken(): String {
         val sharedPreferences: SharedPreferences = getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userToken", "") ?: ""
+    }
+
+    //파일 업로드 버튼 클릭시 파일과 인원수 받기
+    fun setHeadCountAndFile(headcount: Int, fileUri: String) {
+        _headcount.value = headcount
+        _fileUri.value = fileUri
     }
 }

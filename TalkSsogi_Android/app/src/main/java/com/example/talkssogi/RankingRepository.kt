@@ -35,4 +35,14 @@ object RankingRepository {
             emptyMap()
         }
     }
+    //페이지 8의 기본 동작(가을 동작)
+    suspend fun getActivityAnalysis(): Map<String, List<String>> {
+        return try {
+            val response = apiService.getActivityAnalysis()
+            response.body() ?: emptyMap()
+        } catch (e: Exception) {
+            Log.e("RankingRepository", "Error fetching search ranking results", e)
+            emptyMap()
+        }
+    }
 }
