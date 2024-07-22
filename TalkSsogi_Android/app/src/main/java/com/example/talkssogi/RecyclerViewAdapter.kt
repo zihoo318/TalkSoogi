@@ -7,15 +7,18 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class RecyclerViewAdapter(private val itemList: List<ImageResponse>) :
+class RecyclerViewAdapter(private val itemList: List<ImageURL>) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.item_image)
 
-        fun bind(imageResponse: ImageResponse) {
+        fun bind(imageURL: ImageURL) {
+            // 초기 화면 설정
+            imageView.setImageResource(R.drawable.phone) // 초기 이미지 설정
+
             Glide.with(itemView.context)
-                .load(imageResponse.imageUrl)
+                .load(imageURL.imageUrl)
                 .placeholder(R.drawable.happy2) // 로딩 중 보여줄 이미지
                 .error(R.drawable.error) // 에러 발생 시 보여줄 이미지
                 .into(imageView)

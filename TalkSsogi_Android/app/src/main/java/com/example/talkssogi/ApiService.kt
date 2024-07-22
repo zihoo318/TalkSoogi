@@ -55,4 +55,14 @@ interface ApiService {
         @Path("chatRoomId") chatRoomId: Int,
         @Path("userId") userId: Int
     ): Call<String>
+
+    @POST("/api/activityAnalysisImage") // 페이지9에서 쓸 활동분석 검색 결과 이미지 받기
+    fun getActivityAnalysisImage(
+        @Body searchRequest: Page9SearchData
+    ): Call<List<ImageURL>>
+
+    @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
+    fun getParticipants(
+        @Path("chatRoomId") chatRoomId: Int
+    ): Call<List<String>>
 }
