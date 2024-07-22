@@ -22,25 +22,29 @@ class RankingViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun fetchRankingResults() {
+    fun fetchBasicRankingResults() {
         viewModelScope.launch {
             try {
                 val basicResults = RankingRepository.getBasicRankingResults()
-                val searchResults = RankingRepository.getSearchRankingResults()
 
-                //8페이지 (가을추가)
-                val activityResults = RankingRepository.getActivityAnalysis()
-                //
-
+                Log.d("RankingViewModel", "Basic Results: $basicResults")
                 _basicRankingResults.value = basicResults
-                _searchRankingResults.value = searchResults
-
-                //8페이지 (가을추가)
-                _activityAnalysis.value = activityResults
-                //
 
             } catch (e: Exception) {
-                Log.e("RankingViewModel", "Error fetching ranking results", e)
+                Log.e("RankingViewModel", "Error fetching basic ranking results", e)
+                _error.value = "데이터를 가져오는 중 문제가 발생했습니다. 나중에 다시 시도해 주세요."
+            }
+        }
+    }
+
+    fun fetchSearchRankingResults(keyword: String) {
+        viewModelScope.launch {
+            try {
+                val searchResults = RankingRepository.getSearchRankingResults(keyword)
+                Log.d("RankingViewModel", "Search Results: $searchResults")
+                _searchRankingResults.value = searchResults
+            } catch (e: Exception) {
+                Log.e("RankingViewModel", "Error fetching search ranking results", e)
                 _error.value = "데이터를 가져오는 중 문제가 발생했습니다. 나중에 다시 시도해 주세요."
             }
         }

@@ -26,9 +26,9 @@ object RankingRepository {
         }
     }
 
-    suspend fun getSearchRankingResults(): Map<String, List<String>> {
+    suspend fun getSearchRankingResults(keyword: String): Map<String, List<String>> {
         return try {
-            val response = apiService.getSearchRankingResults()
+            val response = apiService.getSearchRankingResults(keyword)
             response.body() ?: emptyMap()
         } catch (e: Exception) {
             Log.e("RankingRepository", "Error fetching search ranking results", e)
