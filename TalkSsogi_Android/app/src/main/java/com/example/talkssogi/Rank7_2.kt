@@ -22,7 +22,7 @@ class Rank7_2 : Fragment() {
         val view = inflater.inflate(R.layout.rank7_board, container, false)
 
         val search = view.findViewById<ImageView>(R.id.button_search)
-        val textView2 = view.findViewById<TextView>(R.id.textView2)
+        val ranking_result = view.findViewById<TextView>(R.id.ranking_result)
 
         search.setOnClickListener {
             val intent = Intent(requireContext(), Page7_search_Activity::class.java)
@@ -31,16 +31,16 @@ class Rank7_2 : Fragment() {
 
         // ViewModel 데이터 관찰
         rankingViewModel.basicRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            // "주제1"의 랭킹을 가져와 표시
+            // "주제2"의 랭킹을 가져와 표시
             val rankingList = results["주제2"]
             rankingList?.let {
                 val displayText = it.joinToString(separator = "\n") { name -> "순위: $name" }
-                textView2.text = displayText
+                ranking_result.text = displayText
             }
         })
 
         // 데이터 가져오기 요청
-        rankingViewModel.fetchRankingResults()
+        rankingViewModel.fetchBasicRankingResults()
 
         return view
     }
