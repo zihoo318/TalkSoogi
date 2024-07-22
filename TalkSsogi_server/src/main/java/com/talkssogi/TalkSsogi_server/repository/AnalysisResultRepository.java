@@ -10,6 +10,7 @@ public interface AnalysisResultRepository extends JpaRepository<AnalysisResult, 
 
     AnalysisResult findByWordCloudImageUrl(String wordCloudImageUrl);
 
-    AnalysisResult findByChattingRoom_CrNumAndChattingRoom_User_Id(Integer chatRoomId, Integer userId);
+    AnalysisResult findByChattingRoom_CrNumAndChattingRoom_User_UserId(Integer chatRoomId, String userId);
+
 }
 

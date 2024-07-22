@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
@@ -22,7 +23,8 @@ data class ImageResponse(
 class fragmentPage9 : Fragment() {
     private var selectedDate1: String? = null // 시작할 날짜 저장
     private var selectedDate2: String? = null // 끝날 날짜 저장
-    lateinit var viewModel: MyViewModel
+    lateinit var viewModel: MyViewModel // 공유 뷰모델
+    private val activityAnalysisViewModel: ActivityAnalysisViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,10 +69,10 @@ class fragmentPage9 : Fragment() {
                 selectedResultsItem
             )
 
-            viewModel.getActivityAnalysisImage(searchData)
+            activityAnalysisViewModel.getActivityAnalysisImage(searchData)
 
             // 이미지 URL을 LiveData로 관찰하여 업데이트
-            viewModel.imageUrls.observe(viewLifecycleOwner, { imageResponses ->
+            activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageResponses ->
                 // List<ImageResponse>를 List<ImageURL>로 변환
                 val imageURLs = imageResponses.map { ImageURL(it.imageUrl) }
                 val adapter = RecyclerViewAdapter(imageURLs)
@@ -81,8 +83,8 @@ class fragmentPage9 : Fragment() {
         // 스피너 아이템 설정
         // 대화방 참가자 목록 로드 및 스피너 업데이트
         val chatRoomId = 1 // 실제 채팅방 ID로 변경 필요
-        viewModel.loadParticipants(chatRoomId)
-        viewModel.participants.observe(viewLifecycleOwner, { participants ->
+        activityAnalysisViewModel.loadParticipants(chatRoomId)
+        activityAnalysisViewModel.participants.observe(viewLifecycleOwner, { participants ->
             // 참가자 목록을 스피너의 아이템으로 설정
             val participantAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, participants)
             participantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
