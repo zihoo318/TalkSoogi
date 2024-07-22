@@ -16,6 +16,7 @@ public class ChattingRoom {
     private User user;
 
     @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //AnalysisResult 엔티티에 chattingRoom이라는 필드가 있으며, 이 필드가 관계의 주인임
     private AnalysisResult analysisResult;
 
     // Getters and setters

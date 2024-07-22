@@ -17,8 +17,8 @@ public class AnalysisResult {
     @Id
     private String chatroomName;
 
-    @OneToOne //일대일
-    @JoinColumn(name = "cr_num")
+    @OneToOne // 일대일
+    @JoinColumn(name = "cr_num", referencedColumnName = "crNum") // JPA가 테이블에 저장할 때는 int타입 외래키로 관리함 = 채빙방객체의 번호를 저장함
     private ChattingRoom chattingRoom;
 
     @Convert(converter = StringListConverter.class)
