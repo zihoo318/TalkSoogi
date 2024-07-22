@@ -2,10 +2,12 @@ package com.talkssogi.TalkSsogi_server.service;
 
 import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class AnalysisResultService {
     @Autowired
     private AnalysisResultRepository analysisResultRepository;
@@ -20,5 +22,13 @@ public class AnalysisResultService {
 
     public AnalysisResult findAnalysisResultByWordCloudImageUrl(String wordCloudImageUrl) {
         return analysisResultRepository.findByWordCloudImageUrl(wordCloudImageUrl);
+    }
+
+    public String findWordCloudImageUrlByChatRoomIdAndUserId(Integer chatRoomId, Integer userId) {
+        AnalysisResult analysisResult = analysisResultRepository.findByChattingRoom_CrNumAndChattingRoom_User_Id(chatRoomId, userId);
+        if (analysisResult != null) {
+            return analysisResult.getWordCloudImageUrl();
+        }
+        return null;
     }
 }

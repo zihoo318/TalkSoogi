@@ -11,6 +11,9 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
+import androidx.activity.viewModels
+
 
 class Page3Activity : AppCompatActivity() {
 
@@ -27,6 +30,9 @@ class Page3Activity : AppCompatActivity() {
     private lateinit var pot: ImageView
     private lateinit var speech_bubble: ImageView
     private lateinit var btnUploadFile: ImageButton
+    //추가
+    private val viewModel: MyViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,5 +124,12 @@ class Page3Activity : AppCompatActivity() {
         // 실제 분석 로직을 추가하세요.
         // 분석이 완료되면 결과를 표시합니다.
         tvSelectedFile.text = "파일 분석 완료"
+    }
+    //업로드 버튼 클릭시 파일과 인원수 뷰모델로 넘어감
+    private fun uploadFileAndPeopleCount() {
+        val peopleCount = etPeopleCount.text.toString().toIntOrNull() ?: 0
+        val fileUri = tvSelectedFile.text.toString()
+
+        viewModel.setHeadCountAndFile(peopleCount, fileUri)
     }
 }

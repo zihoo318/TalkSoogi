@@ -7,15 +7,25 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+class MyApplication : Application() {
+    val viewModel: MyViewModel by lazy {
+        ViewModelProvider.AndroidViewModelFactory.getInstance(this)
+            .create(MyViewModel::class.java)
+    }
+}
+
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들
+data class User(val userId: String) //유저 아이디 db저장을 위한 클래스
 class MyViewModel(application: Application) : AndroidViewModel(application) {
-    private val BASE_URL = "https://example.com" // 실제 API 호스트 URL로 대체해야 됨
+    private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
@@ -30,6 +40,15 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val _chatRoomList = MutableLiveData<List<ChatRoom>>() // 한 유저의 채팅방 목록
     val chatRoomList: LiveData<List<ChatRoom>>
         get() = _chatRoomList
+    //가을 추가 코드
+    private val _headcount = MutableLiveData<Int>() // 파일 업로드 버튼 클릭시 인원수
+    val headcount: LiveData<Int>
+        get() = _headcount
+
+    private val _fileUri = MutableLiveData<String>() // 파일 업로드 버튼 클릭시 파일 URI
+    val fileUri: LiveData<String>
+        get() = _fileUri
+//가을 추가 코드
 
     init {
         fetchUserIds() // 전체 유저 아이디 목록
@@ -85,8 +104,33 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    fun sendUserId(userId: String) { //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
+        apiService.sendUserId(User(userId)).enqueue(object : retrofit2.Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    // 성공 처리
+                    println("User created successfully")
+                } else {
+                    // 실패 처리
+                    println("Failed to create user: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                // 네트워크 실패 처리
+                println("Network error: ${t.message}")
+            }
+        })
+    }
+
     private fun getUserToken(): String {
         val sharedPreferences: SharedPreferences = getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
         return sharedPreferences.getString("userToken", "") ?: ""
+    }
+
+    //파일 업로드 버튼 클릭시 파일과 인원수 받기
+    fun setHeadCountAndFile(headcount: Int, fileUri: String) {
+        _headcount.value = headcount
+        _fileUri.value = fileUri
     }
 }

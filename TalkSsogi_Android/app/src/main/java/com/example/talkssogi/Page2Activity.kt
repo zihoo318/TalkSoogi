@@ -11,21 +11,29 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+// 테스트용 버튼들
 private lateinit var buttonOpenPage5: Button
+private lateinit var buttonOpenPage1: Button
 
 class Page2Activity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var chatRoomAdapter: ChatRoomAdapter
-    private val viewModel: MyViewModel by viewModels()
     private lateinit var bottomNavigationView : BottomNavigationView
+    private val viewModel: MyViewModel by lazy {
+        (application as MyApplication).viewModel
+    }
 
     private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page2)
+
+        //테스트용 버튼 선언
         buttonOpenPage5 = findViewById(R.id.button_open_page5)
+        buttonOpenPage1 = findViewById(R.id.button_open_page1)
+
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -67,6 +75,11 @@ class Page2Activity : AppCompatActivity() {
         //////////page5로 가기/////////
         buttonOpenPage5.setOnClickListener {
             val intent = Intent(this, FragmentActivity::class.java)
+            startActivity(intent)
+        }
+        //////////page1로 가기(db확인차)/////////
+        buttonOpenPage1.setOnClickListener {
+            val intent = Intent(this, Page1Activity::class.java)
             startActivity(intent)
         }
 

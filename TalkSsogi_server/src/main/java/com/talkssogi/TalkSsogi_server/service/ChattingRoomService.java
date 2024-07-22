@@ -5,6 +5,7 @@ import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 @Service
+@Transactional
 public class ChattingRoomService {
 
     private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
@@ -54,18 +57,12 @@ public class ChattingRoomService {
             Path uploadPath = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
             // 파일 저장
             Files.write(uploadPath, file.getBytes());
-            // 새로운 채팅방 객체 생성
-            ChattingRoom newRoom = new ChattingRoom(uploadPath.toString(), headcount);
-            user.addChatRoom(newRoom);
-            // 채팅방 저장
-            chattingRoomRepository.save(newRoom);
-            // 파일 저장 후 반환할 응답 메시지 설정
-            return "파일 업로드 성공";
+            // 파일 저장 후 반환할 파일 경로를 반환
+            return uploadPath.toString();
         } catch (Exception e) {
             // 파일 저장 실패 시 예외 처리
             return "파일 업로드 실패: " + e.getMessage();
         }
-
     }
 
     public void updateAnalysisResult(String filePath, AnalysisResult result) {
@@ -77,5 +74,13 @@ public class ChattingRoomService {
             // 채팅방 저장
             chattingRoomRepository.save(room);
         }
+    }
+
+    public List<String> getChattingRoomMembers(Integer chatRoomId) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(chatRoomId).orElse(null);
+        if (chattingRoom != null && chattingRoom.getAnalysisResult() != null) {
+            return chattingRoom.getAnalysisResult().getMemberNames();
+        }
+        return List.of();
     }
 }
