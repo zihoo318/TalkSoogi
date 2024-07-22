@@ -56,11 +56,6 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         get() = _fileUri
 //가을 추가 코드
 
-    private val _imageUrls = MutableLiveData<List<ImageURL>>()
-    val imageUrls: LiveData<List<ImageURL>> get() = _imageUrls
-
-    private val _participants = MutableLiveData<List<String>>() // 대화 참가자 이름 리스트
-    val participants: LiveData<List<String>> get() = _participants
 
     init {
         fetchUserIds() // 전체 유저 아이디 목록
@@ -133,41 +128,6 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                 println("Network error: ${t.message}")
             }
         })
-    }
-
-    fun getActivityAnalysisImage(searchData: Page9SearchData) { //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
-        apiService.getActivityAnalysisImage(searchData).enqueue(object : Callback<List<ImageURL>> {
-            override fun onResponse(call: Call<List<ImageURL>>, response: Response<List<ImageURL>>) {
-                if (response.isSuccessful) {
-                    val ImageURL = response.body()
-                    ImageURL?.let { _imageUrls.value = it }
-                } else {
-                    println("Failed to fetch images: ${response.errorBody()?.string()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<ImageURL>>, t: Throwable) {
-                println("Network error: ${t.message}")
-            }
-        })
-    }
-
-    fun loadParticipants(chatRoomId: Int) { // 채팅방 대화 참여자 이름 가져와서 리스트로 변환 (페이지9 + 윤지 파트? api 같은거 가져다 씀)
-        viewModelScope.launch {
-            try {
-                val response = apiService.getChattingRoomMembers(chatRoomId).execute()
-                if (response.isSuccessful) {
-                    val participantsList = response.body() ?: emptyList()
-                    _participants.postValue(participantsList)
-                } else {
-                    // 에러 처리
-                    _participants.postValue(emptyList())
-                }
-            } catch (e: Exception) {
-                // 예외 처리
-                _participants.postValue(emptyList())
-            }
-        }
     }
 
     private fun getUserToken(): String {

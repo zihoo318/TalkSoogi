@@ -14,7 +14,6 @@ public class AnalysisResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Id
     private String chatroomName;
 
     @OneToOne // 일대일

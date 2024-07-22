@@ -24,8 +24,8 @@ public class AnalysisResultService {
         return analysisResultRepository.findByWordCloudImageUrl(wordCloudImageUrl);
     }
 
-    public String findWordCloudImageUrlByChatRoomIdAndUserId(Integer chatRoomId, Integer userId) {
-        AnalysisResult analysisResult = analysisResultRepository.findByChattingRoom_CrNumAndChattingRoom_User_Id(chatRoomId, userId);
+    public String findWordCloudImageUrlByChatRoomIdAndUserId(Integer chatRoomId, String userId) {
+        AnalysisResult analysisResult = analysisResultRepository.findByChattingRoom_CrNumAndChattingRoom_User_UserId(chatRoomId, userId);
         if (analysisResult != null) {
             return analysisResult.getWordCloudImageUrl();
         }
