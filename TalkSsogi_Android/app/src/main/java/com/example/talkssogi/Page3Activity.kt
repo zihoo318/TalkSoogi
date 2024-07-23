@@ -67,7 +67,7 @@ class Page3Activity : AppCompatActivity() {
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
             handlePeopleCount() //
-            uploadFileAndPeopleCount() // 인원수, 모바일 내의 파일 경로 뷰모델에 저장
+            uploadFileAndPeopleCount() // 인원수, 모바일 내의 파일 경로 뷰모델에 저장하고 서버에 저장
 
             // 업로드 완료 후 이전 Activity2로 복귀하는 코드
             val intent = Intent()
@@ -114,7 +114,7 @@ class Page3Activity : AppCompatActivity() {
 
     private fun openFileChooser() { //파일 선택 tvSelectedFile 클릭 이벤트
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "text/*"
+            type = "*/*"
             addCategory(Intent.CATEGORY_OPENABLE)
         }
         startActivityForResult(intent, REQUEST_CODE_SELECT_FILE)
@@ -146,6 +146,7 @@ class Page3Activity : AppCompatActivity() {
         //서버에 저장
         selectedFileUri?.let { uri ->
             viewModel.uploadFile(uri, userId, peopleCount)
+            println("서버에 파일 보냄")
         } ?: run {
             tvSelectedFile.text = "파일을 선택해주세요."
         }

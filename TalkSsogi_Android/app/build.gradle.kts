@@ -70,5 +70,6 @@ dependencies {
     // API 관련
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환을 위한 Gson Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0") // 문자열 변환을 위한 컨버터
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.2") // 로깅을 위한 Interceptor (선택 사항)
 }

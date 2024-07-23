@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +23,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 class MyApplication : Application() {
     val viewModel: MyViewModel by lazy {
@@ -37,7 +41,7 @@ data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-    private val BASE_URL = "http://172.30.1.84/"  // 실제 안드로이드 기기에서 실행 할 때
+    private val BASE_URL = "http://192.168.45.232:8080/"  // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
@@ -45,13 +49,17 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
     val client = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
         .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
+        .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
         .build()
         .create(ApiService::class.java)
 
@@ -157,34 +165,54 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         _fileUri.value = fileUri
     }
 
-    // 파일 업로드 api실행 메서드 페이지3
-    fun uploadFile(fileUri: Uri, userId: String, headcount: Int) {
-        // 파일 경로로 File 객체를 생성
-        val file = File(fileUri.path ?: "")
-
-        // 파일을 RequestBody로 변환
-        val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
-        // MultipartBody.Part로 변환
-        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-        // 사용자 아이디와 인원 수를 RequestBody로 변환
-        val userIdPart = userId.toRequestBody("text/plain".toMediaType())
-        val headcountPart = headcount.toString().toRequestBody("text/plain".toMediaType())
-
-        // API 호출
-        apiService.uploadFile(body, userId, headcount).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    println("파일 업로드 성공")
-                } else {
-                    println("파일 업로드 실패: ${response.errorBody()?.string()}")
-                }
+    // 모바일의 파일 경로 알아내기
+    fun getPathFromUri(uri: Uri): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = getApplication<Application>().contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            if (it.moveToFirst()) {
+                return it.getString(columnIndex)
             }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                println("네트워크 오류: ${t.message}")
-            }
-        })
+        }
+        return null
     }
 
-}
+    // 파일 업로드 api실행 메서드 페이지3
+    fun uploadFile(fileUri: Uri, userId: String, headcount: Int) {
+        // Uri에서 Path만들기
+        val filePath = getPathFromUri(fileUri)
+        val file = filePath?.let { File(it) }
+
+        // null인지 확인
+        if (file != null && file.exists()) {
+            // RequestBody로 바꾸기
+            val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+            // 사용자 아이디와 인원 수를 RequestBody로 변환
+            val userIdPart = userId.toRequestBody("text/plain".toMediaType())
+            val headcountPart = headcount.toString().toRequestBody("text/plain".toMediaType())
+
+            // API 호출
+            apiService.uploadFile(body, userId, headcount).enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.i("FileUpload", "파일 업로드 성공")
+                    } else {
+                        Log.e("FileUpload", "파일 업로드 실패: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e("FileUpload", "네트워크 오류: ${t.message}")
+                }
+            })
+        } else {
+            Log.e("FileUpload", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
+        }
+    }
+    }
