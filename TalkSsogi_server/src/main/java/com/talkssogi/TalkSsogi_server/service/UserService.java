@@ -66,6 +66,7 @@ public class UserService {
         newRoom.setCrNum(nextRoomNumber);
 
         // 채팅방을 유저의 채팅방 목록에 추가
+       // user.addChatRoom(newRoom);
         user.getChatList().add(newRoom);
         newRoom.setUser(user);
 

@@ -5,12 +5,17 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "user")
 public class User {
 
+    private static final Logger logger = LoggerFactory.getLogger(User.class); // 로그 출력하기 위함
+
     @Id //기본키
+    @Column(name = "userId") // 데이터베이스에서 사용되는 컬럼 이름
     private String userId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -38,6 +43,12 @@ public class User {
 
     public void addChatRoom(ChattingRoom room) {
         this.chatList.add(room);
+        room.setUser(this);  // 양방향 관계 유지
+
+        // 로그 출력
+        logger.info("Added chat room with ID {} to user with ID {}. Current chat list: {}",
+                room.getCrNum(), this.userId, this.chatList);
     }
+
 
 }

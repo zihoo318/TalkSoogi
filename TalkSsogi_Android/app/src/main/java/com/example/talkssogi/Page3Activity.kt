@@ -1,7 +1,10 @@
 package com.example.talkssogi
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,8 +33,11 @@ class Page3Activity : AppCompatActivity() {
     private lateinit var pot: ImageView
     private lateinit var speech_bubble: ImageView
     private lateinit var btnUploadFile: ImageButton
-    //추가
-    private val viewModel: MyViewModel by viewModels()
+    private val viewModel: MyViewModel by lazy { //공유 뷰모델
+        (application as MyApplication).viewModel
+    }
+    private var selectedFileUri: Uri? = null // 파일 경로
+    private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +45,16 @@ class Page3Activity : AppCompatActivity() {
         setContentView(R.layout.page3_activity)
 
         // UI 요소의 참조를 가져옵니다.
-        tvPeople = findViewById(R.id.tvPeople)
-        etPeopleCount = findViewById(R.id.etPeopleCount)
+        tvPeople = findViewById(R.id.tvPeople) // .text에 인원 수
+        etPeopleCount = findViewById(R.id.etPeopleCount) //인원 수 뷰
         tvSelectedFile = findViewById(R.id.tvSelectedFile)
         imageView = findViewById(R.id.undo_button)
         textView = findViewById(R.id.title_analyze)
         speech_bubble = findViewById(R.id.analyze_speech)
         pot = findViewById(R.id.pot_page3)
         btnUploadFile = findViewById(R.id.btnUploadFile)
+        // SharedPreferences에서 사용자 아이디를 가져온다
+        sharedPreferences = getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
 
         // null 체크 추가
         checkForNulls()
@@ -58,7 +66,13 @@ class Page3Activity : AppCompatActivity() {
 
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
-            handlePeopleCount()
+            handlePeopleCount() //
+            uploadFileAndPeopleCount() // 인원수, 모바일 내의 파일 경로 뷰모델에 저장하고 서버에 저장
+
+            // 업로드 완료 후 이전 Activity2로 복귀하는 코드
+            val intent = Intent()
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
 
         // TextWatcher 설정(인원수가 수정될 때마다 바로 업데이트)
@@ -98,7 +112,7 @@ class Page3Activity : AppCompatActivity() {
         }
     }
 
-    private fun openFileChooser() {
+    private fun openFileChooser() { //파일 선택 tvSelectedFile 클릭 이벤트
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "*/*"
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -109,13 +123,8 @@ class Page3Activity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK) {
-            val fileUri = data?.data
-            tvSelectedFile.text = fileUri?.path ?: "파일 선택 실패"
-
-            // 파일 업로드 완료 후 이전 Activity2로 복귀하는 코드
-            val intent = Intent()
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+            selectedFileUri = data?.data
+            tvSelectedFile.text = selectedFileUri?.path ?: "파일 선택 실패"
         }
     }
 
@@ -125,11 +134,22 @@ class Page3Activity : AppCompatActivity() {
         // 분석이 완료되면 결과를 표시합니다.
         tvSelectedFile.text = "파일 분석 완료"
     }
-    //업로드 버튼 클릭시 파일과 인원수 뷰모델로 넘어감
+
+    //업로드 버튼 클릭시 파일과 인원수 뷰모델에 저장 후 서버에 저장
     private fun uploadFileAndPeopleCount() {
         val peopleCount = etPeopleCount.text.toString().toIntOrNull() ?: 0
         val fileUri = tvSelectedFile.text.toString()
+        val userId = sharedPreferences.getString("userToken", "") ?: ""
 
-        viewModel.setHeadCountAndFile(peopleCount, fileUri)
+        viewModel.setHeadCountAndFile(peopleCount, fileUri)  //공유뷰모델에 저장
+
+        //서버에 저장
+        selectedFileUri?.let { uri ->
+            viewModel.uploadFile(uri, userId, peopleCount)
+            println("서버에 파일 보냄")
+        } ?: run {
+            tvSelectedFile.text = "파일을 선택해주세요."
+        }
+
     }
 }

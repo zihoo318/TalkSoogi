@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 @Table(name = "chattingroom")
 public class ChattingRoom {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer crNum;
 
     private String filePath;
     private int headcount;
 
     @ManyToOne //여러 ChattingRoom이 하나의 User와 관계
-    @JoinColumn(name = "user_id") //ChattingRoom 테이블에서 외래 키로 사용될 컬럼의 이름이 user_id
+    @JoinColumn(name = "userId") //ChattingRoom 테이블에서 외래 키로 사용될 컬럼의 이름이 userId
     private User user;
 
     @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
