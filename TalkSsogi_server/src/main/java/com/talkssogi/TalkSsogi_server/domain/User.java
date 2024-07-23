@@ -11,6 +11,7 @@ import java.util.Set;
 public class User {
 
     @Id //기본키
+    @Column(name = "userId") // 데이터베이스에서 사용되는 컬럼 이름
     private String userId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -38,6 +39,8 @@ public class User {
 
     public void addChatRoom(ChattingRoom room) {
         this.chatList.add(room);
+        room.setUser(this);  // 양방향 관계 유지
     }
+
 
 }

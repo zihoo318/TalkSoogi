@@ -12,7 +12,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ActivityAnalysisViewModel : ViewModel() {
-    private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+    //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+    private val BASE_URL = "http://172.30.1.84/"  // 실제 안드로이드 기기에서 실행 할 때
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
@@ -62,4 +63,5 @@ class ActivityAnalysisViewModel : ViewModel() {
             }
         }
     }
+
 }

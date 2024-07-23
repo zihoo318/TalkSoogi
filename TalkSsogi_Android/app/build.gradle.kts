@@ -54,6 +54,10 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    // api로그 보기
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
     // Lifecycle ViewModel KTX (viewModelScope)
     implementation(libs.lifecycle.viewmodel.ktx)
     // Fragment KTX (viewModels)

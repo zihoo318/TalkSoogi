@@ -3,19 +3,24 @@ package com.example.talkssogi
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 class MyApplication : Application() {
     val viewModel: MyViewModel by lazy {
@@ -31,10 +36,21 @@ data class Page9SearchData(val selectedDate1: String?, val selectedDate2: String
 data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지 URL 담아 옴 페이지9
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
-    private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+    // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+    private val BASE_URL = "http://172.30.1.84/"  // 실제 안드로이드 기기에서 실행 할 때
+
+    // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
+    val logging = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+    val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .build()
+
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
+        .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)
@@ -62,7 +78,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         fetchChatRooms() // 한 유저의 채팅방 목록
     }
 
-    fun fetchUserIds() { // 서버에 요청하고 전체 유저 목록 받기
+    fun fetchUserIds() { // 서버에 요청하고 전체 유저 목록 받기 페이지1
         apiService.getAllUserIds().enqueue(object : Callback<UserIdResponse> {
             override fun onResponse(call: Call<UserIdResponse>, response: Response<UserIdResponse>) {
                 if (response.isSuccessful) {
@@ -135,9 +151,40 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         return sharedPreferences.getString("userToken", "") ?: ""
     }
 
-    //파일 업로드 버튼 클릭시 파일과 인원수 받기
+    //파일 업로드 버튼 클릭시 파일과 인원수 부모델에 저장
     fun setHeadCountAndFile(headcount: Int, fileUri: String) {
         _headcount.value = headcount
         _fileUri.value = fileUri
     }
+
+    // 파일 업로드 api실행 메서드 페이지3
+    fun uploadFile(fileUri: Uri, userId: String, headcount: Int) {
+        // 파일 경로로 File 객체를 생성
+        val file = File(fileUri.path ?: "")
+
+        // 파일을 RequestBody로 변환
+        val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
+        // MultipartBody.Part로 변환
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+        // 사용자 아이디와 인원 수를 RequestBody로 변환
+        val userIdPart = userId.toRequestBody("text/plain".toMediaType())
+        val headcountPart = headcount.toString().toRequestBody("text/plain".toMediaType())
+
+        // API 호출
+        apiService.uploadFile(body, userId, headcount).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    println("파일 업로드 성공")
+                } else {
+                    println("파일 업로드 실패: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                println("네트워크 오류: ${t.message}")
+            }
+        })
+    }
+
 }

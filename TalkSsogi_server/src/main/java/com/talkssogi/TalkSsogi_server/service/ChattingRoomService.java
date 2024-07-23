@@ -40,14 +40,6 @@ public class ChattingRoomService {
     public String handleFileUpload(MultipartFile file, String userId, int headcount) throws IOException {
         // MultipartFile을 받아 파일 업로드 처리
         // 파일 업로드 성공 여부에 따라 적절한 응답을 반환
-
-        // 유저 확인 및 생성
-        User user = userRepository.findByUserId(userId);
-        if (user == null) {
-            user = new User(userId);
-            userRepository.save(user);
-        }
-
         if (file.isEmpty()) {
             return "업로드할 파일을 선택하세요.";
         }
@@ -57,6 +49,23 @@ public class ChattingRoomService {
             Path uploadPath = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
             // 파일 저장
             Files.write(uploadPath, file.getBytes());
+            // 사용자 확인 및 생성
+            User user = userRepository.findByUserId(userId);
+            if (user == null) {
+                user = new User(userId);
+                userRepository.save(user);
+            }
+
+            // ChattingRoom 생성 및 사용자와 연결 (db처리)
+            ChattingRoom chattingRoom = new ChattingRoom();
+            chattingRoom.setFilePath(uploadPath.toString());
+            chattingRoom.setUser(user);  // User와 연결
+            chattingRoomRepository.save(chattingRoom);
+            // User의 chatList에 추가
+            user.addChatRoom(chattingRoom);
+            userRepository.save(user);  // User 업데이트 (chatList에 추가)
+
+
             // 파일 저장 후 반환할 파일 경로를 반환
             return uploadPath.toString();
         } catch (Exception e) {
