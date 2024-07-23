@@ -1,15 +1,14 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +33,6 @@ page2 서버에서 가져올 데이터
 @RequestMapping("/api")
 public class Page2Controller {
 
-    private static final Logger log = LoggerFactory.getLogger(Page2Controller.class); //로그보기
     private final ChattingRoomService chattingRoomService;
     private final UserService userService;
     private final AnalysisResultService analysisResultService;
@@ -48,13 +46,10 @@ public class Page2Controller {
 
     @GetMapping("/chatrooms") // 채팅방 목록 보내기
     public ResponseEntity<Map<Integer, String>> getChatRooms(@RequestParam String ID) {
-        log.info("유저의 채팅방목록 Received request to get chat rooms for user ID: {}", ID);
-
         // 특정 사용자의 정보를 가져옵니다.
         User user = userService.findUserById(ID);
 
         if (user == null) {
-            log.warn("User with ID {}의 유저가 없음.", ID);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -62,12 +57,6 @@ public class Page2Controller {
         Set<ChattingRoom> chatRooms = user.getChatList();
         // 반환할 채팅방 목록을 저장할 Map을 선언합니다.
         Map<Integer, String> chatRoomsMap = new HashMap<>();
-
-        if (chatRooms.isEmpty()) {
-            log.info("채팅방없음.User with ID {} has no chat rooms.", ID);
-        } else {
-            log.info("채팅방 있음.User with ID {} has {} chat rooms.", ID, chatRooms.size());
-        }
 
         // 각 채팅방에 대해 번호와 이름을 Map에 추가합니다.
         for (ChattingRoom room : chatRooms) {

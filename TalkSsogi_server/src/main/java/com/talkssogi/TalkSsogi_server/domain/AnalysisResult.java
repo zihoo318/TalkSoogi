@@ -4,6 +4,8 @@ import com.talkssogi.TalkSsogi_server.Converter.MapStringListConverter;
 import com.talkssogi.TalkSsogi_server.Converter.StringListConverter;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,81 +14,54 @@ import java.util.Map;
 public class AnalysisResult {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @OneToOne // 일대일 관계 설정
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
-
-    @Column(name = "chatroom_name", length = 255)
-    private String chatroomName;
+    @Column(name = "chattingRoomNum")
+    private Integer chattingRoomNum; // ChattingRoom의 기본 키를 직접 사용
 
     @OneToOne
-    @JoinColumn(name = "cr_num", referencedColumnName = "crNum")
-    private ChattingRoom chattingRoom;
+    @MapsId // 외래 키와 기본 키가 같은 값을 가지도록 설정
+    @JoinColumn(name = "chattingRoomNum") // AnalysisResult 테이블에서 외래 키로 사용될 컬럼의 이름
+    private ChattingRoom chattingRoom; // ChattingRoom 엔티티와의 일대일 관계
+
+    @Column(name = "chatroom_name", length = 255)
+    private String chatroomName = ""; // 빈 문자열로 초기화
 
     @Convert(converter = StringListConverter.class)
-    private List<String> memberNames;
+    private List<String> memberNames = new ArrayList<>(); // 빈 리스트로 초기화
 
     @Convert(converter = MapStringListConverter.class)
-    private Map<String, List<String>> basicActivityAnalysis;
+    private Map<String, List<String>> basicActivityAnalysis = new HashMap<>(); // 빈 맵으로 초기화
 
     @Column(name = "activity_analysis_image_url", length = 255)
-    private String activityAnalysisImageUrl;
+    private String activityAnalysisImageUrl = ""; // 빈 문자열로 초기화
 
     @Column(name = "word_cloud_image_url", length = 255)
-    private String wordCloudImageUrl;
+    private String wordCloudImageUrl = ""; // 빈 문자열로 초기화
 
     @Convert(converter = MapStringListConverter.class)
-    private Map<String, List<String>> basicRankingResults;
+    private Map<String, List<String>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
     @Convert(converter = MapStringListConverter.class)
-    private Map<String, List<String>> searchRankingResults;
+    private Map<String, List<String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
     // 기본 생성자
     public AnalysisResult() {
     }
 
     // 명시적 생성자
-    public AnalysisResult(User user, String chatroomName, ChattingRoom chattingRoom, List<String> memberNames,
-                          Map<String, List<String>> basicActivityAnalysis, String activityAnalysisImageUrl,
-                          String wordCloudImageUrl, Map<String, List<String>> basicRankingResults,
-                          Map<String, List<String>> searchRankingResults) {
-        this.user = user;
-        this.chatroomName = chatroomName;
+    public AnalysisResult(ChattingRoom chattingRoom, String chatroomName, List<String> memberNames) {
         this.chattingRoom = chattingRoom;
-        this.memberNames = memberNames;
-        this.basicActivityAnalysis = basicActivityAnalysis;
-        this.activityAnalysisImageUrl = activityAnalysisImageUrl;
-        this.wordCloudImageUrl = wordCloudImageUrl;
-        this.basicRankingResults = basicRankingResults;
-        this.searchRankingResults = searchRankingResults;
+        this.chattingRoomNum = chattingRoom != null ? chattingRoom.getCrNum() : null;
+        this.chatroomName = chatroomName != null ? chatroomName : ""; // null 체크 후 빈 문자열로 초기화
+        this.memberNames = memberNames != null ? memberNames : new ArrayList<>(); // null 체크 후 빈 리스트로 초기화
     }
 
     // Getter 및 Setter
-    public Integer getId() {
-        return id;
+    public Integer getChattingRoomNum() {
+        return chattingRoomNum;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getChatroomName() {
-        return chatroomName;
-    }
-
-    public void setChatroomName(String chatroomName) {
-        this.chatroomName = chatroomName;
+    public void setChattingRoomNum(Integer chattingRoomNum) {
+        this.chattingRoomNum = chattingRoomNum;
     }
 
     public ChattingRoom getChattingRoom() {
@@ -95,6 +70,15 @@ public class AnalysisResult {
 
     public void setChattingRoom(ChattingRoom chattingRoom) {
         this.chattingRoom = chattingRoom;
+        this.chattingRoomNum = chattingRoom != null ? chattingRoom.getCrNum() : null;
+    }
+
+    public String getChatroomName() {
+        return chatroomName;
+    }
+
+    public void setChatroomName(String chatroomName) {
+        this.chatroomName = chatroomName != null ? chatroomName : ""; // null 체크 후 빈 문자열로 설정
     }
 
     public List<String> getMemberNames() {
@@ -102,7 +86,7 @@ public class AnalysisResult {
     }
 
     public void setMemberNames(List<String> memberNames) {
-        this.memberNames = memberNames;
+        this.memberNames = memberNames != null ? memberNames : new ArrayList<>(); // null 체크 후 빈 리스트로 설정
     }
 
     public Map<String, List<String>> getBasicActivityAnalysis() {
@@ -110,7 +94,7 @@ public class AnalysisResult {
     }
 
     public void setBasicActivityAnalysis(Map<String, List<String>> basicActivityAnalysis) {
-        this.basicActivityAnalysis = basicActivityAnalysis;
+        this.basicActivityAnalysis = basicActivityAnalysis != null ? basicActivityAnalysis : new HashMap<>(); // null 체크 후 빈 맵으로 설정
     }
 
     public String getActivityAnalysisImageUrl() {
@@ -118,7 +102,7 @@ public class AnalysisResult {
     }
 
     public void setActivityAnalysisImageUrl(String activityAnalysisImageUrl) {
-        this.activityAnalysisImageUrl = activityAnalysisImageUrl;
+        this.activityAnalysisImageUrl = activityAnalysisImageUrl != null ? activityAnalysisImageUrl : ""; // null 체크 후 빈 문자열로 설정
     }
 
     public String getWordCloudImageUrl() {
@@ -126,7 +110,7 @@ public class AnalysisResult {
     }
 
     public void setWordCloudImageUrl(String wordCloudImageUrl) {
-        this.wordCloudImageUrl = wordCloudImageUrl;
+        this.wordCloudImageUrl = wordCloudImageUrl != null ? wordCloudImageUrl : ""; // null 체크 후 빈 문자열로 설정
     }
 
     public Map<String, List<String>> getBasicRankingResults() {
@@ -134,7 +118,7 @@ public class AnalysisResult {
     }
 
     public void setBasicRankingResults(Map<String, List<String>> basicRankingResults) {
-        this.basicRankingResults = basicRankingResults;
+        this.basicRankingResults = basicRankingResults != null ? basicRankingResults : new HashMap<>(); // null 체크 후 빈 맵으로 설정
     }
 
     public Map<String, List<String>> getSearchRankingResults() {
@@ -142,6 +126,6 @@ public class AnalysisResult {
     }
 
     public void setSearchRankingResults(Map<String, List<String>> searchRankingResults) {
-        this.searchRankingResults = searchRankingResults;
+        this.searchRankingResults = searchRankingResults != null ? searchRankingResults : new HashMap<>(); // null 체크 후 빈 맵으로 설정
     }
 }

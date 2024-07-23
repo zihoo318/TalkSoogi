@@ -116,21 +116,28 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchChatRooms() { // 서버에 요청하고 한 유저의 채팅방 목록 받기
         val userToken = getUserToken()
         // API 요청하여 채팅방 목록 가져오기
-        apiService.getChatRooms(userID = userToken).enqueue(object : Callback<List<ChatRoom>> {
-            override fun onResponse(call: Call<List<ChatRoom>>, response: Response<List<ChatRoom>>) {
+        apiService.getChatRooms(userID = userToken).enqueue(object : Callback<Map<Int, String>> {
+            override fun onResponse(call: Call<Map<Int, String>>, response: Response<Map<Int, String>>) {
                 if (response.isSuccessful) {
                     // 성공적인 응답(onResponse)일 경우, 받은 채팅방 목록을 처리하여 ViewModel에 값을 설정
-                    val chatRooms = response.body()
-                    chatRooms?.let { _chatRoomList.value = it }
+                    val chatRoomMap = response.body()
+
+                    // Map을 List<ChatRoom>으로 변환
+                    val chatRoomList = chatRoomMap?.map { (roomNumber, roomName) ->
+                        ChatRoom(crnum = roomNumber, name = roomName)
+                    } ?: emptyList() // Map이 null인 경우 빈 리스트로 대체
+
+                    // ViewModel에 값 설정
+                    _chatRoomList.value = chatRoomList
                 } else {
                     // 오류 처리
-                    // 예를 들어, response.code() 등을 이용하여 상세 오류 처리
+                    Log.e("fetchChatRooms", "Error: ${response.code()} - ${response.message()}")
                 }
             }
 
-            override fun onFailure(call: Call<List<ChatRoom>>, t: Throwable) {
+            override fun onFailure(call: Call<Map<Int, String>>, t: Throwable) {
                 // 네트워크 오류 처리
-                // 예를 들어, 네트워크 연결 상태 확인 및 사용자에게 오류 메시지 표시
+                Log.e("fetchChatRooms", "Network error: ${t.message}")
             }
         })
     }
