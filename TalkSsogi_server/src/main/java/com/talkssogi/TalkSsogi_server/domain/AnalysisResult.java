@@ -10,14 +10,20 @@ import java.util.Map;
 @Entity
 @Table(name = "analysisresult")
 public class AnalysisResult {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToOne // 일대일 관계 설정
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    private User user;
+
+    @Column(name = "chatroom_name", length = 255)
     private String chatroomName;
 
-    @OneToOne // 일대일
-    @JoinColumn(name = "cr_num", referencedColumnName = "crNum") // JPA가 테이블에 저장할 때는 int타입 외래키로 관리함 = 채빙방객체의 번호를 저장함
+    @OneToOne
+    @JoinColumn(name = "cr_num", referencedColumnName = "crNum")
     private ChattingRoom chattingRoom;
 
     @Convert(converter = StringListConverter.class)
@@ -26,7 +32,10 @@ public class AnalysisResult {
     @Convert(converter = MapStringListConverter.class)
     private Map<String, List<String>> basicActivityAnalysis;
 
+    @Column(name = "activity_analysis_image_url", length = 255)
     private String activityAnalysisImageUrl;
+
+    @Column(name = "word_cloud_image_url", length = 255)
     private String wordCloudImageUrl;
 
     @Convert(converter = MapStringListConverter.class)
@@ -35,8 +44,43 @@ public class AnalysisResult {
     @Convert(converter = MapStringListConverter.class)
     private Map<String, List<String>> searchRankingResults;
 
+    // 기본 생성자
+    public AnalysisResult() {
+    }
 
-    // for chatroomName
+    // 명시적 생성자
+    public AnalysisResult(User user, String chatroomName, ChattingRoom chattingRoom, List<String> memberNames,
+                          Map<String, List<String>> basicActivityAnalysis, String activityAnalysisImageUrl,
+                          String wordCloudImageUrl, Map<String, List<String>> basicRankingResults,
+                          Map<String, List<String>> searchRankingResults) {
+        this.user = user;
+        this.chatroomName = chatroomName;
+        this.chattingRoom = chattingRoom;
+        this.memberNames = memberNames;
+        this.basicActivityAnalysis = basicActivityAnalysis;
+        this.activityAnalysisImageUrl = activityAnalysisImageUrl;
+        this.wordCloudImageUrl = wordCloudImageUrl;
+        this.basicRankingResults = basicRankingResults;
+        this.searchRankingResults = searchRankingResults;
+    }
+
+    // Getter 및 Setter
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getChatroomName() {
         return chatroomName;
     }
@@ -45,7 +89,14 @@ public class AnalysisResult {
         this.chatroomName = chatroomName;
     }
 
-    // for memberNames
+    public ChattingRoom getChattingRoom() {
+        return chattingRoom;
+    }
+
+    public void setChattingRoom(ChattingRoom chattingRoom) {
+        this.chattingRoom = chattingRoom;
+    }
+
     public List<String> getMemberNames() {
         return memberNames;
     }
@@ -54,7 +105,6 @@ public class AnalysisResult {
         this.memberNames = memberNames;
     }
 
-    // for basicActivityAnalysis
     public Map<String, List<String>> getBasicActivityAnalysis() {
         return basicActivityAnalysis;
     }
@@ -63,7 +113,6 @@ public class AnalysisResult {
         this.basicActivityAnalysis = basicActivityAnalysis;
     }
 
-    // for activityAnalysisImageUrl
     public String getActivityAnalysisImageUrl() {
         return activityAnalysisImageUrl;
     }
@@ -72,7 +121,6 @@ public class AnalysisResult {
         this.activityAnalysisImageUrl = activityAnalysisImageUrl;
     }
 
-    // for wordCloudImageUrl
     public String getWordCloudImageUrl() {
         return wordCloudImageUrl;
     }
@@ -81,7 +129,6 @@ public class AnalysisResult {
         this.wordCloudImageUrl = wordCloudImageUrl;
     }
 
-    // for basicRankingResults
     public Map<String, List<String>> getBasicRankingResults() {
         return basicRankingResults;
     }
@@ -90,7 +137,6 @@ public class AnalysisResult {
         this.basicRankingResults = basicRankingResults;
     }
 
-    // for searchRankingResults
     public Map<String, List<String>> getSearchRankingResults() {
         return searchRankingResults;
     }

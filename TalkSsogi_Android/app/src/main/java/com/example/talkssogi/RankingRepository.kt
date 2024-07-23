@@ -16,9 +16,9 @@ object RankingRepository {
         apiService = retrofit.create(ApiService::class.java)
     }
 
-    suspend fun getBasicRankingResults(): Map<String, List<String>> {
+    suspend fun getBasicRankingResults(userId: String): Map<String, List<String>> {
         return try {
-            val response = apiService.getBasicRankingResults()
+            val response = apiService.getBasicRankingResults(userId)
             response.body() ?: emptyMap()
         } catch (e: Exception) {
             Log.e("RankingRepository", "Error fetching basic ranking results", e)
@@ -26,19 +26,9 @@ object RankingRepository {
         }
     }
 
-    suspend fun getSearchRankingResults(keyword: String): Map<String, List<String>> {
+    suspend fun getSearchRankingResults(userId: String, keyword: String): Map<String, List<String>> {
         return try {
-            val response = apiService.getSearchRankingResults(keyword)
-            response.body() ?: emptyMap()
-        } catch (e: Exception) {
-            Log.e("RankingRepository", "Error fetching search ranking results", e)
-            emptyMap()
-        }
-    }
-    //페이지 8의 기본 동작(가을 동작)
-    suspend fun getActivityAnalysis(): Map<String, List<String>> {
-        return try {
-            val response = apiService.getActivityAnalysis()
+            val response = apiService.getSearchRankingResults(userId, keyword)
             response.body() ?: emptyMap()
         } catch (e: Exception) {
             Log.e("RankingRepository", "Error fetching search ranking results", e)

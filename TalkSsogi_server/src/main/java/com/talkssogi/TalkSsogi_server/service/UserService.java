@@ -28,6 +28,11 @@ public class UserService {
         return users.stream().map(User::getUserId).collect(Collectors.toList());
     }
 
+    // 사용자 ID 존재 여부 확인(페이지7에서 사용)
+    public boolean userIdExists(String userId) {
+        return getAllUserIds().contains(userId);
+    }
+
     public void addUser(User user) {
         userRepository.save(user);
     }

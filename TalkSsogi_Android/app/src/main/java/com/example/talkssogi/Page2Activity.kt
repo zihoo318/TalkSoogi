@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 // 테스트용 버튼들
 private lateinit var buttonOpenPage5: Button
 private lateinit var buttonOpenPage1: Button
+private lateinit var user_name: TextView
 
 class Page2Activity : AppCompatActivity() {
 
@@ -33,7 +35,7 @@ class Page2Activity : AppCompatActivity() {
         //테스트용 버튼 선언
         buttonOpenPage5 = findViewById(R.id.button_open_page5)
         buttonOpenPage1 = findViewById(R.id.button_open_page1)
-
+        user_name = findViewById(R.id.user_name)    //현재 사용하고 있는 사용자 아이디 출력
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
