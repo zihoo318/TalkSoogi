@@ -29,7 +29,7 @@ page7 서버에서 가져올 데이터
 public class Page7Controller {
 
     @GetMapping("/basicRankingResults")
-    public Map<String, List<String>> getBasicRankingResults() {
+    public Map<String, List<String>> getBasicRankingResults(@RequestParam String userId) {
         // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
         Map<String, List<String>> basicRankingResults = new HashMap<>();
         basicRankingResults.put("주제1", List.of("조", "유", "진"));
@@ -45,7 +45,7 @@ public class Page7Controller {
     }
 
     @GetMapping("/searchRankingResults")
-    public Map<String, List<String>> getSearchRankingResults(@RequestParam String keyword) {
+    public Map<String, List<String>> getSearchRankingResults(@RequestParam String userId, String keyword) {
         // 기본 제공 랭킹 결과를 생성
         Map<String, List<String>> searchRankingResults = new HashMap<>();
         searchRankingResults.put("qqq", List.of("이름1", "이름2", "이름3"));
