@@ -37,10 +37,15 @@ interface ApiService {
     ): Call<ResponseBody>
 
     @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
-    suspend fun getBasicRankingResults(): Response<Map<String, List<String>>>
+    suspend fun getBasicRankingResults(
+        @Query("userId") userId: String     //userId를 넘겨준다.
+    ): Response<Map<String, List<String>>>
 
-    @GET("/api/rankings/searchRankingResults")  //키워드를 서버로 보냄
-    suspend fun getSearchRankingResults(@Query("keyword") keyword: String): Response<Map<String, List<String>>>
+    @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
+    suspend fun getSearchRankingResults(
+        @Query("keyword") keyword: String,      //keyword와 userId를 넘겨준다.
+        @Query("userId") userId: String
+    ): Response<Map<String, List<String>>>
 
     @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
     suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>

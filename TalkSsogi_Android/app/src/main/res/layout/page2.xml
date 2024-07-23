@@ -11,14 +11,14 @@
         android:layout_width="74dp"
         android:layout_height="72dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toBottomOf="@+id/user_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/smile" />
 
     <!-- 카톡방 이름 텍스트뷰 -->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/user_name"
         android:layout_width="70dp"
         android:layout_height="24dp"
         android:text="사용자 이름"
