@@ -23,10 +23,10 @@ interface ApiService {
         @Body user: User
     ): Call<ResponseBody>
 
-    @GET("/api/chatrooms") //채팅방 목록
+    @GET("/api/chatrooms") // 채팅방 목록
     fun getChatRooms(
         @Query("ID") userID: String?
-    ): Call<List<ChatRoom>> // 업로드 성공 여부를 확인하기 위한 응답
+    ): Call<Map<Int, String>> // Map<Integer, String> 형태의 응답
 
     @Multipart //파일 전송
     @POST("/api/uploadfile")

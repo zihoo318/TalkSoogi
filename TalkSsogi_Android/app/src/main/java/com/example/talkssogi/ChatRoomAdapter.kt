@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-data class ChatRoom(val name: String, val profileImageResId: Int)
+data class ChatRoom(val crnum: Int, val name: String)
 
 class ChatRoomAdapter(private var chatRoomList: List<ChatRoom>) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
 
@@ -19,7 +19,7 @@ class ChatRoomAdapter(private var chatRoomList: List<ChatRoom>) : RecyclerView.A
     override fun onBindViewHolder(holder: ChatRoomViewHolder, position: Int) {
         val chatRoom = chatRoomList[position]
         holder.chatRoomName.text = chatRoom.name
-        holder.profileImage.setImageResource(chatRoom.profileImageResId)
+        holder.profileImage.setImageResource(R.drawable.profile_placeholder)
     }
 
     override fun getItemCount(): Int {
