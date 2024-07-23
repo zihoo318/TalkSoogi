@@ -56,9 +56,6 @@ class fragmentPage8 : Fragment() {
             textView.text = displayText
         })
 
-        // 데이터 가져오기 요청
-        rankingViewModel.fetchRankingResults()
-
         return view
         // 예시 설정: 필요한 경우 텍스트나 이미지를 설정
         // textView.text = "동적 콘텐츠"
