@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -62,6 +63,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
         .build()
         .create(ApiService::class.java)
+
 
     private val _userIds = MutableLiveData<List<String>>() // 전체 유저 아이디 목록
     val userIds: LiveData<List<String>>
@@ -127,6 +129,9 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                         ChatRoom(crnum = roomNumber, name = roomName)
                     } ?: emptyList() // Map이 null인 경우 빈 리스트로 대체
 
+                    Log.d("fetchChatRooms", "Number of chat rooms: ${chatRoomList.size}")
+
+
                     // ViewModel에 값 설정
                     _chatRoomList.value = chatRoomList
                 } else {
@@ -143,8 +148,8 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sendUserId(userId: String) { //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
-        apiService.sendUserId(User(userId)).enqueue(object : retrofit2.Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: retrofit2.Response<ResponseBody>) {
+        apiService.sendUserId(User(userId)).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     // 성공 처리
                     println("User created successfully")
@@ -163,7 +168,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getUserToken(): String {
         val sharedPreferences: SharedPreferences = getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("userToken", "") ?: ""
+        return sharedPreferences.getString("Session_ID", "") ?: ""
     }
 
     //파일 업로드 버튼 클릭시 파일과 인원수 부모델에 저장

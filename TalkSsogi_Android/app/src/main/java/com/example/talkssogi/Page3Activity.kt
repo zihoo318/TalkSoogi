@@ -14,8 +14,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
-import androidx.activity.viewModels
 
 
 class Page3Activity : AppCompatActivity() {
@@ -37,7 +35,7 @@ class Page3Activity : AppCompatActivity() {
         (application as MyApplication).viewModel
     }
     private var selectedFileUri: Uri? = null // 파일 경로
-    private lateinit var sharedPreferences: SharedPreferences //intent를 위한 유저 아이
+    private lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +50,7 @@ class Page3Activity : AppCompatActivity() {
         textView = findViewById(R.id.title_analyze)
         speech_bubble = findViewById(R.id.analyze_speech)
         pot = findViewById(R.id.pot_page3)
-        btnUploadFile = findViewById(R.id.btnUploadFile)
+        btnUploadFile = findViewById(R.id.btnUploadName)
         // SharedPreferences에서 사용자 아이디를 가져온다
         sharedPreferences = getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
 
@@ -66,8 +64,9 @@ class Page3Activity : AppCompatActivity() {
 
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
-            handlePeopleCount() //
             uploadFileAndPeopleCount() // 인원수, 모바일 내의 파일 경로 뷰모델에 저장하고 서버에 저장
+
+            viewModel.fetchChatRooms() // 새로 업로드한 파일에 대한 채팅방 갱신(페이지2)
 
             // 업로드 완료 후 이전 Activity2로 복귀하는 코드
             val intent = Intent()
@@ -139,7 +138,7 @@ class Page3Activity : AppCompatActivity() {
     private fun uploadFileAndPeopleCount() {
         val peopleCount = etPeopleCount.text.toString().toIntOrNull() ?: 0
         val fileUri = tvSelectedFile.text.toString()
-        val userId = sharedPreferences.getString("userToken", "") ?: ""
+        val userId = sharedPreferences.getString("Session_ID", "") ?: ""
 
         viewModel.setHeadCountAndFile(peopleCount, fileUri)  //공유뷰모델에 저장
 

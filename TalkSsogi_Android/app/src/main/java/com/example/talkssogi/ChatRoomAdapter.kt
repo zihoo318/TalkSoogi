@@ -8,8 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 data class ChatRoom(val crnum: Int, val name: String)
-
-class ChatRoomAdapter(private var chatRoomList: List<ChatRoom>) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
+class ChatRoomAdapter(
+    private var chatRoomList: List<ChatRoom>,
+    private val onItemClick: (ChatRoom) -> Unit // 클릭 리스너를 위한 콜백 추가
+) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
@@ -20,6 +22,11 @@ class ChatRoomAdapter(private var chatRoomList: List<ChatRoom>) : RecyclerView.A
         val chatRoom = chatRoomList[position]
         holder.chatRoomName.text = chatRoom.name
         holder.profileImage.setImageResource(R.drawable.profile_placeholder)
+
+        // 추가
+        holder.itemView.setOnClickListener {
+            onItemClick(chatRoom) // 클릭 시 콜백 호출
+        }
     }
 
     override fun getItemCount(): Int {

@@ -18,8 +18,15 @@ class FragmentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fragment_container)
 
         if (savedInstanceState == null) {
+            val chatRoomId = intent.getIntExtra("chatRoomId", -1) // 채팅방 번호를 가져옴
+            val fragment = fragmentPage5().apply {
+                arguments = Bundle().apply {
+                    putInt("chatRoomId", chatRoomId) // 채팅방 번호를 arguments에 추가(fragment버전의 intent같은거)
+                }
+            }
+
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragmentPage5())
+                .replace(R.id.fragment_container, fragment)
                 .commit()
         }
     }
