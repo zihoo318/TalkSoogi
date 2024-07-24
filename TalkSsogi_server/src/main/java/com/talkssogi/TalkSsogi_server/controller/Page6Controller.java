@@ -43,7 +43,7 @@ public class Page6Controller {
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
-    @GetMapping("/api/wordCloudImageUrl/{chatRoomId}/{userId}")
+    @GetMapping("/wordCloudImageUrl/{chatRoomId}/{userId}")
     public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer chatRoomId, @PathVariable String userId) {
         String wordCloudImageUrl = analysisResultService.findWordCloudImageUrlByChatRoomIdAndUserId(chatRoomId, userId);
         if (wordCloudImageUrl == null) {

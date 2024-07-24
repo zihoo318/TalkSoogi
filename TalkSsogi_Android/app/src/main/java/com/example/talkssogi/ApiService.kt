@@ -28,13 +28,18 @@ interface ApiService {
         @Query("ID") userID: String?
     ): Call<Map<Int, String>> // Map<Integer, String> 형태의 응답
 
-    @Multipart //파일 전송
+    @Multipart // 파일 전송
     @POST("/api/uploadfile")
     fun uploadFile(
         @Part file: MultipartBody.Part, // 업로드할 파일을 MultipartBody.Part 형식으로 전달
         @Query("userId") userID: String?,
-        @Query("headcount") headcount : Int?
-    ): Call<ResponseBody>
+        @Query("headcount") headcount: Int?
+    ): Call<Map<String, Any>>
+
+    @GET("/api/analysis/basic-python") // 기본 분석 요청(uploadFile을 실행하고 같은 메서드에서 같이 요청 실행)
+    fun runBasicPythonAnalysis(
+        @Query("crnum") crnum: Int
+    ): Call<String>
 
     @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
     suspend fun getBasicRankingResults(
