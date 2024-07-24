@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+
+// 서버 로그 확인하기 위한 파일
 @ControllerAdvice
 public class LoggingControllerAdvice implements ResponseBodyAdvice<Object> {
 

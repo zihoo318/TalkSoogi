@@ -3,6 +3,7 @@ package com.talkssogi.TalkSsogi_server.service;
 import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
+import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,18 +31,24 @@ public class ChattingRoomService {
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
+    private final AnalysisResultRepository analysisResultRepository;
 
     @Autowired
-    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
+    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository, AnalysisResultRepository analysisResultRepository) {
         this.chattingRoomRepository = chattingRoomRepository;
         this.userRepository = userRepository;
+        this.analysisResultRepository=analysisResultRepository;
     }
 
-    public String handleFileUpload(MultipartFile file, String userId, int headcount) throws IOException {
+    public ChattingRoom findByCrNum(int crnum) {
+        return chattingRoomRepository.findByCrNum(crnum).orElse(null); // 채팅방을 찾고 없으면 null 반환
+    }
+
+    public ChattingRoom handleFileUpload(MultipartFile file, String userId, int headcount) throws IOException {
         // MultipartFile을 받아 파일 업로드 처리
         // 파일 업로드 성공 여부에 따라 적절한 응답을 반환
         if (file.isEmpty()) {
-            return "업로드할 파일을 선택하세요.";
+            throw new IOException("업로드할 파일을 선택하세요.");
         }
 
         try {
@@ -59,18 +66,16 @@ public class ChattingRoomService {
             // ChattingRoom 생성 및 사용자와 연결 (db처리)
             ChattingRoom chattingRoom = new ChattingRoom();
             chattingRoom.setFilePath(uploadPath.toString());
+            chattingRoom.setHeadcount(headcount);
             chattingRoom.setUser(user);  // User와 연결
             chattingRoomRepository.save(chattingRoom);
             // User의 chatList에 추가
             user.addChatRoom(chattingRoom);
             userRepository.save(user);  // User 업데이트 (chatList에 추가)
 
-
-            // 파일 저장 후 반환할 파일 경로를 반환
-            return uploadPath.toString();
+            return chattingRoom;
         } catch (Exception e) {
-            // 파일 저장 실패 시 예외 처리
-            return "파일 업로드 실패: " + e.getMessage();
+            throw new IOException("파일 업로드 실패: " + e.getMessage(), e);
         }
     }
 

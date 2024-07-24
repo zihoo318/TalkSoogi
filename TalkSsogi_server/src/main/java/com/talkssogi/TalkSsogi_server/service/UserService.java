@@ -51,32 +51,6 @@ public class UserService {
         return new HashSet<>(); // 유저가 없을 경우 빈 Set 반환
     }
 
-    // 유저에게 채팅방 생성 및 추가
-    // 무조건 ChattingRoomService의 handleFileUpload를 실행하고 파일경로를 받아서 이 메서드 실행
-    public ChattingRoom createChattingRoomForUser(String userId, String filePath, int headcount) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 새 채팅방 생성
-        ChattingRoom newRoom = new ChattingRoom();
-        newRoom.setFilePath(filePath);
-        newRoom.setHeadcount(headcount);
-
-        // 채팅방 번호 생성 및 할당
-        int nextRoomNumber = generateNextChattingRoomNumber(user);
-        newRoom.setCrNum(nextRoomNumber);
-
-        // 채팅방을 유저의 채팅방 목록에 추가
-       // user.addChatRoom(newRoom);
-        user.getChatList().add(newRoom);
-        newRoom.setUser(user);
-
-        // 데이터베이스에 저장
-        chattingRoomRepository.save(newRoom);
-        userRepository.save(user);
-
-        return newRoom;
-    }
-
     private int generateNextChattingRoomNumber(User user) {
         // 유저의 채팅방 목록에서 가장 큰 번호를 찾고, 그 다음 번호를 반환
         Set<ChattingRoom> chatRooms = user.getChatList();

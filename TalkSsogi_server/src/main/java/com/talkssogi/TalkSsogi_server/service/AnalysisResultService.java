@@ -12,6 +12,10 @@ public class AnalysisResultService {
     @Autowired
     private AnalysisResultRepository analysisResultRepository;
 
+    public void save(AnalysisResult analysisResult) {
+        analysisResultRepository.save(analysisResult);
+    }
+
     public void addAnalysisResult(AnalysisResult result) {
         analysisResultRepository.save(result);
     }

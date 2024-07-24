@@ -54,7 +54,7 @@ class Page2Activity : AppCompatActivity() {
 
         // 실시간으로 변화 확인하면서 화면 출력(=api요청 시 실행 됨)
         viewModel.chatRoomList.observe(this, { chatRooms ->
-            Log.d("Page2Activity", "Received chat rooms: $chatRooms") // 로그 추가
+            Log.d("fetchChatRooms", "옵저버 감지 Received chat rooms: $chatRooms") // 로그 추가
             chatRooms?.let {
                 chatRoomAdapter.submitList(it)
             }
@@ -88,6 +88,7 @@ class Page2Activity : AppCompatActivity() {
         super.onResume()
         // 데이터 갱신
         viewModel.fetchChatRooms()
+        Log.d("fetchChatRooms", "2에서 resume으로 갱신 Number of chat rooms")
     }
 
 }

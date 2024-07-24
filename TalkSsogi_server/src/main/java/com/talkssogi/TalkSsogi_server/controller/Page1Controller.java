@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*
-Page1Service를 모든 유저의 id를 저장한 배열을 만드는 함수를 포함해서 만들어줘 이 함수를 사용해서 Page1Controller에서 api로 보내도록
-Page1Service랑 Page1Controller 만들기!!
- */
 
 @RestController
 @RequestMapping("/api")
