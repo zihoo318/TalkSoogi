@@ -1,10 +1,8 @@
 package com.example.talkssogi
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 
 // 액티비티에 page5를 기본으로 올리고 버튼을 누르면 다른 페이지의 프래그먼트로 바뀜
 
@@ -18,10 +16,10 @@ class FragmentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fragment_container)
 
         if (savedInstanceState == null) {
-            val chatRoomId = intent.getIntExtra("chatRoomId", -1) // 채팅방 번호를 가져옴
+            val crnum = intent.getIntExtra("crnum", -1) // 채팅방 번호를 가져옴
             val fragment = fragmentPage5().apply {
                 arguments = Bundle().apply {
-                    putInt("chatRoomId", chatRoomId) // 채팅방 번호를 arguments에 추가(fragment버전의 intent같은거)
+                    putInt("crnum", crnum) // 채팅방 번호를 arguments에 추가(fragment버전의 intent같은거)
                 }
             }
 
