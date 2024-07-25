@@ -51,8 +51,11 @@ interface ApiService {
         @Query("userId") userId: String
     ): Response<Map<String, List<String>>>
 
-    @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
-    suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
+    //가을 api 수정사항(페이지8)
+    @GET("/api/basics/activityAnalysis")
+    fun getActivityAnalysis(
+        @Query("crnum") crnum: Int
+    ): Response<Map<String, List<String>>>
 
     @GET("/members/{crnum}") // 채팅방 멤버 목록 가져오기
     fun getChattingRoomMembers(

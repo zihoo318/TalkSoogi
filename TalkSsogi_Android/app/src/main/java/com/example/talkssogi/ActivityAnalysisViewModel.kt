@@ -47,7 +47,13 @@ class ActivityAnalysisViewModel : ViewModel() {
 
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
-    fun getActivityAnalysisImage(startDate: String?, endDate: String?, searchWho: String, resultsItem: String, crnum: Int) {
+    fun getActivityAnalysisImage(
+        startDate: String?,
+        endDate: String?,
+        searchWho: String,
+        resultsItem: String,
+        crnum: Int
+    ) {
         // 모든 필드가 null이 아니어야 API 호출을 진행합니다
         if (startDate != null && endDate != null && searchWho.isNotEmpty() && resultsItem.isNotEmpty()) {
             apiService.getActivityAnalysisImage(startDate, endDate, searchWho, resultsItem, crnum)
@@ -87,6 +93,42 @@ class ActivityAnalysisViewModel : ViewModel() {
             } catch (e: Exception) {
                 // 예외 처리
                 _participants.postValue(emptyList())
+            }
+        }
+    }
+
+    //8페이지 기본분석(가을추가)
+    private val _activityAnalysis = MutableLiveData<Map<String, List<String>>>()
+    val activityAnalysis: LiveData<Map<String, List<String>>> get() = _activityAnalysis
+    //
+
+
+    /*페이지 8의 기본 동작(가을 동작)
+    suspend fun getActivityAnalysis(): Map<String, List<String>> {
+        return try {
+            val response = apiService.getActivityAnalysis()
+            response.body() ?: emptyMap()
+        } catch (e: Exception) {
+            Log.e("RankingRepository", "Error fetching search ranking results", e)
+            emptyMap()
+        }
+    }
+
+}*/
+    // crnum을 매개변수로 받아서 API 호출
+    fun fetchActivityAnalysis(crnum: Int) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getActivityAnalysis(crnum)
+                if (response.isSuccessful) {
+                    _activityAnalysis.value = response.body() ?: emptyMap()
+                } else {
+                    Log.e("ActivityAnalysisViewModel", "Error: ${response.code()}")
+                    _activityAnalysis.value = emptyMap()
+                }
+            } catch (e: Exception) {
+                Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
+                _activityAnalysis.value = emptyMap()
             }
         }
     }
