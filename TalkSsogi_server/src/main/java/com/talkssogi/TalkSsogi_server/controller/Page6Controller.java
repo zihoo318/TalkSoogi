@@ -34,18 +34,18 @@ public class Page6Controller {
         this.analysisResultService = analysisResultService;
     }
 
-    @GetMapping("/members/{chatRoomId}")
-    public ResponseEntity<List<String>> getChattingRoomMembers(@PathVariable Integer chatRoomId) {
-        List<String> members = chattingRoomService.getChattingRoomMembers(chatRoomId);
+    @GetMapping("/members/{crnum}")
+    public ResponseEntity<List<String>> getChattingRoomMembers(@PathVariable Integer crnum) {
+        List<String> members = chattingRoomService.getChattingRoomMembers(crnum);
         if (members.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
-    @GetMapping("/wordCloudImageUrl/{chatRoomId}/{userId}")
-    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer chatRoomId, @PathVariable String userId) {
-        String wordCloudImageUrl = analysisResultService.findWordCloudImageUrlByChatRoomIdAndUserId(chatRoomId, userId);
+    @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
+    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer crnum, @PathVariable String userId) {
+        String wordCloudImageUrl = analysisResultService.findWordCloudImageUrlByChatRoomIdAndUserId(crnum, userId);
         if (wordCloudImageUrl == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
