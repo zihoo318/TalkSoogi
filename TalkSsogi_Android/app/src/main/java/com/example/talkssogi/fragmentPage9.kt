@@ -1,6 +1,8 @@
 package com.example.talkssogi
 
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
-import androidx.lifecycle.ViewModelProvider
 
 data class ImageResponse(
     val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
@@ -25,6 +26,14 @@ class fragmentPage9 : Fragment() {
     private var selectedDate2: String? = null // 끝날 날짜 저장
     lateinit var viewModel: MyViewModel // 공유 뷰모델
     private val activityAnalysisViewModel: ActivityAnalysisViewModel by viewModels()
+    private var crnum: Int = -1 // arguments로 받을 변수 저장할 변수 초기화
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            crnum = it.getInt("crnum", -1)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,28 +71,24 @@ class fragmentPage9 : Fragment() {
             val selectedResultsItem = resultsSpinner.selectedItem.toString()
 
             // 서버에 이미지 요청하기
-            val searchData = Page9SearchData(
+            activityAnalysisViewModel.getActivityAnalysisImage(
                 selectedDate1,
                 selectedDate2,
                 selectedSearchItem,
-                selectedResultsItem
+                selectedResultsItem,
+                crnum
             )
 
-            activityAnalysisViewModel.getActivityAnalysisImage(searchData)
-
             // 이미지 URL을 LiveData로 관찰하여 업데이트
-            activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageResponses ->
-                // List<ImageResponse>를 List<ImageURL>로 변환
-                val imageURLs = imageResponses.map { ImageURL(it.imageUrl) }
-                val adapter = RecyclerViewAdapter(imageURLs)
+            activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageUrls ->
+                val adapter = RecyclerViewAdapter(imageUrls)
                 recyclerView.adapter = adapter
             })
         }
 
         // 스피너 아이템 설정
         // 대화방 참가자 목록 로드 및 스피너 업데이트
-        val chatRoomId = 1 // 실제 채팅방 ID로 변경 필요
-        activityAnalysisViewModel.loadParticipants(chatRoomId)
+        activityAnalysisViewModel.loadParticipants(crnum)
         activityAnalysisViewModel.participants.observe(viewLifecycleOwner, { participants ->
             // 참가자 목록을 스피너의 아이템으로 설정
             val participantAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, participants)
@@ -95,13 +100,6 @@ class fragmentPage9 : Fragment() {
         val resultsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, resultsItems)
         resultsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         resultsSpinner.adapter = resultsAdapter
-
-//        // 일단 테스트용 코드(버튼 누르기 전까지 보일 이미지)
-//        val imageUrl = R.drawable.phone // 이미지 리소스 ID
-//        val testImageResponse = ImageResponse(imageUrl)
-//        val itemList = listOf(testImageResponse)
-//        val adapter = RecyclerViewAdapter(itemList)
-//        recyclerView.adapter = adapter
 
         return view
     }

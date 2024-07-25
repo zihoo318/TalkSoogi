@@ -6,7 +6,6 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -55,9 +54,9 @@ interface ApiService {
     @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
     suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
 
-    @GET("/members/{chatRoomId}") // 채팅방 멤버 목록 가져오기
+    @GET("/members/{crnum}") // 채팅방 멤버 목록 가져오기
     fun getChattingRoomMembers(
-        @Path("chatRoomId") chatRoomId: Int
+        @Path("crnum") crnum: Int
     ): Call<List<String>>
 
     @GET("/api/wordCloudImageUrl/{chatRoomId}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
@@ -66,9 +65,13 @@ interface ApiService {
         @Path("userId") userId: Int
     ): Call<String>
 
-    @POST("/api/activityAnalysisImage") // 페이지9에서 쓸 활동분석 검색 결과 이미지 받기
+    @POST("/api/analysis/personalActivityAnalysisImage")
     fun getActivityAnalysisImage(
-        @Body searchRequest: Page9SearchData
+        @Query("startDate") startDate: String,
+        @Query("endDate") endDate: String,
+        @Query("searchWho") searchWho: String,
+        @Query("resultsItem") resultsItem: String,
+        @Query("crnum") crnum: Int
     ): Call<List<ImageURL>>
 
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기

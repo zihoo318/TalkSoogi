@@ -36,13 +36,11 @@ class MyApplication : Application() {
 
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들 페이지1
 data class User(val userId: String) //유저 아이디 db저장을 위한 클래스 페이지1
-data class Page9SearchData(val selectedDate1: String?, val selectedDate2: String?,
-                           val searchWho: String, val resultsItem: String) //페이지9에서 검색할 정보 담기
 data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지 URL 담아 옴 페이지9
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-    private val BASE_URL = "http://192.168.45.232:8080/"  // 실제 안드로이드 기기에서 실행 할 때
+    private val BASE_URL = "http://192.168.45.208:8080/"    // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
