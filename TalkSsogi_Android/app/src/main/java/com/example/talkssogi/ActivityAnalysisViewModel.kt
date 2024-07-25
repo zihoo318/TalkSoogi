@@ -1,5 +1,6 @@
 package com.example.talkssogi
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,28 +46,37 @@ class ActivityAnalysisViewModel : ViewModel() {
     val participants: LiveData<List<String>> get() = _participants
 
 
+    //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
+    fun getActivityAnalysisImage(startDate: String?, endDate: String?, searchWho: String, resultsItem: String, crnum: Int) {
+        // 모든 필드가 null이 아니어야 API 호출을 진행합니다
+        if (startDate != null && endDate != null && searchWho.isNotEmpty() && resultsItem.isNotEmpty()) {
+            apiService.getActivityAnalysisImage(startDate, endDate, searchWho, resultsItem, crnum)
+                .enqueue(object : Callback<List<ImageURL>> {
+                    override fun onResponse(
+                        call: Call<List<ImageURL>>,
+                        response: Response<List<ImageURL>>
+                    ) {
+                        if (response.isSuccessful) {
+                            val ImageURL = response.body()
+                            ImageURL?.let { _imageUrls.value = it }
+                            Log.d("FileUpload", "이미지 생성 및 전달 받기 성공 : ${ImageURL}")
+                        } else {
+                            Log.d("FileUpload", "이미지 생성 및 전달 받기 실패")
+                        }
+                    }
 
-    fun getActivityAnalysisImage(searchData: Page9SearchData) { //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
-        apiService.getActivityAnalysisImage(searchData).enqueue(object : Callback<List<ImageURL>> {
-            override fun onResponse(call: Call<List<ImageURL>>, response: Response<List<ImageURL>>) {
-                if (response.isSuccessful) {
-                    val ImageURL = response.body()
-                    ImageURL?.let { _imageUrls.value = it }
-                } else {
-                    println("Failed to fetch images: ${response.errorBody()?.string()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<ImageURL>>, t: Throwable) {
-                println("Network error: ${t.message}")
-            }
-        })
+                    override fun onFailure(call: Call<List<ImageURL>>, t: Throwable) {
+                        Log.d("FileUpload", "이미지 생성 및 전달 받기 실패 네트워크 에러")
+                    }
+                })
+        }
     }
 
-    fun loadParticipants(chatRoomId: Int) { // 채팅방 대화 참여자 이름 가져와서 리스트로 변환 (페이지9 + 윤지 파트? api 같은거 가져다 씀)
+    // 채팅방 대화 참여자 이름 가져와서 리스트로 변환
+    fun loadParticipants(crnum: Int) {
         viewModelScope.launch {
             try {
-                val response = apiService.getChattingRoomMembers(chatRoomId).execute()
+                val response = apiService.getChattingRoomMembers(crnum).execute()
                 if (response.isSuccessful) {
                     val participantsList = response.body() ?: emptyList()
                     _participants.postValue(participantsList)
@@ -80,5 +90,4 @@ class ActivityAnalysisViewModel : ViewModel() {
             }
         }
     }
-
 }
