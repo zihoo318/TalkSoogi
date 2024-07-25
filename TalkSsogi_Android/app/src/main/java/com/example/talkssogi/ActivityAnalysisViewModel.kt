@@ -15,6 +15,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
@@ -44,6 +47,10 @@ class ActivityAnalysisViewModel : ViewModel() {
 
     private val _participants = MutableLiveData<List<String>>() // 페이지9 대화 참가자 이름 리스트
     val participants: LiveData<List<String>> get() = _participants
+
+    //8페이지 기본분석(가을추가)
+
+    //
 
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
@@ -97,10 +104,6 @@ class ActivityAnalysisViewModel : ViewModel() {
         }
     }
 
-    //8페이지 기본분석(가을추가)
-    private val _activityAnalysis = MutableLiveData<Map<String, List<String>>>()
-    val activityAnalysis: LiveData<Map<String, List<String>>> get() = _activityAnalysis
-    //
 
 
     /*페이지 8의 기본 동작(가을 동작)
@@ -116,19 +119,19 @@ class ActivityAnalysisViewModel : ViewModel() {
 
 }*/
     // crnum을 매개변수로 받아서 API 호출
-    fun fetchActivityAnalysis(crnum: Int) {
-        viewModelScope.launch {
+    suspend fun fetchActivityAnalysis(crnum: Int): Map<String, List<String>> {
+        return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getActivityAnalysis(crnum)
                 if (response.isSuccessful) {
-                    _activityAnalysis.value = response.body() ?: emptyMap()
+                    response.body() ?: emptyMap()
                 } else {
                     Log.e("ActivityAnalysisViewModel", "Error: ${response.code()}")
-                    _activityAnalysis.value = emptyMap()
+                    emptyMap()
                 }
             } catch (e: Exception) {
                 Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
-                _activityAnalysis.value = emptyMap()
+                emptyMap()
             }
         }
     }

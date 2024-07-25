@@ -6,13 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.viewModels
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class FragmentPage8 : Fragment() {
 
     private val viewModel: ActivityAnalysisViewModel by viewModels()
+    private var crnum: Int = -1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            crnum = it.getInt("crnum", -1)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,23 +46,30 @@ class FragmentPage8 : Fragment() {
             (requireActivity() as FragmentActivity).replaceFragment(fragmentPage9())
         }
 
-        // ViewModel 데이터 관찰
-        viewModel.activityAnalysis.observe(viewLifecycleOwner, Observer { results ->
-            val displayText = buildString {
-                results.forEach { (key, value) ->
-                    append("$key:\n")
-                    value.forEach { item ->
-                        append("- $item\n")
-                    }
-                    append("\n")
-                }
-            }
-            textView.text = displayText
-        })
+        // API 호출 및 결과 가공 후 TextView에 출력
+        lifecycleScope.launch {
+            try {
+                // API 호출
+                val results = viewModel.fetchActivityAnalysis(crnum)
 
-        // API 호출
-        val crnum = 1 // 실제 값으로 설정하세요
-        viewModel.fetchActivityAnalysis(crnum)
+                // 결과 가공
+                val displayText = buildString {
+                    results.forEach { (key, value) ->
+                        append("$key:\n")
+                        value.forEach { item ->
+                            append("- $item\n")
+                        }
+                        append("\n")
+                    }
+                }
+
+                // 결과 출력
+                textView.text = displayText
+
+            } catch (e: Exception) {
+                textView.text = "데이터를 가져오는 데 실패했습니다."
+            }
+        }
 
         return view
     }
