@@ -54,6 +54,14 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+
+    // Retrofit과 Gson Converter 의존성
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Scalars Converter 의존성 추가
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
     // api로그 보기
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")

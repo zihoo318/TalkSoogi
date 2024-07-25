@@ -32,7 +32,7 @@ interface ApiService {
     @POST("/api/uploadfile")
     fun uploadFile(
         @Part file: MultipartBody.Part, // 업로드할 파일을 MultipartBody.Part 형식으로 전달
-        @Query("userId") userID: String?,
+        @Query("userId") userId: String?,
         @Query("headcount") headcount: Int?
     ): Call<Map<String, Any>>
 
@@ -43,26 +43,26 @@ interface ApiService {
 
     @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
     suspend fun getBasicRankingResults(
-        @Query("userId") userId: String     //userId를 넘겨준다.
+        @Query("crnum") crnum: Int     //userId를 넘겨준다.
     ): Response<Map<String, List<String>>>
 
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
     suspend fun getSearchRankingResults(
-        @Query("keyword") keyword: String,      //keyword와 userId를 넘겨준다.
-        @Query("userId") userId: String
+        @Query("crnum") crnum: Int,
+        @Query("keyword") keyword: String      //keyword와 userId를 넘겨준다.
     ): Response<Map<String, List<String>>>
 
     @GET("/api/basics/activityAnalysis")//페이지8 사용할 기본 정보 제공
     suspend fun getActivityAnalysis(): Response<Map<String, List<String>>>
 
-    @GET("/members/{chatRoomId}") // 채팅방 멤버 목록 가져오기
+    @GET("/members/{crnum}") // 채팅방 멤버 목록 가져오기
     fun getChattingRoomMembers(
-        @Path("chatRoomId") chatRoomId: Int
+        @Path("crnum") crnum: Int
     ): Call<List<String>>
 
-    @GET("/api/wordCloudImageUrl/{chatRoomId}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
+    @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(
-        @Path("chatRoomId") chatRoomId: Int,
+        @Path("crnum") crnum: Int,
         @Path("userId") userId: Int
     ): Call<String>
 
@@ -71,8 +71,8 @@ interface ApiService {
         @Body searchRequest: Page9SearchData
     ): Call<List<ImageURL>>
 
-    @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
+    @GET("/api/participants/{crnum}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
     fun getParticipants(
-        @Path("chatRoomId") chatRoomId: Int
+        @Path("crnum") crnum: Int
     ): Call<List<String>>
 }
