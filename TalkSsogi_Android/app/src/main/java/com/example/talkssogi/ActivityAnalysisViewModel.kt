@@ -15,6 +15,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 //data class ImageResponse(
 //    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
@@ -105,12 +108,7 @@ class ActivityAnalysisViewModel : ViewModel() {
     }
 
 
-    //8페이지 기본분석(가을추가)
-    private val _activityAnalysis = MutableLiveData<Map<String, List<String>>>()
-    val activityAnalysis: LiveData<Map<String, List<String>>> get() = _activityAnalysis
     //
-
-
     /*페이지 8의 기본 동작(가을 동작)
     suspend fun getActivityAnalysis(): Map<String, List<String>> {
         return try {
@@ -124,19 +122,19 @@ class ActivityAnalysisViewModel : ViewModel() {
 
 }*/
     // crnum을 매개변수로 받아서 API 호출
-    fun fetchActivityAnalysis(crnum: Int) {
-        viewModelScope.launch {
+    suspend fun fetchActivityAnalysis(crnum: Int): Map<String, List<String>> {
+        return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getActivityAnalysis(crnum)
                 if (response.isSuccessful) {
-                    _activityAnalysis.value = response.body() ?: emptyMap()
+                    response.body() ?: emptyMap()
                 } else {
                     Log.e("ActivityAnalysisViewModel", "Error: ${response.code()}")
-                    _activityAnalysis.value = emptyMap()
+                    emptyMap()
                 }
             } catch (e: Exception) {
                 Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
-                _activityAnalysis.value = emptyMap()
+                emptyMap()
             }
 
         }
