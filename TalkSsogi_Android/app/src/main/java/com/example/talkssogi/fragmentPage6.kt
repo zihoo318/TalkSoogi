@@ -57,8 +57,8 @@ class fragmentPage6 : Fragment() {
             activityAnalysisViewModel.loadWordCloudImageUrl(crnum, selectedItem)
 
             // 워드 클라우드 이미지 URL을 LiveData로 관찰하여 RecyclerView 업데이트
-            activityAnalysisViewModel.wordCloudImageUrl.observe(viewLifecycleOwner, { imageUrls ->
-                val adapter = RecyclerViewAdapter(imageUrls)
+            activityAnalysisViewModel.wordCloudImageUrl.observe(viewLifecycleOwner, { wordCloudImageUrl ->
+                val adapter = RecyclerViewAdapter(wordCloudImageUrl)
                 recyclerView.adapter = adapter
             })
 
