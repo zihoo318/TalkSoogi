@@ -49,7 +49,7 @@ class ActivityAnalysisViewModel : ViewModel() {
     val participants: LiveData<List<String>> get() = _participants
 
     // 페이지6 워드 클라우드 이미지 URL, LiveData 변수를 초기화
-    private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>() // Nullable로 설정
+    private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>(emptyList()) // 빈 리스트로 초기화
     val wordCloudImageUrl: LiveData<List<ImageURL>> get() = _wordCloudImageUrl
 
 
@@ -137,25 +137,25 @@ class ActivityAnalysisViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
                 _activityAnalysis.value = emptyMap()
+            }
 
-                // 워드 클라우드 이미지 URL 가져오기
-                fun loadWordCloudImageUrl(crnum: Int, userId: Int) {
-                    viewModelScope.launch {
-                        try {
-                            // activityAnalysisViewModel.getWordCloudImageUrl 호출 후, imageUrls가 wordCloudImageUrl로 수정됨
-                            val response = apiService.getWordCloudImageUrl(crnum, userId).execute()
-                            if (response.isSuccessful) {
-                                val wordCloudUrl = response.body()
-                                _wordCloudImageUrl.postValue(wordCloudUrl) // Nullable 값을 설정
-                            } else {
-                                _wordCloudImageUrl.postValue(null) // 실패시 null 설정
-                            }
-                        } catch (e: Exception) {
-                            _wordCloudImageUrl.postValue(null) // 예외 발생시 null 설정
+        }
+    }
 
-                        }
-                    }
+    // 워드 클라우드 이미지 URL 가져오기
+    fun loadWordCloudImageUrl(crnum: Int, userId: Int) {
+        viewModelScope.launch {
+            try {
+                // activityAnalysisViewModel.getWordCloudImageUrl 호출 후, imageUrls가 wordCloudImageUrl로 수정됨
+                val response = apiService.getWordCloudImageUrl(crnum, userId).execute()
+                if (response.isSuccessful) {
+                    val wordCloudUrls = response.body() ?: emptyList() // 응답이 null이면 빈 리스트로 대체
+                    _wordCloudImageUrl.postValue(wordCloudUrls) // 빈 리스트를 설정
+                } else {
+                    _wordCloudImageUrl.postValue(emptyList()) // 실패 시 빈 리스트로 설정
                 }
+            } catch (e: Exception) {
+                _wordCloudImageUrl.postValue(emptyList()) // 네트워크 오류 시 빈 리스트로 설정
             }
         }
     }

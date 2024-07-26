@@ -7,8 +7,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class RecyclerViewAdapter(private val itemList: List<ImageURL>) :
-    RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
+class Page9RecyclerViewAdapter(private val itemList: List<ImageURL>) :
+    RecyclerView.Adapter<Page9RecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.item_image)

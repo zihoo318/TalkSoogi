@@ -1,8 +1,6 @@
 package com.example.talkssogi
 
 import android.app.DatePickerDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -79,7 +77,7 @@ class fragmentPage9 : Fragment() {
 
             // 이미지 URL을 LiveData로 관찰하여 업데이트
             activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageUrls ->
-                val adapter = RecyclerViewAdapter(imageUrls)
+                val adapter = Page9RecyclerViewAdapter(imageUrls)
                 recyclerView.adapter = adapter
             })
         }

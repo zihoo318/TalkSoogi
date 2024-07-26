@@ -58,7 +58,7 @@ class fragmentPage6 : Fragment() {
 
             // 워드 클라우드 이미지 URL을 LiveData로 관찰하여 RecyclerView 업데이트
             activityAnalysisViewModel.wordCloudImageUrl.observe(viewLifecycleOwner, { wordCloudImageUrl ->
-                val adapter = RecyclerViewAdapter(wordCloudImageUrl)
+                val adapter = Page9RecyclerViewAdapter(wordCloudImageUrl)
                 recyclerView.adapter = adapter
             })
 
@@ -79,8 +79,8 @@ class fragmentPage6 : Fragment() {
             val itemList = listOf(testImageResponse)
 
             // 리싸이클러뷰 어댑터 초기화 (모든 프래그먼트에서 같은 어댑터를 사용)
-            val recyclerViewAdapter = RecyclerViewAdapter(itemList)
-            recyclerView.adapter = recyclerViewAdapter
+            val page9RecyclerViewAdapter = Page9RecyclerViewAdapter(itemList)
+            recyclerView.adapter = page9RecyclerViewAdapter
 
         }
 
@@ -97,8 +97,8 @@ class fragmentPage6 : Fragment() {
         val imageUrlForRecyclerView = "https://example.com/test_img_page6.jpg" // 실제 URL로 변경해야 함
         val testImageResponseForRecyclerView = ImageURL(imageUrlForRecyclerView)
         val itemListForRecyclerView = listOf(testImageResponseForRecyclerView)
-        val recyclerViewAdapter = RecyclerViewAdapter(itemListForRecyclerView)
-        recyclerView.adapter = recyclerViewAdapter
+        val page9RecyclerViewAdapter = Page9RecyclerViewAdapter(itemListForRecyclerView)
+        recyclerView.adapter = page9RecyclerViewAdapter
 
         // 인플레이트된 뷰를 반환합니다.
         return view
