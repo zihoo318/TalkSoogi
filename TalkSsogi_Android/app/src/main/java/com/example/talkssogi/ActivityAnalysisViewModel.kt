@@ -16,6 +16,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
+//data class ImageResponse(
+//    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
+//)
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
     private val BASE_URL = "http://192.168.45.208:8080/"  // 실제 안드로이드 기기에서 실행 할 때
@@ -44,6 +47,7 @@ class ActivityAnalysisViewModel : ViewModel() {
 
     private val _participants = MutableLiveData<List<String>>() // 페이지9 대화 참가자 이름 리스트
     val participants: LiveData<List<String>> get() = _participants
+
 
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기

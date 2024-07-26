@@ -18,9 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
 
-data class ImageResponse(
-    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
-)
+
 class fragmentPage9 : Fragment() {
     private var selectedDate1: String? = null // 시작할 날짜 저장
     private var selectedDate2: String? = null // 끝날 날짜 저장
