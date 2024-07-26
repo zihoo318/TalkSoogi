@@ -45,6 +45,9 @@ class ActivityAnalysisViewModel : ViewModel() {
     private val _participants = MutableLiveData<List<String>>() // 페이지9 대화 참가자 이름 리스트
     val participants: LiveData<List<String>> get() = _participants
 
+    // 페이지6 워드 클라우드 이미지 URL, LiveData 변수를 초기화
+    private val _wordCloudImageUrl = MutableLiveData<String?>() // Nullable로 설정
+    val wordCloudImageUrl: LiveData<String?> get() = _wordCloudImageUrl
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
     fun getActivityAnalysisImage(startDate: String?, endDate: String?, searchWho: String, resultsItem: String, crnum: Int) {
@@ -87,6 +90,24 @@ class ActivityAnalysisViewModel : ViewModel() {
             } catch (e: Exception) {
                 // 예외 처리
                 _participants.postValue(emptyList())
+            }
+        }
+    }
+
+    // 워드 클라우드 이미지 URL 가져오기
+    fun loadWordCloudImageUrl(crnum: Int, userId: Int) {
+        viewModelScope.launch {
+            try {
+                // activityAnalysisViewModel.getWordCloudImageUrl 호출 후, imageUrls가 wordCloudImageUrl로 수정됨
+                val response = apiService.getWordCloudImageUrl(crnum, userId).execute()
+                if (response.isSuccessful) {
+                    val wordCloudUrl = response.body()
+                    _wordCloudImageUrl.postValue(wordCloudUrl) // Nullable 값을 설정
+                } else {
+                    _wordCloudImageUrl.postValue(null) // 실패시 null 설정
+                }
+            } catch (e: Exception) {
+                _wordCloudImageUrl.postValue(null) // 예외 발생시 null 설정
             }
         }
     }
