@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
-class FragmentPage8 : Fragment() {
+class fragmentPage8 : Fragment() {
 
     private val viewModel: ActivityAnalysisViewModel by viewModels()
     private var crnum: Int = -1
