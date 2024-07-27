@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.app.AlertDialog
 
 class Page2Activity : AppCompatActivity() {
 
@@ -41,12 +42,15 @@ class Page2Activity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         //chatRoomAdapter = ChatRoomAdapter(emptyList()) // 초기화는 빈 리스트로
         // Adapter 생성 시 클릭 리스너 전달
-        chatRoomAdapter = ChatRoomAdapter(emptyList()) { chatRoom ->
+        chatRoomAdapter = ChatRoomAdapter(emptyList(), { chatRoom ->
             // 클릭 시 처리할 로직
             val intent = Intent(this, FragmentActivity::class.java)
             intent.putExtra("chatRoomId", chatRoom.crnum) // 채팅방 ID를 전달
             startActivity(intent)
-        }
+        }, { chatRoom ->
+                // 길게 눌렀을 때 삭제 다이얼로그 표시
+                showDeleteConfirmationDialog(chatRoom)
+        })
         recyclerView.adapter = chatRoomAdapter
 
         // SharedPreferences에서 사용자 아이디를 가져온다
@@ -90,5 +94,38 @@ class Page2Activity : AppCompatActivity() {
         viewModel.fetchChatRooms()
         Log.d("fetchChatRooms", "2에서 resume으로 갱신 Number of chat rooms")
     }
+
+    private fun showDeleteConfirmationDialog(chatRoom: ChatRoom) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("채팅방 삭제")
+        builder.setMessage("${chatRoom.name} 채팅방을 삭제하시겠습니까?")
+        builder.setPositiveButton("삭제") { dialog, _ ->
+            viewModel.deleteChatRoom(chatRoom.crnum)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("취소") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    /* 바로 위의 코드와 기능적으로는 동일하며, 사용자에게 삭제 확인 대화상자를 보여주는데, 코드의 스타일과 간결성 측면에서 차이점이 있음
+    private fun showDeleteConfirmationDialog(chatRoom: ChatRoom) {
+        AlertDialog.Builder(this)
+            .setTitle("채팅방 삭제")
+            .setMessage("${chatRoom.name} 채팅방을 삭제하시겠습니까?")
+            .setPositiveButton("삭제") { _, _ -> // Kotlin에서 _, _는 함수의 매개변수를 무시할 때 사용하는 방법
+                viewModel.deleteChatRoom(chatRoom.crnum)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+    */
+
+    /*override fun onResume() {
+        super.onResume()
+        // 데이터 갱신
+        viewModel.fetchChatRooms()
+    }*/
 
 }
