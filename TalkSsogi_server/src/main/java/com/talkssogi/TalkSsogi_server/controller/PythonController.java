@@ -54,11 +54,14 @@ public class PythonController {
             }
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
-            // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/testpy.py"; // 여기에 절대 경로를 설정
+            // 파이썬 인터프리터의 절대 경로 설정
+            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
-            // 파이썬 스크립트를 실행할 명령어를 설정
-            String command = String.format("python %s \"%s\" %d", pythonScriptPath, filePath, headcount);
+            // 파이썬 스크립트의 절대 경로 설정
+            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/testpy.py";  // 실행할 Python 스크립트의 경로
+
+            // 명령어 설정
+            String command = String.format("%s %s %s %d", pythonInterpreterPath, pythonScriptPath, filePath, headcount);
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
