@@ -12,4 +12,6 @@ public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, Inte
     ChattingRoom findByFilePath(String filePath);
 
     Optional<ChattingRoom> findByCrNum(Integer crNum);
+
+    void deleteById(Integer crNum);
 }

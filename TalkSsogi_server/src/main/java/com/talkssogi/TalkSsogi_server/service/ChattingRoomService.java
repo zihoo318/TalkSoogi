@@ -97,4 +97,8 @@ public class ChattingRoomService {
         }
         return List.of();
     }
+
+    public void deleteChattingRoom(Integer crNum) { // 채팅방 삭제 메서드
+        chattingRoomRepository.deleteById(crNum);
+    }
 }
