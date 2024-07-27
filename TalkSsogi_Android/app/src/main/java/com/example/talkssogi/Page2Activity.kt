@@ -79,8 +79,9 @@ class Page2Activity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
-                R.id.navigation_edit -> {
-                    // 편집 선택 시 처리(채팅방 삭제)
+                R.id.navigation_logout -> {
+                    // 로그아웃 선택 시 처리(로그아웃할건지 한번 물어보고, 액티비티1로 이동)
+                    showLogoutConfirmationDialog()
                     true
                 }
                 else -> false
@@ -127,5 +128,30 @@ class Page2Activity : AppCompatActivity() {
         // 데이터 갱신
         viewModel.fetchChatRooms()
     }*/
+
+    private fun showLogoutConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("로그아웃")
+        builder.setMessage("정말 로그아웃 하시겠습니까?")
+        builder.setPositiveButton("로그아웃") { dialog, _ ->
+            logout()
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("취소") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun logout() {
+        // SharedPreferences의 세션 아이디 제거
+        sharedPreferences.edit().remove("Session_ID").apply()
+        // Page1Activity로 이동
+        val intent = Intent(this, Page1Activity::class.java)
+        //새로운 Activity를 수행하고 현재 Activity를 스텍에서 제거
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // 백 스택을 모두 지움
+        startActivity(intent) // 새로운 태스크로 Page1Activity를 시작
+        finish()
+    }
 
 }
