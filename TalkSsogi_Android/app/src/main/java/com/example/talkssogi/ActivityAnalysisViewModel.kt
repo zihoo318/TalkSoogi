@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 //)
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-    private val BASE_URL = "http://172.30.1.39:8080/"  // 실제 안드로이드 기기에서 실행 할 때
+    private val BASE_URL = "http://192.168.0.29:8080/"  // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
