@@ -27,7 +27,7 @@ import java.util.List;
 @Transactional
 public class ChattingRoomService {
 
-    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
+    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi/"; //테스트용 경로
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
