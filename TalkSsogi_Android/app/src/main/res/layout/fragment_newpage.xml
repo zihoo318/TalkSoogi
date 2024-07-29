@@ -8,9 +8,6 @@
     tools:context=".MainActivity"
     android:background="@color/white">
 
-    <!-- ImageView (배경 이미지) -->
-
-    <!-- TextView (이미지 위에 배치될 텍스트) -->
     <ImageView
         android:id="@+id/imgResult_Sender"
         android:layout_width="300dp"
@@ -32,11 +29,8 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/imgResult_Sender"
         app:layout_constraintEnd_toEndOf="@id/imgResult_Sender"
-        app:layout_constraintHorizontalBias="0.5"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@id/imgResult_Sender"
         app:layout_constraintTop_toTopOf="@id/imgResult_Sender"
-        app:layout_constraintVerticalBias="0.5"
-        app:layout_constraintVertical_bias="0.453" />
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
