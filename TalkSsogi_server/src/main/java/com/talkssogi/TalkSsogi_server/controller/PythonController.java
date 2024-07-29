@@ -2,6 +2,7 @@ package com.talkssogi.TalkSsogi_server.controller;
 
 import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
@@ -96,8 +97,9 @@ public class PythonController {
             List<String> memberNames = List.of(resultLines[1].split(","));
 
             // AnalysisResult 객체 생성
-            AnalysisResult analysisResult = new AnalysisResult(chattingRoom, chatroomName, memberNames);
-            analysisResult.setChattingRoomNum(crnum);
+            AnalysisResult analysisResult = new AnalysisResult();
+            analysisResult.setChattingRoom(chattingRoom);
+            analysisResult.setChattingRoomNum(chattingRoom.getCrNum());
             analysisResult.setChatroomName(chatroomName);
             analysisResult.setActivityAnalysisImageUrl("");
             analysisResult.setWordCloudImageUrl("");
@@ -109,9 +111,12 @@ public class PythonController {
             logger.debug("AnalysisResult crnum: {}", analysisResult.getChattingRoomNum());
 
             // AnalysisResult 객체를 데이터베이스에 저장
-            logger.info("Saving AnalysisResult for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직전 Saving AnalysisResult for ChattingRoom: {}", crnum);
             analysisResultService.save(analysisResult);
-            logger.info("AnalysisResult saved successfully for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직후 Saving AnalysisResult for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 저장되었는가 : ", analysisResult);
+
+
 
             return ResponseEntity.ok("Success");
         } catch (EntityNotFoundException e) {
