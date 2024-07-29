@@ -1,8 +1,6 @@
 package com.example.talkssogi
 
 import android.app.DatePickerDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
 
-data class ImageResponse(
-    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
-)
+
 class fragmentPage9 : Fragment() {
     private var selectedDate1: String? = null // 시작할 날짜 저장
     private var selectedDate2: String? = null // 끝날 날짜 저장
@@ -81,7 +77,7 @@ class fragmentPage9 : Fragment() {
 
             // 이미지 URL을 LiveData로 관찰하여 업데이트
             activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageUrls ->
-                val adapter = RecyclerViewAdapter(imageUrls)
+                val adapter = Page9RecyclerViewAdapter(imageUrls)
                 recyclerView.adapter = adapter
             })
         }

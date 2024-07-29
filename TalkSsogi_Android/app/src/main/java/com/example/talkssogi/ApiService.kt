@@ -63,11 +63,11 @@ interface ApiService {
         @Path("crnum") crnum: Int
     ): Call<List<String>>
 
-    @GET("/api/wordCloudImageUrl/{chatRoomId}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
+    @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(
-        @Path("chatRoomId") chatRoomId: Int,
+        @Path("crnum") crnum: Int,
         @Path("userId") userId: Int
-    ): Call<String>
+    ): Call<List<ImageURL>>
 
     @POST("/api/analysis/personalActivityAnalysisImage")
     fun getActivityAnalysisImage(
@@ -78,6 +78,8 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Call<List<ImageURL>>
 
+<<<<<<< HEAD
+=======
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
     fun getParticipants(
         @Path("chatRoomId") chatRoomId: Int
@@ -86,4 +88,5 @@ interface ApiService {
     @DELETE("/api/chatrooms/{crnum}")
     fun deleteChatRoom(@Path("crnum") crnum: Int): Call<Void>
 
+>>>>>>> b62c92dc5b0a01561560890879109701816ed371
 }

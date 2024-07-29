@@ -56,6 +56,7 @@ public class Page2Controller {
             chatRoomsMap.put(roomNumber, roomName); // 채팅방 번호와 이름을 Map에 추가합니다.
         }
 
+
         // 생성된 채팅방 목록을 HttpStatus OK와 함께 ResponseEntity로 반환합니다.
         return new ResponseEntity<>(chatRoomsMap, HttpStatus.OK);
     }

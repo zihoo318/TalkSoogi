@@ -2,6 +2,7 @@ package com.talkssogi.TalkSsogi_server.controller;
 
 import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
@@ -54,11 +55,14 @@ public class PythonController {
             }
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
-            // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/testpy.py"; // 여기에 절대 경로를 설정
+            // 파이썬 인터프리터의 절대 경로 설정
+            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
-            // 파이썬 스크립트를 실행할 명령어를 설정
-            String command = String.format("python %s \"%s\" %d", pythonScriptPath, filePath, headcount);
+            // 파이썬 스크립트의 절대 경로 설정
+            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/testpy.py";  // 실행할 Python 스크립트의 경로
+
+            // 명령어 설정
+            String command = String.format("%s %s %s %d", pythonInterpreterPath, pythonScriptPath, filePath, headcount);
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
@@ -93,8 +97,9 @@ public class PythonController {
             List<String> memberNames = List.of(resultLines[1].split(","));
 
             // AnalysisResult 객체 생성
-            AnalysisResult analysisResult = new AnalysisResult(chattingRoom, chatroomName, memberNames);
-            analysisResult.setChattingRoomNum(crnum);
+            AnalysisResult analysisResult = new AnalysisResult();
+            analysisResult.setChattingRoom(chattingRoom);
+            analysisResult.setChattingRoomNum(chattingRoom.getCrNum());
             analysisResult.setChatroomName(chatroomName);
             analysisResult.setActivityAnalysisImageUrl("");
             analysisResult.setWordCloudImageUrl("");
@@ -106,9 +111,12 @@ public class PythonController {
             logger.debug("AnalysisResult crnum: {}", analysisResult.getChattingRoomNum());
 
             // AnalysisResult 객체를 데이터베이스에 저장
-            logger.info("Saving AnalysisResult for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직전 Saving AnalysisResult for ChattingRoom: {}", crnum);
             analysisResultService.save(analysisResult);
-            logger.info("AnalysisResult saved successfully for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직후 Saving AnalysisResult for ChattingRoom: {}", crnum);
+            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 저장되었는가 : ", analysisResult);
+
+
 
             return ResponseEntity.ok("Success");
         } catch (EntityNotFoundException e) {

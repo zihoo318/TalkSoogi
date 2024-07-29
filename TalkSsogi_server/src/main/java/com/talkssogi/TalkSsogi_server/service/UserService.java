@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -23,25 +22,30 @@ public class UserService {
     @Autowired
     private ChattingRoomRepository chattingRoomRepository;
 
+    @Transactional
     public List<String> getAllUserIds() {
         List<User> users = userRepository.findAll();
         return users.stream().map(User::getUserId).collect(Collectors.toList());
     }
 
     // 사용자 ID 존재 여부 확인(페이지7에서 사용)
+    @Transactional
     public boolean userIdExists(String userId) {
         return getAllUserIds().contains(userId);
     }
 
+    @Transactional
     public void addUser(User user) {
         userRepository.save(user);
     }
 
+    @Transactional
     public User findUserById(String userId) {
         return userRepository.findByUserId(userId);
     }
 
     // User 객체의 채팅방 목록을 가져오는 메서드
+    @Transactional
     public Set<ChattingRoom> getChattingRoomsByUserId(String userId) {
         User user = userRepository.findByUserId(userId);
         if (user != null) {
@@ -51,6 +55,7 @@ public class UserService {
         return new HashSet<>(); // 유저가 없을 경우 빈 Set 반환
     }
 
+    @Transactional
     private int generateNextChattingRoomNumber(User user) {
         // 유저의 채팅방 목록에서 가장 큰 번호를 찾고, 그 다음 번호를 반환
         Set<ChattingRoom> chatRooms = user.getChatList();

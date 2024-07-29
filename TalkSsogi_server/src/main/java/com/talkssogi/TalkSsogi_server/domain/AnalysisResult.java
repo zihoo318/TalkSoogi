@@ -14,12 +14,12 @@ import java.util.Map;
 public class AnalysisResult {
 
     @Id
-    @Column(name = "chatting_room_num") // 스키마 맞추기
-    private Integer chattingRoomNum; // ChattingRoom의 기본 키를 직접 사용
+    @Column(name = "cr_num") // 스키마와 일치하도록 컬럼 이름 설정
+    private Integer chattingRoomNum=0;
 
     @OneToOne
     @MapsId // 외래 키와 기본 키가 같은 값을 가지도록 설정
-    @JoinColumn(name = "chatting_room_num") // AnalysisResult 테이블에서 외래 키로 사용될 컬럼의 이름
+    @JoinColumn(name = "cr_num") // AnalysisResult 테이블에서 외래 키로 사용될 컬럼의 이름
     private ChattingRoom chattingRoom; // ChattingRoom 엔티티와의 일대일 관계
 
     @Column(name = "chatroom_name", length = 255)
