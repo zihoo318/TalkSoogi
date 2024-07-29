@@ -45,11 +45,11 @@ class Page2Activity : AppCompatActivity() {
         chatRoomAdapter = ChatRoomAdapter(emptyList(), { chatRoom ->
             // 클릭 시 처리할 로직
             val intent = Intent(this, FragmentActivity::class.java)
-            intent.putExtra("crnum", chatRoom.crnum) // 채팅방 ID를 전달
+            intent.putExtra("chatRoomId", chatRoom.crnum) // 채팅방 ID를 전달
             startActivity(intent)
         }, { chatRoom ->
-            // 길게 눌렀을 때 삭제 다이얼로그 표시
-            showDeleteConfirmationDialog(chatRoom)
+                // 길게 눌렀을 때 삭제 다이얼로그 표시
+                showDeleteConfirmationDialog(chatRoom)
         })
         recyclerView.adapter = chatRoomAdapter
 
