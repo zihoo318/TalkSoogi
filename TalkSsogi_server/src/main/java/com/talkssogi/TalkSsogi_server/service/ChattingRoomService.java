@@ -66,6 +66,7 @@ public class ChattingRoomService {
             // ChattingRoom 생성 및 사용자와 연결 (db처리)
             ChattingRoom chattingRoom = new ChattingRoom();
             chattingRoom.setFilePath(uploadPath.toString());
+            chattingRoom.setCrNum(0); // or some other appropriate default value
             chattingRoom.setHeadcount(headcount);
             chattingRoom.setUser(user);  // User와 연결
             chattingRoomRepository.save(chattingRoom);

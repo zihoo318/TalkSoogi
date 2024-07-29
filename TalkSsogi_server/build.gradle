@@ -36,6 +36,11 @@ dependencies {
 	// 로그 출력
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-logging'
+
+	// AWS SDK for S3
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.340'
+	// AWS SDK Core
+	implementation 'com.amazonaws:aws-java-sdk-core:1.12.340'
 }
 
 tasks.named('test') {

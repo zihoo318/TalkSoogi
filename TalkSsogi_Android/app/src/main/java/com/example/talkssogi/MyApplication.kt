@@ -36,8 +36,6 @@ class MyApplication : Application() {
 
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들 페이지1
 data class User(val userId: String) //유저 아이디 db저장을 위한 클래스 페이지1
-data class Page9SearchData(val selectedDate1: String?, val selectedDate2: String?,
-                           val searchWho: String, val resultsItem: String) //페이지9에서 검색할 정보 담기
 data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지 URL 담아 옴 페이지9
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {

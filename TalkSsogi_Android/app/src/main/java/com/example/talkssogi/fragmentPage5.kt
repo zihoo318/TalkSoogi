@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 
 class fragmentPage5 : Fragment() {
-    private var chatRoomId: Int = -1 // 채팅방 번호를 저장할 변수
+    private var crnum: Int = -1 // 채팅방 번호를 저장할 변수
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -18,7 +18,7 @@ class fragmentPage5 : Fragment() {
         val view = inflater.inflate(R.layout.page5_fragment_activity, container, false)
 
         // arguments에서 채팅방 번호를 가져옴
-        chatRoomId = arguments?.getInt("chatRoomId", -1) ?: -1
+        crnum = arguments?.getInt("crnum", -1) ?: -1
 
         val btnBack: ImageView = view.findViewById(R.id.imageView) //뒤로가기
         val option1 = view.findViewById<TextView>(R.id.option_1) //페이지6
@@ -36,7 +36,7 @@ class fragmentPage5 : Fragment() {
             // 채팅방 번호를 arguments로 설정하여 다음 프래그먼트로 전달
             val fragment = fragmentPage6().apply {
                 arguments = Bundle().apply {
-                    putInt("chatRoomId", chatRoomId)
+                    putInt("crnum", crnum)
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
@@ -45,7 +45,7 @@ class fragmentPage5 : Fragment() {
         option2.setOnClickListener {
             // 채팅방 번호를 Intent로 전달
             val intent = Intent(requireContext(), Page7Activity::class.java).apply {
-                putExtra("chatRoomId", chatRoomId)
+                putExtra("crnum", crnum)
             }
             startActivity(intent)
         }
@@ -54,7 +54,7 @@ class fragmentPage5 : Fragment() {
             // 채팅방 번호를 arguments로 설정하여 다음 프래그먼트로 전달
             val fragment = fragmentPage8().apply {
                 arguments = Bundle().apply {
-                    putInt("chatRoomId", chatRoomId)
+                    putInt("crnum", crnum)
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)

@@ -65,9 +65,6 @@ class Page1Activity : AppCompatActivity() {
                 etID.text.clear() // EditText의 텍스트를 비움
                 idConfirm.visibility = TextView.GONE // ID가 사용 가능한 경우의 메시지를 숨김
                 idConfirm2.visibility = TextView.GONE // ID가 사용 중임을 나타내는 메시지를 숨김
-                // ID가 추가되었다는 메시지를 표시할 수 있음 (예: Toast)
-                // Toast.makeText(this, "ID added", Toast.LENGTH_SHORT).show()
-
 
                 // Shared Preferences에 사용자 아이디 저장
                 // (메인액티비티에서 만든 변수 안에 값 넣기 -> 다음 앱 접속 땐 값이 있어서 바로 페이지2로 이동)
