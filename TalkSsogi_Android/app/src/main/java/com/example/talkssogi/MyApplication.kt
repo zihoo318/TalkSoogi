@@ -11,6 +11,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.GsonBuilder
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -46,19 +48,28 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     val logging = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
+
+    // Accept 헤더를 추가하는 인터셉터
+    private val acceptHeaderInterceptor = Interceptor { chain ->
+        val originalRequest = chain.request()
+        val newRequest = originalRequest.newBuilder()
+            .addHeader("Accept", "application/json") // Accept 헤더 추가
+            .build()
+        chain.proceed(newRequest)
+    }
     val client = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .addInterceptor(acceptHeaderInterceptor) // Accept 헤더 인터셉터
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-
+    var gson= GsonBuilder().setLenient().create()
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(BASE_URL)
         .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
-        .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
-        .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
+        .addConverterFactory(GsonConverterFactory.create(gson)) // JSON 변환
         .build()
         .create(ApiService::class.java)
 

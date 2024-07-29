@@ -1,13 +1,9 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
-import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
-import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
-import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +21,11 @@ public class Page3Controller {
 
     private final ChattingRoomService chattingRoomService;
     private final ChattingRoomRepository chattingRoomRepository;
-    private final AnalysisResultRepository analysisResultRepository;
 
     @Autowired
-    public Page3Controller(ChattingRoomService chattingRoomService,ChattingRoomRepository chattingRoomRepository, AnalysisResultRepository analysisResultRepository) {
+    public Page3Controller(ChattingRoomService chattingRoomService,ChattingRoomRepository chattingRoomRepository) {
         this.chattingRoomService = chattingRoomService;
         this.chattingRoomRepository = chattingRoomRepository;
-        this.analysisResultRepository=analysisResultRepository;
     }
 
     @PostMapping("/uploadfile")

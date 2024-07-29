@@ -1,24 +1,15 @@
 package com.talkssogi.TalkSsogi_server.service;
 
-import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
-import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,17 +19,20 @@ import java.util.List;
 @Service
 public class ChattingRoomService {
 
-    private static final String UPLOAD_DIR = "C:/Users/KYJ/TalkSsogi_Workspace/"; //테스트용 경로
+    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
-    private final AnalysisResultRepository analysisResultRepository;
 
     @Autowired
-    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository, AnalysisResultRepository analysisResultRepository) {
+    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
         this.chattingRoomRepository = chattingRoomRepository;
         this.userRepository = userRepository;
-        this.analysisResultRepository=analysisResultRepository;
+    }
+
+    @Transactional
+    public void save(ChattingRoom chattingRoom) {
+        chattingRoomRepository.save(chattingRoom);
     }
 
     @Transactional
@@ -83,15 +77,37 @@ public class ChattingRoomService {
     }
 
     @Transactional
-    public List<String> getChattingRoomMembers(Integer chatRoomId) {
-        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(chatRoomId).orElse(null);
-        if (chattingRoom != null && chattingRoom.getAnalysisResult() != null) {
-            return chattingRoom.getAnalysisResult().getMemberNames();
+    public List<String> getChattingRoomMembers(Integer crnum) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
+        if (chattingRoom != null && chattingRoom.getMemberNames() != null) {
+            return chattingRoom.getMemberNames();
         }
         return List.of();
     }
 
+    @Transactional
     public void deleteChattingRoom(Integer crNum) { // 채팅방 삭제 메서드
         chattingRoomRepository.deleteById(crNum);
+    }
+
+    @Transactional
+    public String findActivityAnalysisImageUrlByCrnum(Integer crnum) {
+        return chattingRoomRepository.findByCrNum(crnum)
+                .map(ChattingRoom::getActivityAnalysisImageUrl)
+                .orElse(null);
+    }
+
+    @Transactional
+    public String findWordCloudImageUrlByCrnum(Integer crnum) {
+        return chattingRoomRepository.findByCrNum(crnum)
+                .map(ChattingRoom::getWordCloudImageUrl)
+                .orElse(null);
+    }
+
+    @Transactional
+    public String findWordCloudImageUrlByCrnumAndUserId(Integer crnum, String userId) {
+        return chattingRoomRepository.findByCrNumAndUser_UserId(crnum, userId)
+                .map(ChattingRoom::getWordCloudImageUrl)
+                .orElse(null);
     }
 }

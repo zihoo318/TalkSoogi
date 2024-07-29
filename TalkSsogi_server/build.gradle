@@ -22,7 +22,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	//implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' //웹 안 만듦
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	//runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -45,4 +46,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
 }
