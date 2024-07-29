@@ -153,6 +153,23 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    // 채팅방 삭제 메서드
+    fun deleteChatRoom(crnum: Int) {
+        apiService.deleteChatRoom(crnum).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    // 삭제 성공 시 채팅방 목록 갱신
+                    fetchChatRooms()
+                } else {
+                    Log.e("DeleteChatRoom", "채팅방 삭제를 실패하였습니다: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("DeleteChatRoom", "Network error: ${t.message}")
+            }
+        })
+    }
+
     fun sendUserId(userId: String) { //페이지1에서 쓸 유저 생성(아이디 입력 후 확인 버튼 누르면)
         apiService.sendUserId(User(userId)).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
