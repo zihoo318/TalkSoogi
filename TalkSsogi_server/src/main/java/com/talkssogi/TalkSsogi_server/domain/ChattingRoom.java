@@ -1,6 +1,13 @@
 package com.talkssogi.TalkSsogi_server.domain;
 
+import com.talkssogi.TalkSsogi_server.Converter.MapStringListConverter;
+import com.talkssogi.TalkSsogi_server.Converter.StringListConverter;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "chattingroom")
@@ -21,17 +28,40 @@ public class ChattingRoom {
     @JoinColumn(name = "user_id") // 외래 키 컬럼 이름과 매핑
     private User user;
 
-    @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private AnalysisResult analysisResult;
+    @Column(name = "chatroom_name", length = 255)
+    private String chatroomName = ""; // 빈 문자열로 초기화
+
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "member_names") // Column name updated to match MySQL schema
+    private List<String> memberNames = new ArrayList<>(); // 빈 리스트로 초기화
+
+    @Convert(converter = MapStringListConverter.class)
+    @Column(name = "basic_activity_analysis") // Column name updated to match MySQL schema
+    private Map<String, List<String>> basicActivityAnalysis = new HashMap<>(); // 빈 맵으로 초기화
+
+    @Column(name = "activity_analysis_image_url", length = 255)
+    private String activityAnalysisImageUrl = ""; // 빈 문자열로 초기화
+
+    @Column(name = "word_cloud_image_url", length = 255)
+    private String wordCloudImageUrl = ""; // 빈 문자열로 초기화
+
+    @Convert(converter = MapStringListConverter.class)
+    @Column(name = "basic_ranking_results") // Column name updated to match MySQL schema
+    private Map<String, List<String>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+
+    @Convert(converter = MapStringListConverter.class)
+    @Column(name = "search_ranking_results") // Column name updated to match MySQL schema
+    private Map<String, List<String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+
 
     // Getters and setters
-    public Integer getCrNum() { return crNum;  }
+    public Integer getCrNum() {
+        return crNum;
+    }
 
-    public void setCrNum(Integer crNum) { this.crNum = crNum;  }
-
-    public User getUser() { return user; }
-
-    public void setUser(User user) { this.user = user; }
+    public void setCrNum(Integer crNum) {
+        this.crNum = crNum;
+    }
 
     public String getFilePath() {
         return filePath;
@@ -41,18 +71,75 @@ public class ChattingRoom {
         this.filePath = filePath;
     }
 
-    public int getHeadcount() { return headcount; }
+    public int getHeadcount() {
+        return headcount;
+    }
 
     public void setHeadcount(int headcount) {
         this.headcount = headcount;
     }
 
-    public AnalysisResult getAnalysisResult() {
-        return analysisResult;
+    public User getUser() {
+        return user;
     }
 
-    public void setAnalysisResult(AnalysisResult analysisResult) {
-        this.analysisResult = analysisResult;
+    public void setUser(User user) {
+        this.user = user;
     }
 
+    public String getChatroomName() {
+        return chatroomName;
+    }
+
+    public void setChatroomName(String chatroomName) {
+        this.chatroomName = chatroomName != null ? chatroomName : "";
+    }
+
+    public List<String> getMemberNames() {
+        return memberNames;
+    }
+
+    public void setMemberNames(List<String> memberNames) {
+        this.memberNames = memberNames != null ? memberNames : new ArrayList<>();
+    }
+
+    public Map<String, List<String>> getBasicActivityAnalysis() {
+        return basicActivityAnalysis;
+    }
+
+    public void setBasicActivityAnalysis(Map<String, List<String>> basicActivityAnalysis) {
+        this.basicActivityAnalysis = basicActivityAnalysis != null ? basicActivityAnalysis : new HashMap<>();
+    }
+
+    public String getActivityAnalysisImageUrl() {
+        return activityAnalysisImageUrl;
+    }
+
+    public void setActivityAnalysisImageUrl(String activityAnalysisImageUrl) {
+        this.activityAnalysisImageUrl = activityAnalysisImageUrl != null ? activityAnalysisImageUrl : "";
+    }
+
+    public String getWordCloudImageUrl() {
+        return wordCloudImageUrl;
+    }
+
+    public void setWordCloudImageUrl(String wordCloudImageUrl) {
+        this.wordCloudImageUrl = wordCloudImageUrl != null ? wordCloudImageUrl : "";
+    }
+
+    public Map<String, List<String>> getBasicRankingResults() {
+        return basicRankingResults;
+    }
+
+    public void setBasicRankingResults(Map<String, List<String>> basicRankingResults) {
+        this.basicRankingResults = basicRankingResults != null ? basicRankingResults : new HashMap<>();
+    }
+
+    public Map<String, List<String>> getSearchRankingResults() {
+        return searchRankingResults;
+    }
+
+    public void setSearchRankingResults(Map<String, List<String>> searchRankingResults) {
+        this.searchRankingResults = searchRankingResults != null ? searchRankingResults : new HashMap<>();
+    }
 }

@@ -1,9 +1,6 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogi_server.domain.User;
-import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
-import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +22,11 @@ public class Page6Controller {
 
     private final ChattingRoomService chattingRoomService;
     private final UserService userService;
-    private final AnalysisResultService analysisResultService;
 
     @Autowired
-    public Page6Controller(ChattingRoomService chattingRoomService, UserService userService, AnalysisResultService analysisResultService) {
+    public Page6Controller(ChattingRoomService chattingRoomService, UserService userService) {
         this.chattingRoomService = chattingRoomService;
         this.userService = userService;
-        this.analysisResultService = analysisResultService;
     }
 
     @GetMapping("/members/{crnum}")
@@ -45,7 +40,7 @@ public class Page6Controller {
 
     @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
     public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer crnum, @PathVariable String userId) {
-        String wordCloudImageUrl = analysisResultService.findWordCloudImageUrlByChatRoomIdAndUserId(crnum, userId);
+        String wordCloudImageUrl = chattingRoomService.findWordCloudImageUrlByCrnumAndUserId(crnum, userId);
         if (wordCloudImageUrl == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

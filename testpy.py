@@ -1,4 +1,8 @@
 import sys
+import codecs
+
+# Ensure the script handles UTF-8 encoding
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
 
 def main():
     if len(sys.argv) < 3:

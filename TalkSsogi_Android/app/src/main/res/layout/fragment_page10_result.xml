@@ -33,7 +33,5 @@
         app:layout_constraintTop_toTopOf="@id/imgResult_Sender"
         />
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
