@@ -78,8 +78,6 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Call<List<ImageURL>>
 
-<<<<<<< HEAD
-=======
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
     fun getParticipants(
         @Path("chatRoomId") chatRoomId: Int
@@ -88,5 +86,4 @@ interface ApiService {
     @DELETE("/api/chatrooms/{crnum}")
     fun deleteChatRoom(@Path("crnum") crnum: Int): Call<Void>
 
->>>>>>> b62c92dc5b0a01561560890879109701816ed371
 }
