@@ -1,5 +1,6 @@
 package com.example.talkssogi
 
+import com.example.talkssogi.model.ChatRoom
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

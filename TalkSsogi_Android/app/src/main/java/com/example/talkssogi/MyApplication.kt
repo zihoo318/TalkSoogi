@@ -1,5 +1,6 @@
 package com.example.talkssogi
 
+import com.example.talkssogi.model.ChatRoom
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
@@ -28,6 +29,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 class MyApplication : Application() {
+    //page2Activity에서 사용할 apiService
+    lateinit var apiService: ApiService
     val viewModel: MyViewModel by lazy {
         ViewModelProvider.AndroidViewModelFactory.getInstance(this)
             .create(MyViewModel::class.java)
@@ -40,7 +43,7 @@ data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-    private val BASE_URL = "http://172.20.10.4:8080/"  // 실제 안드로이드 기기에서 실행 할 때
+//    private val BASE_URL = "http://172.32.76.111:8080/"  // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
@@ -55,7 +58,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
 
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
-        .baseUrl(BASE_URL)
+        .baseUrl(Constants.BASE_URL)
         .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
         .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
         .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
@@ -132,7 +135,11 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
                     // Map을 List<ChatRoom>으로 변환
                     val chatRoomList = chatRoomMap?.map { (roomNumber, roomName) ->
-                        ChatRoom(crnum = roomNumber, name = roomName)
+                        ChatRoom(
+                            crnum = roomNumber,
+                            name = roomName,
+                            profileImageResId = R.drawable.profile_placeholder // 기본 이미지 리소스 설정
+                        )
                     } ?: emptyList() // Map이 null인 경우 빈 리스트로 대체
 
                     Log.d("fetchChatRooms", "실제 api실행 Number of chat rooms: ${chatRoomList.size}")

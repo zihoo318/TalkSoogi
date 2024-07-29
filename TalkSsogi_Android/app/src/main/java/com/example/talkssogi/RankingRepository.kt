@@ -10,7 +10,7 @@ object RankingRepository {
     init {
         val retrofit = Retrofit.Builder()
 //            .baseUrl("http://10.0.2.2:8080/") // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-            .baseUrl("http://172.20.10.4:8080/") // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+            .baseUrl(Constants.BASE_URL) // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
