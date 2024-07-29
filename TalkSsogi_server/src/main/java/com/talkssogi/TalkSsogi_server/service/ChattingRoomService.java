@@ -6,6 +6,8 @@ import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,6 @@ import java.util.List;
 
 
 @Service
-@Transactional
 public class ChattingRoomService {
 
     private static final String UPLOAD_DIR = "C:/Users/KYJ/TalkSsogi_Workspace/"; //테스트용 경로
@@ -40,10 +41,12 @@ public class ChattingRoomService {
         this.analysisResultRepository=analysisResultRepository;
     }
 
+    @Transactional
     public ChattingRoom findByCrNum(int crnum) {
         return chattingRoomRepository.findByCrNum(crnum).orElse(null); // 채팅방을 찾고 없으면 null 반환
     }
 
+    @Transactional
     public ChattingRoom handleFileUpload(MultipartFile file, String userId, int headcount) throws IOException {
         // MultipartFile을 받아 파일 업로드 처리
         // 파일 업로드 성공 여부에 따라 적절한 응답을 반환
@@ -79,17 +82,7 @@ public class ChattingRoomService {
         }
     }
 
-    public void updateAnalysisResult(String filePath, AnalysisResult result) {
-        // 파일 경로를 사용하여 채팅방 객체 조회
-        ChattingRoom room = chattingRoomRepository.findByFilePath(filePath);
-        if (room != null) {
-            // 채팅방 객체에 분석 결과 설정
-            room.setAnalysisResult(result);
-            // 채팅방 저장
-            chattingRoomRepository.save(room);
-        }
-    }
-
+    @Transactional
     public List<String> getChattingRoomMembers(Integer chatRoomId) {
         ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(chatRoomId).orElse(null);
         if (chattingRoom != null && chattingRoom.getAnalysisResult() != null) {
