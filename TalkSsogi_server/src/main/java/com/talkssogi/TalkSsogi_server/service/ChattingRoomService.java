@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 public class ChattingRoomService {
 
-    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
+    private static final String UPLOAD_DIR = "C:/Users/KYJ/TalkSsogi_Workspace/"; //테스트용 경로
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
@@ -89,5 +89,9 @@ public class ChattingRoomService {
             return chattingRoom.getAnalysisResult().getMemberNames();
         }
         return List.of();
+    }
+
+    public void deleteChattingRoom(Integer crNum) { // 채팅방 삭제 메서드
+        chattingRoomRepository.deleteById(crNum);
     }
 }
