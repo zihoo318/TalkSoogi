@@ -63,11 +63,11 @@ interface ApiService {
         @Path("crnum") crnum: Int
     ): Call<List<String>>
 
-    @GET("/api/wordCloudImageUrl/{chatRoomId}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
+    @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(
-        @Path("chatRoomId") chatRoomId: Int,
+        @Path("crnum") crnum: Int,
         @Path("userId") userId: Int
-    ): Call<String>
+    ): Call<List<ImageURL>>
 
     @POST("/api/analysis/personalActivityAnalysisImage")
     fun getActivityAnalysisImage(

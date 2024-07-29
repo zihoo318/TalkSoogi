@@ -48,8 +48,8 @@ class Page2Activity : AppCompatActivity() {
             intent.putExtra("chatRoomId", chatRoom.crnum) // 채팅방 ID를 전달
             startActivity(intent)
         }, { chatRoom ->
-            // 길게 눌렀을 때 삭제 다이얼로그 표시
-            showDeleteConfirmationDialog(chatRoom)
+                // 길게 눌렀을 때 삭제 다이얼로그 표시
+                showDeleteConfirmationDialog(chatRoom)
         })
         recyclerView.adapter = chatRoomAdapter
 

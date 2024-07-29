@@ -10,10 +10,7 @@ import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -56,8 +53,21 @@ public class Page2Controller {
             chatRoomsMap.put(roomNumber, roomName); // 채팅방 번호와 이름을 Map에 추가합니다.
         }
 
+
         // 생성된 채팅방 목록을 HttpStatus OK와 함께 ResponseEntity로 반환합니다.
         return new ResponseEntity<>(chatRoomsMap, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/chatrooms/{crNum}")
+    public ResponseEntity<?> deleteChatRoom(@PathVariable Integer crNum) {
+        ChattingRoom room = chattingRoomService.findByCrNum(crNum);
+
+        if (room == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        chattingRoomService.deleteChattingRoom(crNum);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

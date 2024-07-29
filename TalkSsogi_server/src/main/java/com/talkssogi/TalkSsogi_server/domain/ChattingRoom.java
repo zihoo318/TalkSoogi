@@ -5,19 +5,23 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "chattingroom")
 public class ChattingRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cr_num")
     private Integer crNum;
 
+    @Column(name = "file_path")
     private String filePath;
+
+    @Column(name = "headcount")
     private int headcount;
 
-    @ManyToOne //여러 ChattingRoom이 하나의 User와 관계
-    @JoinColumn(name = "userId") //ChattingRoom 테이블에서 외래 키로 사용될 컬럼의 이름이 userId
+    @ManyToOne
+    @JoinColumn(name = "user_id") // 외래 키 컬럼 이름과 매핑
     private User user;
 
-    @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //AnalysisResult 엔티티에 chattingRoom이라는 필드가 있으며, 이 필드가 관계의 주인임 (이 테이블에서는 관계만 읽음 필드로 저장x)
+    @OneToOne(mappedBy = "chattingRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private AnalysisResult analysisResult;
 
     // Getters and setters

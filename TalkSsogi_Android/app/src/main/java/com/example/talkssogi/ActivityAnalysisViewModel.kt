@@ -19,9 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
+//data class ImageResponse(
+//    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
+//)
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-    private val BASE_URL = "http://192.168.45.208:8080/"  // 실제 안드로이드 기기에서 실행 할 때
+    private val BASE_URL = "http://192.168.0.29:8080/"  // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
@@ -48,9 +51,9 @@ class ActivityAnalysisViewModel : ViewModel() {
     private val _participants = MutableLiveData<List<String>>() // 페이지9 대화 참가자 이름 리스트
     val participants: LiveData<List<String>> get() = _participants
 
-    //8페이지 기본분석(가을추가)
-
-    //
+    // 페이지6 워드 클라우드 이미지 URL, LiveData 변수를 초기화
+    private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>(emptyList()) // 빈 리스트로 초기화
+    val wordCloudImageUrl: LiveData<List<ImageURL>> get() = _wordCloudImageUrl
 
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
@@ -105,7 +108,7 @@ class ActivityAnalysisViewModel : ViewModel() {
     }
 
 
-
+    //
     /*페이지 8의 기본 동작(가을 동작)
     suspend fun getActivityAnalysis(): Map<String, List<String>> {
         return try {
@@ -132,6 +135,25 @@ class ActivityAnalysisViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
                 emptyMap()
+            }
+
+        }
+    }
+
+    // 워드 클라우드 이미지 URL 가져오기
+    fun loadWordCloudImageUrl(crnum: Int, userId: Int) {
+        viewModelScope.launch {
+            try {
+                // activityAnalysisViewModel.getWordCloudImageUrl 호출 후, imageUrls가 wordCloudImageUrl로 수정됨
+                val response = apiService.getWordCloudImageUrl(crnum, userId).execute()
+                if (response.isSuccessful) {
+                    val wordCloudUrls = response.body() ?: emptyList() // 응답이 null이면 빈 리스트로 대체
+                    _wordCloudImageUrl.postValue(wordCloudUrls) // 빈 리스트를 설정
+                } else {
+                    _wordCloudImageUrl.postValue(emptyList()) // 실패 시 빈 리스트로 설정
+                }
+            } catch (e: Exception) {
+                _wordCloudImageUrl.postValue(emptyList()) // 네트워크 오류 시 빈 리스트로 설정
             }
         }
     }

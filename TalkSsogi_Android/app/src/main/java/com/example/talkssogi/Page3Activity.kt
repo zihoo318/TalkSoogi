@@ -106,6 +106,10 @@ class Page3Activity : AppCompatActivity() {
                         Log.d("fetchChatRooms", "옵저버 안에서 분석 함수 실행 전  현 uploadResult : ${result}")
                         analyzeFile(result)
                         Log.d("fetchChatRooms", "옵저버 안에서 분석 함수 실행 후  현 uploadResult : ${result}")
+
+                        //분석 성공 후 액티비티2로 가기
+                        val intent = Intent(this, Page2Activity::class.java)
+                        startActivity(intent)
                     } else {
                         // 업로드 실패로 오류 처리
                         handleUploadError(result)
