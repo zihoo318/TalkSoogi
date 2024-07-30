@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.app.AlertDialog
 
 data class ChatRoom(val crnum: Int, val name: String)
 class ChatRoomAdapter(
     private var chatRoomList: List<ChatRoom>,
-    private val onItemClick: (ChatRoom) -> Unit // 클릭 리스너를 위한 콜백 추가
+    private val onItemClick: (ChatRoom) -> Unit, // 클릭 리스너를 위한 콜백 추가
+    private val onChatRoomLongClick: (ChatRoom) -> Unit // 추가된 콜백
 ) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
@@ -25,9 +27,15 @@ class ChatRoomAdapter(
         holder.chatRoomName.text = chatRoom.name
         holder.profileImage.setImageResource(R.drawable.profile_placeholder)
 
-        // 추가
+        // 기존 클릭 리스너 추가
         holder.itemView.setOnClickListener {
             onItemClick(chatRoom) // 클릭 시 콜백 호출
+        }
+
+        // 길게 눌렀을 때 리스너 추가
+        holder.itemView.setOnLongClickListener {
+            onChatRoomLongClick(chatRoom)
+            true
         }
     }
 

@@ -17,6 +17,8 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+//가을 추가 코두
+import android.graphics.drawable.AnimationDrawable
 
 
 class Page3Activity : AppCompatActivity() {
@@ -58,6 +60,11 @@ class Page3Activity : AppCompatActivity() {
         loadingIndicator = findViewById(R.id.loadingIndicator) // 분석 중 띄우는 바(띄워져 있는데 안 보이게 해둠)
         // SharedPreferences에서 사용자 아이디를 가져온다
         sharedPreferences = getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
+
+        // AnimationDrawable 설정
+        val animationDrawable = getDrawable(R.drawable.animation_loding) as? AnimationDrawable
+        loadingIndicator.indeterminateDrawable = animationDrawable
+
 
         // null 체크 추가
         checkForNulls()
@@ -152,11 +159,17 @@ class Page3Activity : AppCompatActivity() {
 
     // "분석 중" 상태를 표시하는 함수
     private fun showLoadingIndicator() {
+        // 애니메이션 시작
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.start()
+
         loadingIndicator.visibility = View.VISIBLE
     }
 
     // "분석 중" 상태를 숨기는 함수
     private fun hideLoadingIndicator() {
+        // 애니메이션 멈춤
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.stop()
+
         loadingIndicator.visibility = View.GONE
     }
 

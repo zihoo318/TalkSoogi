@@ -1,7 +1,6 @@
 package com.example.talkssogi
 
 import android.app.Activity
-import com.example.talkssogi.model.ChatRoom
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,7 +9,6 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -19,13 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import com.example.talkssogi.model.ChatRoom
+
 
 class Page2Activity : AppCompatActivity() {
 
@@ -45,7 +44,6 @@ class Page2Activity : AppCompatActivity() {
     private lateinit var SelectedFileText: TextView
 
     private var selectedCrnum: Int? = null // 선택된 채팅방 ID 저장
-
 
     // Retrofit 설정 및 ApiService 인터페이스 생성
     private val retrofit = Retrofit.Builder()
@@ -76,12 +74,15 @@ class Page2Activity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Adapter 생성 시 클릭 리스너 전달
-        chatRoomAdapter = ChatRoomAdapter(emptyList()) { chatRoom ->
+        chatRoomAdapter = ChatRoomAdapter(emptyList(), { chatRoom ->
             // 클릭 시 처리할 로직
             val intent = Intent(this, FragmentActivity::class.java)
             intent.putExtra("chatRoomId", chatRoom.crnum) // 채팅방 ID를 전달
             startActivity(intent)
-        }
+        }, { chatRoom ->
+            // 길게 눌렀을 때 삭제 다이얼로그 표시
+            showDeleteConfirmationDialog(chatRoom)
+        })
         recyclerView.adapter = chatRoomAdapter
 
         // 실시간으로 변화 확인하면서 화면 출력(=api요청 시 실행 됨)
@@ -109,9 +110,9 @@ class Page2Activity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
-
-                R.id.navigation_edit -> {
-                    // 편집 선택 시 처리(채팅방 삭제)
+                R.id.navigation_logout -> {
+                    // 로그아웃 선택 시 처리(로그아웃할건지 한번 물어보고, 액티비티1로 이동)
+                    showLogoutConfirmationDialog()
                     true
                 }
 
@@ -120,7 +121,6 @@ class Page2Activity : AppCompatActivity() {
         }
 
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -172,8 +172,7 @@ class Page2Activity : AppCompatActivity() {
         dialog.show()
     }
 
-
-    //새로운 파일로 업데이트하는 다이얼로그 띄우기
+    // 새로운 파일로 업데이트하는 다이얼로그 띄우기
     private fun showUpdateDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_file_upload, null)
 
@@ -214,7 +213,7 @@ class Page2Activity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Page3Activity.REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             selectedFileUri = data?.data
             SelectedFileText.text = selectedFileUri?.path ?: "파일 선택 실패"
         }
@@ -245,7 +244,6 @@ class Page2Activity : AppCompatActivity() {
             )
             val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
 
-            // 여기서 Callback의 제네릭 타입을 Map<String, Any>로 맞춥니다.
             viewModel.updateFile(uri, crnum).enqueue(object : Callback<Map<String, Any>> {
                 override fun onResponse(
                     call: Call<Map<String, Any>>,
@@ -272,5 +270,43 @@ class Page2Activity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun showDeleteConfirmationDialog(chatRoom: ChatRoom) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("채팅방 삭제")
+        builder.setMessage("${chatRoom.name} 채팅방을 삭제하시겠습니까?")
+        builder.setPositiveButton("삭제") { dialog, _ ->
+            viewModel.deleteChatRoom(chatRoom.crnum)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("취소") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun showLogoutConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("로그아웃")
+        builder.setMessage("정말 로그아웃 하시겠습니까?")
+        builder.setPositiveButton("로그아웃") { dialog, _ ->
+            logout()
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("취소") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun logout() {
+        // SharedPreferences의 세션 아이디 제거
+        sharedPreferences.edit().remove("Session_ID").apply()
+        // Page1Activity로 이동
+        val intent = Intent(this, Page1Activity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // 백 스택을 모두 지움
+        startActivity(intent) // 새로운 태스크로 Page1Activity를 시작
+        finish() // 현재 Activity 종료
     }
 }

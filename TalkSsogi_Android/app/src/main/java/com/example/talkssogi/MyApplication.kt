@@ -12,6 +12,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.GsonBuilder
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -45,23 +47,33 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
 //    private val BASE_URL = "http://172.32.76.111:8080/"  // 실제 안드로이드 기기에서 실행 할 때
 
+
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
+
+    // Accept 헤더를 추가하는 인터셉터
+    private val acceptHeaderInterceptor = Interceptor { chain ->
+        val originalRequest = chain.request()
+        val newRequest = originalRequest.newBuilder()
+            .addHeader("Accept", "application/json") // Accept 헤더 추가
+            .build()
+        chain.proceed(newRequest)
+    }
     val client = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .addInterceptor(acceptHeaderInterceptor) // Accept 헤더 인터셉터
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-
+    var gson= GsonBuilder().setLenient().create()
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
         .baseUrl(Constants.BASE_URL)
         .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
-        .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
-        .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
+        .addConverterFactory(GsonConverterFactory.create(gson)) // JSON 변환
         .build()
         .create(ApiService::class.java)
 
@@ -164,6 +176,23 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             override fun onFailure(call: Call<Map<Int, String>>, t: Throwable) {
                 // 네트워크 오류 처리
                 Log.e("fetchChatRooms", "Network error: ${t.message}")
+            }
+        })
+    }
+
+    // 채팅방 삭제 메서드
+    fun deleteChatRoom(crnum: Int) {
+        apiService.deleteChatRoom(crnum).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    // 삭제 성공 시 채팅방 목록 갱신
+                    fetchChatRooms()
+                } else {
+                    Log.e("DeleteChatRoom", "채팅방 삭제를 실패하였습니다: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("DeleteChatRoom", "Network error: ${t.message}")
             }
         })
     }
