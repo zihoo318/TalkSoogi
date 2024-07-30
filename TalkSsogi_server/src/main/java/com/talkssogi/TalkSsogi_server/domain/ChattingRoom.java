@@ -24,8 +24,10 @@ public class ChattingRoom {
     @Column(name = "headcount")
     private int headcount;
 
+
     @ManyToOne
     @JoinColumn(name = "user_id") // 외래 키 컬럼 이름과 매핑
+
     private User user;
 
     @Column(name = "chatroom_name", length = 255)
