@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.app.fragmentPage10Result
+import fragmentPage10
 
 class fragmentPage5 : Fragment() {
     private var crnum: Int = -1 // 채팅방 번호를 저장할 변수
@@ -23,6 +25,7 @@ class fragmentPage5 : Fragment() {
         val btnBack: ImageView = view.findViewById(R.id.imageView) //뒤로가기
         val option1 = view.findViewById<TextView>(R.id.option_1) //페이지6
         val option2 = view.findViewById<TextView>(R.id.option_2) //페이지7
+        val option3 = view.findViewById<TextView>(R.id.option_3) //페이지10
         val option4 = view.findViewById<TextView>(R.id.option_4) //페이지8
 
         // 뒤로가기 이미지 리스너
@@ -49,6 +52,17 @@ class fragmentPage5 : Fragment() {
             }
             startActivity(intent)
         }
+
+        option3.setOnClickListener {
+            // 채팅방 번호를 arguments로 설정하여 다음 프래그먼트로 전달
+            val fragment = fragmentPage10().apply {
+                arguments = Bundle().apply {
+                    putInt("crnum", crnum)
+                }
+            }
+            (requireActivity() as FragmentActivity).replaceFragment(fragment)
+        }
+
 
         option4.setOnClickListener {
             // 채팅방 번호를 arguments로 설정하여 다음 프래그먼트로 전달
