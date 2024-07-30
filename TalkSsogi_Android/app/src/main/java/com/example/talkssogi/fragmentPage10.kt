@@ -1,16 +1,15 @@
-package com.example.app
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import com.example.app.fragmentPage10Result
 import com.example.talkssogi.R
 
 
 // 검색 기능을 처리하는 프래그먼트
-class fragmentNewPage10 : Fragment() {
+class fragmentPage10 : Fragment() {
 
     // 검색 뷰 선언
     private lateinit var searchView: SearchView
