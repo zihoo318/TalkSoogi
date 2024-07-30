@@ -6,18 +6,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,8 +25,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 class MyApplication : Application() {
@@ -302,20 +301,55 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 파일 업로드 api 실행 메서드 페이지
-    fun updateFile(fileUri: Uri, crnum: Int): Call<Map<String, Any>> {
-        val filePath = getPathFromUri(fileUri)
-        val file = filePath?.let { File(it) }
+    // ViewModel에서의 업데이트 메소드 예시
+    fun updateFile(crnum: Int, uri: Uri, context: Context): Call<Map<String, Any>> {
+        // Uri에서 파일을 가져옵니다.
+        val file = getFileFromUri(uri, context) ?: throw IllegalArgumentException("파일을 가져올 수 없습니다.")
 
-        return if (file != null && file.exists()) {
-            val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        // RequestBody를 생성합니다.
+        val requestFile = file.asRequestBody("application/octet-stream".toMediaType())
+        val filePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-            // Return the Call object instead of enqueuing it here
-            apiService.updateFile(crnum, body)
-        } else {
-            throw IllegalArgumentException("파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
-        }
+        // API 호출을 위해 `apiService.updateFile` 메서드를 호출하고, 그 결과로 `Call` 객체를 반환합니다.
+        return apiService.updateFile(crnum, filePart)
     }
+
+
+
+    // Uri를 MultipartBody.Part로 변환하는 메서드
+    fun convertUriToFilePart(uri: Uri, context: Context): MultipartBody.Part? {
+        val file = getFileFromUri(uri, context) ?: return null
+
+        val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
+        return MultipartBody.Part.createFormData("file", file.name, requestFile)
+    }
+
+    // 파일을 Uri에서 가져오는 메서드
+    private fun getFileFromUri(uri: Uri, context: Context): File? {
+        val fileName = getFileName(uri, context) ?: return null
+        val file = File(context.cacheDir, fileName)
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            file.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        }
+        return file
+    }
+
+    // Uri의 파일 이름을 가져오는 메서드
+    private fun getFileName(uri: Uri, context: Context): String? {
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (cursor.moveToFirst()) {
+                val fileName = cursor.getString(nameIndex)
+                Log.d("FileName", "업데이트 할 파일 이름: $fileName")  // 로그 출력
+                return fileName
+            }
+        }
+        return null
+    }
+
+
 
 
     // 기본 분석 요청 API 호출 함수

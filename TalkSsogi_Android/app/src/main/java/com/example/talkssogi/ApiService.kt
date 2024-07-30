@@ -37,11 +37,10 @@ interface ApiService {
         @Query("headcount") headcount: Int?
     ): Call<Map<String, Any>>
 
-    @Multipart  //업데이트할 파일 전송
-    @POST("/api/updatefile")
-    fun updateFile(
-        @Path("crnum") crnum: Int,
-        @Part file: MultipartBody.Part
+    @Multipart
+    @POST("/api/updatefile/{crnum}")
+    fun updateFile(@Path("crnum") crnum: Int,
+                   @Part file: MultipartBody.Part
     ): Call<Map<String, Any>>
 
     @GET("/api/analysis/basic-python") // 기본 분석 요청(uploadFile을 실행하고 같은 메서드에서 같이 요청 실행)

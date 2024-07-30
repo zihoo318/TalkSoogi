@@ -178,7 +178,6 @@ class Page2Activity : AppCompatActivity() {
 
         SelectedFileText = dialogView.findViewById(R.id.SelectedFileText)
         uploadButton = dialogView.findViewById(R.id.uploadButton)
-        progressBar = dialogView.findViewById(R.id.progressBar)
 
         SelectedFileText.setOnClickListener {
             openFileChooser()
@@ -187,7 +186,6 @@ class Page2Activity : AppCompatActivity() {
         // 업로드 버튼 클릭 리스너 설정
         uploadButton.setOnClickListener {
             uploadButton.isEnabled = false
-            progressBar.visibility = ProgressBar.VISIBLE
             updateFile()
         }
 
@@ -215,6 +213,7 @@ class Page2Activity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             selectedFileUri = data?.data
+            Log.d("FilePicker", "Selected file URI파일이르르름: $selectedFileUri")
             SelectedFileText.text = selectedFileUri?.path ?: "파일 선택 실패"
         }
     }
@@ -233,44 +232,59 @@ class Page2Activity : AppCompatActivity() {
         val message: String? // 혹은 메시지와 관련된 다른 프로퍼티
     )
 
+    private fun getFileFromUri(uri: Uri): File? {
+        val contentResolver = contentResolver
+        val file = File(cacheDir, getFileName(uri) ?: "temp_file")
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            file.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        }
+        return file
+    }
+
     private fun updateFile() {
         selectedFileUri?.let { uri ->
-            val crnum = selectedCrnum ?: return
+            try {
+                val crnum = selectedCrnum ?: return
+                val file = getFileFromUri(uri) ?: return
 
-            val file = File(uri.path)
-            val requestBody = RequestBody.create(
-                "application/octet-stream".toMediaType(),
-                file
-            )
-            val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+                val requestBody = RequestBody.create("application/octet-stream".toMediaType(), file)
+                val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
 
-            viewModel.updateFile(uri, crnum).enqueue(object : Callback<Map<String, Any>> {
-                override fun onResponse(
-                    call: Call<Map<String, Any>>,
-                    response: Response<Map<String, Any>>
-                ) {
-                    uploadButton.isEnabled = true
-                    progressBar.visibility = ProgressBar.GONE
+                // context를 전달하여 updateFile 메서드 호출
+                viewModel.updateFile(crnum, uri, this).enqueue(object : Callback<Map<String, Any>> {
+                    override fun onResponse(
+                        call: Call<Map<String, Any>>,
+                        response: Response<Map<String, Any>>
+                    ) {
+                        uploadButton.isEnabled = true
+                        progressBar.visibility = ProgressBar.GONE
 
-                    if (response.isSuccessful) {
-                        Log.d(
-                            "Upload",
-                            "File updated successfully: ${response.body()?.get("message")}"
-                        )
-                    } else {
-                        Log.e("Upload", "File update failed: ${response.errorBody()?.string()}")
+                        if (response.isSuccessful) {
+                            Log.d("Update", "File updated successfully: ${response.body()?.get("message")}")
+                        } else {
+                            Log.e("Update", "File update failed: ${response.errorBody()?.string()}")
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                    uploadButton.isEnabled = true
-                    progressBar.visibility = ProgressBar.GONE
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        uploadButton.isEnabled = true
+                        progressBar.visibility = ProgressBar.GONE
 
-                    Log.e("Upload", "File update error: ${t.message}")
-                }
-            })
+                        Log.e("Update", "File update error: ${t.message}")
+                    }
+                })
+            } catch (e: Exception) {
+                uploadButton.isEnabled = true
+                progressBar.visibility = ProgressBar.GONE
+
+                Log.e("Upload", "Exception during file update: ${e.message}")
+            }
         }
     }
+
+
 
     private fun showDeleteConfirmationDialog(chatRoom: ChatRoom) {
         val builder = AlertDialog.Builder(this)
