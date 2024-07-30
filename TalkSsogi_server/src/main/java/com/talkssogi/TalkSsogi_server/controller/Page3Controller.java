@@ -45,4 +45,21 @@ public class Page3Controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());
         }
     }
+
+    @PostMapping("/updatefile/{crnum}")
+    public ResponseEntity<?> updateFile(@PathVariable("crnum") int crnum,
+                                        @RequestParam("file") MultipartFile file) {
+        try {
+            ChattingRoom chattingRoom = chattingRoomService.updateFile(crnum, file);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("crNum", chattingRoom.getCrNum());
+            response.put("filePath", chattingRoom.getFilePath());
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 실패: " + e.getMessage());
+        }
+    }
+
 }

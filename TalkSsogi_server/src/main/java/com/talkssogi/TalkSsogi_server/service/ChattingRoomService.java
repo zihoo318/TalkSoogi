@@ -81,6 +81,38 @@ public class ChattingRoomService {
         }
     }
 
+    // 추가된 메서드
+    @Transactional
+    public ChattingRoom updateFile(int crnum, MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("업데이트할 파일을 선택하세요.");
+        }
+
+        // 주어진 crnum에 해당하는 채팅방 검색
+        ChattingRoom chattingRoom = findByCrNum(crnum);
+        if (chattingRoom == null) {
+            throw new IOException("존재하지 않는 채팅방입니다: " + crnum);
+        }
+
+        try {
+            // 새 파일 저장 경로 설정
+            Path uploadPath = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
+
+            // 파일 저장
+            Files.write(uploadPath, file.getBytes());
+
+            // 파일 경로 업데이트
+            chattingRoom.setFilePath(uploadPath.toString());
+
+            // 데이터베이스에 채팅방 업데이트
+            chattingRoomRepository.save(chattingRoom);
+
+            return chattingRoom;
+        } catch (Exception e) {
+            throw new IOException("파일 업데이트 실패: " + e.getMessage(), e);
+        }
+    }
+
     @Transactional
     public List<String> getChattingRoomMembers(Integer crnum) {
         ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
