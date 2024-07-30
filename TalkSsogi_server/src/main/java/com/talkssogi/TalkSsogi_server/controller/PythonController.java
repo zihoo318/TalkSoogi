@@ -48,10 +48,10 @@ public class PythonController {
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 파이썬 인터프리터의 절대 경로 설정
-            String pythonInterpreterPath = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
+            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/testpy.py";  // 실행할 Python 스크립트의 경로
+            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/testpy.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
             String command = String.format("%s %s %s %d", pythonInterpreterPath, pythonScriptPath, filePath, headcount);

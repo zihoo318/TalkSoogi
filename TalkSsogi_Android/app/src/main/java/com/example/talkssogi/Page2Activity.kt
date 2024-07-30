@@ -43,7 +43,7 @@ class Page2Activity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var SelectedFileText: TextView
 
-    private var selectedCrnum: Int? = null // 선택된 채팅방 ID 저장
+    private var selectedCrnum: Int = -1 // 선택된 채팅방 ID 저장
 
     // Retrofit 설정 및 ApiService 인터페이스 생성
     private val retrofit = Retrofit.Builder()
@@ -139,6 +139,7 @@ class Page2Activity : AppCompatActivity() {
         val dialogChatRoomAdapter = DialogChatRoomAdapter(emptyList()) { chatRoom ->
             // 채팅방 클릭 시 처리할 로직을 여기에 추가 가능
             selectedCrnum = chatRoom.crnum // 선택된 채팅방 ID 저장
+            Log.d("SelectedChatRoom", "selectedCrnum 선택된 채팅방의 값으로 바꾸기: $selectedCrnum")
         }
 
         recyclerViewDialog.layoutManager = LinearLayoutManager(this)
@@ -156,7 +157,7 @@ class Page2Activity : AppCompatActivity() {
             .setTitle("채팅방 선택")
             .setView(dialogView)
             .setPositiveButton("확인") { _, _ ->
-                val selectedCrnum = dialogChatRoomAdapter.selectedCrnum
+                selectedCrnum = dialogChatRoomAdapter.selectedCrnum
                 if (selectedCrnum != null) {
                     // 선택된 채팅방의 crnum을 로그로 출력
                     Log.d("SelectedChatRoom", "선택된 채팅방의 crnum: $selectedCrnum")
@@ -186,7 +187,13 @@ class Page2Activity : AppCompatActivity() {
         // 업로드 버튼 클릭 리스너 설정
         uploadButton.setOnClickListener {
             uploadButton.isEnabled = false
-            updateFile()
+            Log.d("SelectedChatRoom", "업로드 버튼 클릭 리스너에서 파일 전송 직전")
+            selectedFileUri?.let { uri ->
+                viewModel.updateFile(selectedCrnum, uri)
+            } ?: run {
+                // 파일 경로가 null인 경우
+                Log.d("SelectedChatRoom", "selectedFileUri가 null임")
+            }
         }
 
         // 다이얼로그 생성
@@ -242,47 +249,47 @@ class Page2Activity : AppCompatActivity() {
         }
         return file
     }
-
-    private fun updateFile() {
-        selectedFileUri?.let { uri ->
-            try {
-                val crnum = selectedCrnum ?: return
-                val file = getFileFromUri(uri) ?: return
-
-                val requestBody = RequestBody.create("application/octet-stream".toMediaType(), file)
-                val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
-
-                // context를 전달하여 updateFile 메서드 호출
-                viewModel.updateFile(crnum, uri, this).enqueue(object : Callback<Map<String, Any>> {
-                    override fun onResponse(
-                        call: Call<Map<String, Any>>,
-                        response: Response<Map<String, Any>>
-                    ) {
-                        uploadButton.isEnabled = true
-                        progressBar.visibility = ProgressBar.GONE
-
-                        if (response.isSuccessful) {
-                            Log.d("Update", "File updated successfully: ${response.body()?.get("message")}")
-                        } else {
-                            Log.e("Update", "File update failed: ${response.errorBody()?.string()}")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                        uploadButton.isEnabled = true
-                        progressBar.visibility = ProgressBar.GONE
-
-                        Log.e("Update", "File update error: ${t.message}")
-                    }
-                })
-            } catch (e: Exception) {
-                uploadButton.isEnabled = true
-                progressBar.visibility = ProgressBar.GONE
-
-                Log.e("Upload", "Exception during file update: ${e.message}")
-            }
-        }
-    }
+//
+//    private fun updateFile() {
+//        selectedFileUri?.let { uri ->
+//            try {
+//                val crnum = selectedCrnum ?: return
+//                val file = getFileFromUri(uri) ?: return
+//
+//                val requestBody = RequestBody.create("application/octet-stream".toMediaType(), file)
+//                val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+//
+//                // context를 전달하여 updateFile 메서드 호출
+//                viewModel.updateFile(crnum, uri, this).enqueue(object : Callback<Map<String, Any>> {
+//                    override fun onResponse(
+//                        call: Call<Map<String, Any>>,
+//                        response: Response<Map<String, Any>>
+//                    ) {
+//                        uploadButton.isEnabled = true
+//                        progressBar.visibility = ProgressBar.GONE
+//
+//                        if (response.isSuccessful) {
+//                            Log.d("Update", "File updated successfully: ${response.body()?.get("message")}")
+//                        } else {
+//                            Log.e("Update", "File update failed: ${response.errorBody()?.string()}")
+//                        }
+//                    }
+//
+//                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+//                        uploadButton.isEnabled = true
+//                        progressBar.visibility = ProgressBar.GONE
+//
+//                        Log.e("Update", "File update error: ${t.message}")
+//                    }
+//                })
+//            } catch (e: Exception) {
+//                uploadButton.isEnabled = true
+//                progressBar.visibility = ProgressBar.GONE
+//
+//                Log.e("Upload", "Exception during file update: ${e.message}")
+//            }
+//        }
+//    }
 
 
 

@@ -301,19 +301,49 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 파일 업로드 api 실행 메서드 페이지
-    // ViewModel에서의 업데이트 메소드 예시
-    fun updateFile(crnum: Int, uri: Uri, context: Context): Call<Map<String, Any>> {
-        // Uri에서 파일을 가져옵니다.
-        val file = getFileFromUri(uri, context) ?: throw IllegalArgumentException("파일을 가져올 수 없습니다.")
+    fun updateFile(crnum: Int, fileUri: Uri) {
+        // URI에서 File 객체를 가져옵니다.
+        val filePath = getPathFromUri(fileUri)
+        val file = filePath?.let { File(it) }
 
-        // RequestBody를 생성합니다.
-        val requestFile = file.asRequestBody("application/octet-stream".toMediaType())
-        val filePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        // 파일이 null이거나 존재하지 않을 경우 처리
+        if (file != null && file.exists()) {
+            // RequestBody와 MultipartBody.Part를 생성합니다.
+            val requestFile = file.asRequestBody("application/octet-stream".toMediaType())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-        // API 호출을 위해 `apiService.updateFile` 메서드를 호출하고, 그 결과로 `Call` 객체를 반환합니다.
-        return apiService.updateFile(crnum, filePart)
+            Log.i("SelectedChatRoom", "업데이트 API 호출 전, crnum: $crnum")
+
+            // API 호출
+            apiService.updateFile(crnum, body)
+                .enqueue(object : Callback<Map<String, Any>> {
+                    override fun onResponse(
+                        call: Call<Map<String, Any>>,
+                        response: Response<Map<String, Any>>
+                    ) {
+                        Log.i("SelectedChatRoom", "API 호출")
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            Log.i("SelectedChatRoom", "API 응답 내용: $responseBody")
+                            // 응답에서 'filePath'와 'crNum' 값을 추출
+                            val filePath = responseBody?.get("filePath") as? String
+                            val crNumRaw = responseBody?.get("crNum")
+                            // 'crNum' 값을 Double인지 확인하고 정수로 변환
+                            val crNum = (crNumRaw as? Number)?.toInt()
+                            Log.i("SelectedChatRoom", "파일 업데이트 성공 후 응답에 있는 파일 경로: $filePath + crNum: $crNum")
+                        } else {
+                            Log.e("SelectedChatRoom", "파일 업데이트 실패: ${response.errorBody()?.string()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        Log.e("SelectedChatRoom", "네트워크 오류: ${t.message}")
+                    }
+                })
+        } else {
+            Log.e("SelectedChatRoom", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
+        }
     }
-
 
 
     // Uri를 MultipartBody.Part로 변환하는 메서드

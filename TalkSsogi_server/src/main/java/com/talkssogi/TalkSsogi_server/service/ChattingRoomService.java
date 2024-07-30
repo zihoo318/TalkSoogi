@@ -1,10 +1,13 @@
 package com.talkssogi.TalkSsogi_server.service;
 
+import com.talkssogi.TalkSsogi_server.controller.PythonController;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +22,9 @@ import java.util.List;
 @Service
 public class ChattingRoomService {
 
-    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi/"; //테스트용 경로
+    private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
+
+    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
@@ -97,6 +102,7 @@ public class ChattingRoomService {
         try {
             // 새 파일 저장 경로 설정
             Path uploadPath = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
+            logger.info("파일 저장을 위한 경로설정 직후(=api 쵸청 잘 받아서 예외 발생 없이 실행 시작) : ", uploadPath);
 
             // 파일 저장
             Files.write(uploadPath, file.getBytes());
@@ -106,6 +112,7 @@ public class ChattingRoomService {
 
             // 데이터베이스에 채팅방 업데이트
             chattingRoomRepository.save(chattingRoom);
+            logger.info("파일 업데이트 성공으로 생긴 파일 경로 : ", chattingRoom.getFilePath());
 
             return chattingRoom;
         } catch (Exception e) {

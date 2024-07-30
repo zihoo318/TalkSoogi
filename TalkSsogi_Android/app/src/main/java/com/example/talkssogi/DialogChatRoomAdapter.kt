@@ -13,7 +13,7 @@ class DialogChatRoomAdapter(
     private val onItemClick: (ChatRoom) -> Unit
 ) : RecyclerView.Adapter<DialogChatRoomAdapter.ChatRoomViewHolder>() {
 
-    var selectedCrnum: Int? = null // 선택된 채팅방의 crnum
+    var selectedCrnum: Int = -1 // 선택된 채팅방의 crnum
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
         val view = LayoutInflater.from(parent.context)
