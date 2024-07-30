@@ -73,6 +73,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val _chatRoomList = MutableLiveData<List<ChatRoom>>() // 한 유저의 채팅방 목록
     val chatRoomList: LiveData<List<ChatRoom>>
         get() = _chatRoomList
+
     //가을 추가 코드
     private val _headcount = MutableLiveData<Int>() // 파일 업로드 버튼 클릭시 인원수
     val headcount: LiveData<Int>
@@ -84,7 +85,8 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 //가을 추가 코드
 
     // 페이지3에서 파일 저장 후 페이지2의 목록 갱신을 실행하기 위한 파일 업로드 결과 데이터이자 분석을 위한 채팅방 번호(crNum)
-    private val _uploadResult = MutableLiveData<Int?>() // 0이상: 채팅방 번호, -1: 업로드 실패, -2: 네트워크 오류, -3: 경로 오류, -4: 분석 실패
+    private val _uploadResult =
+        MutableLiveData<Int?>() // 0이상: 채팅방 번호, -1: 업로드 실패, -2: 네트워크 오류, -3: 경로 오류, -4: 분석 실패
     val uploadResult: LiveData<Int?> = _uploadResult
 
     // 업로드 결과를 업데이트하는 함수
@@ -99,7 +101,10 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserIds() { // 서버에 요청하고 전체 유저 목록 받기 페이지1
         apiService.getAllUserIds().enqueue(object : Callback<UserIdResponse> {
-            override fun onResponse(call: Call<UserIdResponse>, response: Response<UserIdResponse>) {
+            override fun onResponse(
+                call: Call<UserIdResponse>,
+                response: Response<UserIdResponse>
+            ) {
                 if (response.isSuccessful) {
                     val userIdResponse = response.body()
                     userIdResponse?.let { _userIds.value = it.userIds }
@@ -128,7 +133,10 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         val userToken = getUserToken()
         // API 요청하여 채팅방 목록 가져오기
         apiService.getChatRooms(userID = userToken).enqueue(object : Callback<Map<Int, String>> {
-            override fun onResponse(call: Call<Map<Int, String>>, response: Response<Map<Int, String>>) {
+            override fun onResponse(
+                call: Call<Map<Int, String>>,
+                response: Response<Map<Int, String>>
+            ) {
                 if (response.isSuccessful) {
                     // 성공적인 응답(onResponse)일 경우, 받은 채팅방 목록을 처리하여 ViewModel에 값을 설정
                     val chatRoomMap = response.body()
@@ -180,7 +188,8 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun getUserToken(): String {
-        val sharedPreferences: SharedPreferences = getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences =
+            getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
         return sharedPreferences.getString("Session_ID", "") ?: ""
     }
 
@@ -193,7 +202,8 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     // 모바일의 파일 경로 알아내기
     fun getPathFromUri(uri: Uri): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = getApplication<Application>().contentResolver.query(uri, projection, null, null, null)
+        val cursor =
+            getApplication<Application>().contentResolver.query(uri, projection, null, null, null)
         cursor?.use {
             val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
             if (it.moveToFirst()) {
@@ -218,42 +228,67 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             Log.i("fetchChatRooms", "api보내기 직전 파일 업로드 전, crnum: ${_uploadResult.value}")
 
             // API 호출
-            apiService.uploadFile(body, userId, headcount).enqueue(object : Callback<Map<String, Any>> {
-                override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
-                    Log.i("fetchChatRooms", "api호출")
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        Log.i("fetchChatRooms", "API 응답 내용: $responseBody")
-                        // 응답에서 'crNum' 값을 추출
-                        val crNumRaw = responseBody?.get("crNum")
-                        // 'crnum' 값이 Double인지 확인하고 정수로 변환
-                        val crnum = (crNumRaw as? Number)?.toInt()
-                        Log.i("fetchChatRooms", "파일 업로드 직후 변수에 넣기전, crnum: ${crnum}")
-                        if (crnum != null) {
-                            Log.i("fetchChatRooms", "파일 업로드 성공하고 아직 분석 전, crnum: $crnum")
-                            _uploadResult.postValue(crnum as Int) // 업로드 성공 코드로 crnum 저장
-                            updateUploadResult(crnum)
-                            Log.i("fetchChatRooms", "파일 업로드 후 변수에 값 넣기, _uploadResult: ${_uploadResult.value}")
+            apiService.uploadFile(body, userId, headcount)
+                .enqueue(object : Callback<Map<String, Any>> {
+                    override fun onResponse(
+                        call: Call<Map<String, Any>>,
+                        response: Response<Map<String, Any>>
+                    ) {
+                        Log.i("fetchChatRooms", "api호출")
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            Log.i("fetchChatRooms", "API 응답 내용: $responseBody")
+                            // 응답에서 'crNum' 값을 추출
+                            val crNumRaw = responseBody?.get("crNum")
+                            // 'crnum' 값이 Double인지 확인하고 정수로 변환
+                            val crnum = (crNumRaw as? Number)?.toInt()
+                            Log.i("fetchChatRooms", "파일 업로드 직후 변수에 넣기전, crnum: ${crnum}")
+                            if (crnum != null) {
+                                Log.i("fetchChatRooms", "파일 업로드 성공하고 아직 분석 전, crnum: $crnum")
+                                _uploadResult.postValue(crnum as Int) // 업로드 성공 코드로 crnum 저장
+                                updateUploadResult(crnum)
+                                Log.i(
+                                    "fetchChatRooms",
+                                    "파일 업로드 후 변수에 값 넣기, _uploadResult: ${_uploadResult.value}"
+                                )
+                            } else {
+                                Log.e("FileUpload", "crnum을 찾을 수 없음")
+                                _uploadResult.postValue(-1) // 업로드 실패 코드
+                            }
                         } else {
-                            Log.e("FileUpload", "crnum을 찾을 수 없음")
+                            Log.e("FileUpload", "파일 업로드 실패: ${response.errorBody()?.string()}")
                             _uploadResult.postValue(-1) // 업로드 실패 코드
                         }
-                    } else {
-                        Log.e("FileUpload", "파일 업로드 실패: ${response.errorBody()?.string()}")
-                        _uploadResult.postValue(-1) // 업로드 실패 코드
                     }
-                }
 
-                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                    Log.e("FileUpload", "네트워크 오류: ${t.message}")
-                    _uploadResult.postValue(-2) // 네트워크 오류 코드
-                }
-            })
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        Log.e("FileUpload", "네트워크 오류: ${t.message}")
+                        _uploadResult.postValue(-2) // 네트워크 오류 코드
+                    }
+                })
         } else {
             Log.e("FileUpload", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
             _uploadResult.postValue(-3) // 파일 경로 오류 코드
         }
     }
+
+    // 파일 업로드 api 실행 메서드 페이지
+    fun updateFile(fileUri: Uri, crnum: Int): Call<Map<String, Any>> {
+        val filePath = getPathFromUri(fileUri)
+        val file = filePath?.let { File(it) }
+
+        return if (file != null && file.exists()) {
+            val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+            // Return the Call object instead of enqueuing it here
+            apiService.updateFile(crnum, body)
+        } else {
+            throw IllegalArgumentException("파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
+        }
+    }
+
+
     // 기본 분석 요청 API 호출 함수
     public fun requestBasicPythonAnalysis(crnum: Int) {
         apiService.runBasicPythonAnalysis(crnum).enqueue(object : Callback<String> {

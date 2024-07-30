@@ -1,20 +1,31 @@
 package com.example.talkssogi
 
+import android.app.Activity
 import com.example.talkssogi.model.ChatRoom
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 class Page2Activity : AppCompatActivity() {
 
@@ -27,6 +38,14 @@ class Page2Activity : AppCompatActivity() {
     }
 
     private lateinit var sharedPreferences: SharedPreferences
+    private val PICK_FILE_REQUEST_CODE = 1
+    private var selectedFileUri: Uri? = null
+    private lateinit var uploadButton: ImageButton
+    private lateinit var progressBar: ProgressBar
+    private lateinit var SelectedFileText: TextView
+
+    private var selectedCrnum: Int? = null // 선택된 채팅방 ID 저장
+
 
     // Retrofit 설정 및 ApiService 인터페이스 생성
     private val retrofit = Retrofit.Builder()
@@ -78,7 +97,7 @@ class Page2Activity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.navigation_update -> {
                     // 업데이트 선택 시 처리
-                    showUpdateDialog()
+                    showSelectDialog()
                     true
                 }
 
@@ -99,7 +118,9 @@ class Page2Activity : AppCompatActivity() {
                 else -> false
             }
         }
+
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -108,7 +129,8 @@ class Page2Activity : AppCompatActivity() {
         Log.d("fetchChatRooms", "2에서 resume으로 갱신 Number of chat rooms")
     }
 
-    private fun showUpdateDialog() {
+    //업데이트 누르면 뜨는 다이얼로그 코드
+    private fun showSelectDialog() {
         // 다이얼로그 레이아웃을 Inflate 합니다.
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_chatroom_selection, null)
         val recyclerViewDialog = dialogView.findViewById<RecyclerView>(R.id.recyclerViewChatRooms)
@@ -116,6 +138,7 @@ class Page2Activity : AppCompatActivity() {
         // 다이얼로그에 사용할 Adapter 생성
         val dialogChatRoomAdapter = DialogChatRoomAdapter(emptyList()) { chatRoom ->
             // 채팅방 클릭 시 처리할 로직을 여기에 추가 가능
+            selectedCrnum = chatRoom.crnum // 선택된 채팅방 ID 저장
         }
 
         recyclerViewDialog.layoutManager = LinearLayoutManager(this)
@@ -138,7 +161,7 @@ class Page2Activity : AppCompatActivity() {
                     // 선택된 채팅방의 crnum을 로그로 출력
                     Log.d("SelectedChatRoom", "선택된 채팅방의 crnum: $selectedCrnum")
                     // 서버로 선택한 crnum 전송
-                    sendCrnumToServer(selectedCrnum)
+                    showUpdateDialog()
                 } else {
                     Log.d("SelectedChatRoom", "선택된 채팅방이 없습니다.") // 선택된 채팅방이 없는 경우 로그 출력
                 }
@@ -149,41 +172,105 @@ class Page2Activity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun sendCrnumToServer(crnum: Int) {
-        // ApiService의 메서드를 호출하여 서버로 요청을 보냅니다.
-        val call = apiService.runBasicPythonAnalysis(crnum)
 
-        // 비동기적으로 요청을 실행하고 콜백을 통해 응답을 처리합니다.
-        call.enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                if (response.isSuccessful) {
-                    // 요청이 성공적으로 처리된 경우
-                    val result = response.body() ?: "결과를 받을 수 없습니다."
-                    Log.d("AnalysisResult", "분석 결과: $result")
+    //새로운 파일로 업데이트하는 다이얼로그 띄우기
+    private fun showUpdateDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_file_upload, null)
 
-                    // 분석 결과를 처리하는 로직을 추가합니다.
-                    handleAnalysisResult(result)
-                } else {
-                    // 요청이 실패한 경우
-                    Log.e("AnalysisResult", "분석 요청 실패: ${response.code()}")
-                }
+        SelectedFileText = dialogView.findViewById(R.id.SelectedFileText)
+        uploadButton = dialogView.findViewById(R.id.uploadButton)
+        progressBar = dialogView.findViewById(R.id.progressBar)
+
+        SelectedFileText.setOnClickListener {
+            openFileChooser()
+        }
+
+        // 업로드 버튼 클릭 리스너 설정
+        uploadButton.setOnClickListener {
+            uploadButton.isEnabled = false
+            progressBar.visibility = ProgressBar.VISIBLE
+            updateFile()
+        }
+
+        // 다이얼로그 생성
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle("파일 업로드")
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                // 네트워크 오류 또는 요청 실패
-                Log.e("AnalysisResult", "네트워크 오류: ${t.message}")
-            }
-        })
+        val dialog = dialogBuilder.create()
+        dialog.show()
     }
 
-    // 분석 결과를 처리하는 함수
-    private fun handleAnalysisResult(result: String) {
-        // 결과를 처리하거나 사용자에게 표시하는 로직을 여기에 추가합니다.
-        // 예: 대화 상자를 표시하거나 화면에 결과를 보여주는 코드
-        AlertDialog.Builder(this)
-            .setTitle("분석 결과")
-            .setMessage(result)
-            .setPositiveButton("확인", null)
-            .show()
+    private fun openFileChooser() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "*/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Page3Activity.REQUEST_CODE_SELECT_FILE && resultCode == Activity.RESULT_OK) {
+            selectedFileUri = data?.data
+            SelectedFileText.text = selectedFileUri?.path ?: "파일 선택 실패"
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (cursor.moveToFirst()) {
+                return cursor.getString(nameIndex)
+            }
+        }
+        return null
+    }
+
+    data class UploadResponse(
+        val message: String? // 혹은 메시지와 관련된 다른 프로퍼티
+    )
+
+    private fun updateFile() {
+        selectedFileUri?.let { uri ->
+            val crnum = selectedCrnum ?: return
+
+            val file = File(uri.path)
+            val requestBody = RequestBody.create(
+                "application/octet-stream".toMediaType(),
+                file
+            )
+            val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+
+            // 여기서 Callback의 제네릭 타입을 Map<String, Any>로 맞춥니다.
+            viewModel.updateFile(uri, crnum).enqueue(object : Callback<Map<String, Any>> {
+                override fun onResponse(
+                    call: Call<Map<String, Any>>,
+                    response: Response<Map<String, Any>>
+                ) {
+                    uploadButton.isEnabled = true
+                    progressBar.visibility = ProgressBar.GONE
+
+                    if (response.isSuccessful) {
+                        Log.d(
+                            "Upload",
+                            "File updated successfully: ${response.body()?.get("message")}"
+                        )
+                    } else {
+                        Log.e("Upload", "File update failed: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                    uploadButton.isEnabled = true
+                    progressBar.visibility = ProgressBar.GONE
+
+                    Log.e("Upload", "File update error: ${t.message}")
+                }
+            })
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.talkssogi
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -33,6 +34,13 @@ interface ApiService {
         @Part file: MultipartBody.Part, // 업로드할 파일을 MultipartBody.Part 형식으로 전달
         @Query("userId") userId: String?,
         @Query("headcount") headcount: Int?
+    ): Call<Map<String, Any>>
+
+    @Multipart  //업데이트할 파일 전송
+    @POST("/api/updatefile")
+    fun updateFile(
+        @Path("crnum") crnum: Int,
+        @Part file: MultipartBody.Part
     ): Call<Map<String, Any>>
 
     @GET("/api/analysis/basic-python") // 기본 분석 요청(uploadFile을 실행하고 같은 메서드에서 같이 요청 실행)
