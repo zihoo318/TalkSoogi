@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 인터넷 권한 추가 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 네트워크 상태 권한 추가 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--    중복돼서 주석처리 함 확인 후 삭제해도 되면 삭제 해주세요-->
+<!--    &lt;!&ndash; 인터넷 권한 추가 &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.INTERNET" />-->
+<!--    &lt;!&ndash; 네트워크 상태 권한 추가 &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
 
     <application
         android:name=".MyApplication"
@@ -59,6 +60,14 @@
     <!-- 네트워크 권한 추가 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 애뮬레이터에서 download 파일을 사용할 때 필요한 권한 선언 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+
 
 
 </manifest>
