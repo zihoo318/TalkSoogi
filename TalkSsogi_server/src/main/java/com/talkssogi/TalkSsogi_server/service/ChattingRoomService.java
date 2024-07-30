@@ -66,10 +66,14 @@ public class ChattingRoomService {
             // ChattingRoom 생성 및 사용자와 연결 (db처리)
             ChattingRoom chattingRoom = new ChattingRoom();
             chattingRoom.setFilePath(uploadPath.toString());
-            chattingRoom.setCrNum(0); // or some other appropriate default value
             chattingRoom.setHeadcount(headcount);
             chattingRoom.setUser(user);  // User와 연결
             chattingRoomRepository.save(chattingRoom);
+
+            // 생성된 ChattingRoom의 ID를 확인할 수 있습니다.
+            Integer crNum = chattingRoom.getCrNum();
+            System.out.println("Created ChattingRoom with ID: " + crNum);
+
             // User의 chatList에 추가
             user.addChatRoom(chattingRoom);
             userRepository.save(user);  // User 업데이트 (chatList에 추가)
