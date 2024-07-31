@@ -48,31 +48,42 @@ public class PythonController {
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 파이썬 인터프리터의 절대 경로 설정
-            String pythonInterpreterPath = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
+            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/testpy.py";  // 실행할 Python 스크립트의 경로
+            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
-            String command = String.format("%s %s %s %d", pythonInterpreterPath, pythonScriptPath, filePath, headcount);
+            String command = String.format("%s %s %s", pythonInterpreterPath, pythonScriptPath, filePath);
+            logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
+
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             processBuilder.redirectErrorStream(true);
+            processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
 
             // 프로세스 시작
             Process process = processBuilder.start();
 
             // 프로세스의 출력 읽기
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream())); // 표준 오류 스트림 읽기
             StringBuilder result = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 result.append(line).append("\n");
             }
 
+            // 표준 오류 스트림 읽기
+            StringBuilder errorResult = new StringBuilder();
+            while ((line = errorReader.readLine()) != null) {
+                errorResult.append(line).append("\n");
+            }
+
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
+            logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
 
             if (exitCode != 0) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
@@ -87,21 +98,13 @@ public class PythonController {
             // 분석 결과를 저장
             String chatroomName = resultLines[0];
             List<String> memberNames = List.of(resultLines[1].split(","));
+            logger.info("제대로 파이썬 결과를 받았는가???? chatroomName: " + chatroomName);
+            logger.info("제대로 파이썬 결과를 받았는가???? memberNames: " + memberNames);
 
             // ChattingRoom 업데이트
             chattingRoom.setChatroomName(chatroomName);
             chattingRoom.setMemberNames(memberNames);
             chattingRoomService.save(chattingRoom);
-
-
-//            // 엔티티 상태를 디버깅
-//            logger.debug("chattingRoom crnum: {}", chattingRoom.getChattingRoomNum());
-//
-//            // AnalysisResult 객체를 데이터베이스에 저장
-//            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직전 Saving AnalysisResult for ChattingRoom: {}", crnum);
-//            analysisResultService.save(analysisResult);
-//            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 분석결과 데베 저장하기 직후 Saving AnalysisResult for ChattingRoom: {}", crnum);
-//            logger.info("여기여여여여여여겨고ㅑ 객체 파이썬컨트롤러에서 저장되었는가 : ", chattingRoom);
 
             logger.info("여기여여여여여여겨고ㅑ 분석한 결과부터 이상하게 저장되었는가 : {}", chattingRoom.getChatroomName());
 
