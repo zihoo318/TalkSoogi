@@ -1,21 +1,18 @@
 import sys
-import codecs
-
-# Ensure the script handles UTF-8 encoding
-sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
+from basicAnalysis import ChatRoom
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python script.py <file_path> <headcount>")
+    if len(sys.argv) < 2:
+        print("Usage: python main_script.py <file_path>")
         sys.exit(1)
 
     file_path = sys.argv[1]
-    headcount = sys.argv[2]
+    chat_room = ChatRoom(file_path)
+    chat_room.preprocess_and_analyze()
 
-    # 출력할 내용
-    print("공경진!")
-    print("강윤지,강지후,정가을,조유진")
-    print(f"Headcount: {headcount}")
+    print(f"채팅방 이름: {chat_room.room_name}")
+    print(f"멤버들: {', '.join(chat_room.get_members())}")
+    print(f"채팅방 인원 수: {chat_room.get_member_count()}")
 
 if __name__ == "__main__":
     main()
