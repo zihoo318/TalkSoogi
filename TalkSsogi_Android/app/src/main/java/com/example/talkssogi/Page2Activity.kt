@@ -179,21 +179,10 @@ class Page2Activity : AppCompatActivity() {
 
         SelectedFileText = dialogView.findViewById(R.id.SelectedFileText)
         uploadButton = dialogView.findViewById(R.id.uploadButton)
+        progressBar = dialogView.findViewById(R.id.progressBar)
 
         SelectedFileText.setOnClickListener {
             openFileChooser()
-        }
-
-        // 업로드 버튼 클릭 리스너 설정
-        uploadButton.setOnClickListener {
-            uploadButton.isEnabled = false
-            Log.d("SelectedChatRoom", "업로드 버튼 클릭 리스너에서 파일 전송 직전")
-            selectedFileUri?.let { uri ->
-                viewModel.updateFile(selectedCrnum, uri)
-            } ?: run {
-                // 파일 경로가 null인 경우
-                Log.d("SelectedChatRoom", "selectedFileUri가 null임")
-            }
         }
 
         // 다이얼로그 생성
@@ -205,6 +194,25 @@ class Page2Activity : AppCompatActivity() {
             }
 
         val dialog = dialogBuilder.create()
+
+        // 업로드 버튼 클릭 리스너 설정
+        uploadButton.setOnClickListener {
+            uploadButton.isEnabled = false
+            progressBar.visibility = ProgressBar.VISIBLE // ProgressBar 표시
+            Log.d("SelectedChatRoom", "업로드 버튼 클릭 리스너에서 파일 전송 직전")
+            selectedFileUri?.let { uri ->
+                viewModel.updateFile(selectedCrnum, uri)
+            } ?: run {
+                // 파일 경로가 null인 경우
+                Log.d("SelectedChatRoom", "selectedFileUri가 null임")
+            }
+            uploadButton.isEnabled = true  // 업로드 버튼 다시 활성화
+            progressBar.visibility = ProgressBar.GONE // ProgressBar 숨김
+            dialog.dismiss()    //업로드 버튼 누르면 dialog 꺼짐
+
+        }
+
+
         dialog.show()
     }
 

@@ -10,7 +10,7 @@ import android.widget.TextView
 
 class DialogChatRoomAdapter(
     private var chatRooms: List<ChatRoom>,
-    private val onItemClick: (ChatRoom) -> Unit
+    private val onChatRoomSelected: (ChatRoom) -> Unit // ChatRoom 선택 시 콜백
 ) : RecyclerView.Adapter<DialogChatRoomAdapter.ChatRoomViewHolder>() {
 
     var selectedCrnum: Int = -1 // 선택된 채팅방의 crnum
@@ -34,6 +34,12 @@ class DialogChatRoomAdapter(
             notifyDataSetChanged() // 뷰 갱신
         }
 
+        // 라디오 버튼을 클릭했을 때의 리스너 설정
+        holder.radioButton.setOnClickListener {
+            selectedCrnum = chatRoom.crnum // 선택된 crnum 저장
+            notifyDataSetChanged() // 뷰 갱신
+        }
+
         // 선택 상태에 따른 스타일 변화 (선택된 경우 색상 변경 등)
         holder.itemView.isSelected = (selectedCrnum == chatRoom.crnum)
     }
@@ -45,12 +51,18 @@ class DialogChatRoomAdapter(
         notifyDataSetChanged()
     }
 
+    private fun selectChatRoom(chatRoom: ChatRoom) {
+        selectedCrnum = chatRoom.crnum // 선택된 crnum 저장
+        onChatRoomSelected(chatRoom) // 선택된 ChatRoom을 콜백으로 전달
+        notifyDataSetChanged() // 뷰 갱신
+    }
+
     inner class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val chatRoomNameTextView: TextView = itemView.findViewById(R.id.chat_room_name)
+        private val chatRoomName: TextView = itemView.findViewById(R.id.chat_room_name)
         val radioButton: RadioButton = itemView.findViewById(R.id.radioButtonChatRoom) // 라디오 버튼 초기화
 
         fun bind(chatRoom: ChatRoom) {
-            chatRoomNameTextView.text = chatRoom.name // ChatRoom의 이름 표시
+            chatRoomName.text = chatRoom.name // ChatRoom의 이름 표시
         }
     }
 }
