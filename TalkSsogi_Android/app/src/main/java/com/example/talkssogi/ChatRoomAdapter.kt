@@ -1,5 +1,6 @@
 package com.example.talkssogi
 
+import com.example.talkssogi.model.ChatRoom
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,8 @@ class ChatRoomAdapter(
 ) : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatRoomViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_chat_room, parent, false)
         return ChatRoomViewHolder(view)
     }
 

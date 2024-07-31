@@ -1,6 +1,7 @@
 package com.example.talkssogi
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -32,8 +33,14 @@ interface ApiService {
     @POST("/api/uploadfile")
     fun uploadFile(
         @Part file: MultipartBody.Part, // 업로드할 파일을 MultipartBody.Part 형식으로 전달
-        @Query("userId") userID: String?,
+        @Query("userId") userId: String?,
         @Query("headcount") headcount: Int?
+    ): Call<Map<String, Any>>
+
+    @Multipart
+    @POST("/api/updatefile/{crnum}")
+    fun updateFile(@Path("crnum") crnum: Int,
+                   @Part file: MultipartBody.Part
     ): Call<Map<String, Any>>
 
     @GET("/api/analysis/basic-python") // 기본 분석 요청(uploadFile을 실행하고 같은 메서드에서 같이 요청 실행)
@@ -43,13 +50,13 @@ interface ApiService {
 
     @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
     suspend fun getBasicRankingResults(
-        @Query("userId") userId: String     //userId를 넘겨준다.
+        @Query("crnum") crnum: Int     //userId를 넘겨준다.
     ): Response<Map<String, List<String>>>
 
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
     suspend fun getSearchRankingResults(
-        @Query("keyword") keyword: String,      //keyword와 userId를 넘겨준다.
-        @Query("userId") userId: String
+        @Query("crnum") crnum: Int,
+        @Query("keyword") keyword: String      //keyword와 userId를 넘겨준다.
     ): Response<Map<String, List<String>>>
 
     //가을 api 수정사항(페이지8)
@@ -77,6 +84,7 @@ interface ApiService {
         @Query("resultsItem") resultsItem: String,
         @Query("crnum") crnum: Int
     ): Call<List<ImageURL>>
+
 
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
     fun getParticipants(

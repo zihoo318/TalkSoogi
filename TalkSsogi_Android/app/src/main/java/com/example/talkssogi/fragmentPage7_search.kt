@@ -17,15 +17,20 @@ import android.widget.SearchView
 class fragmentPage7_search : Fragment() {
 
     private var _binding: FragmentPage7SearchBinding? = null
+    // 클래스 멤버 변수로 crnum 선언 및 초기화
+    private var crnum: Int = -1 // 기본값을 -1로 설정
     private val binding get() = _binding!!
     private val rankingViewModel: RankingViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences // Intent를 위한 유저 아이디
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // ViewBinding을 사용하여 레이아웃을 인플레이트
+        // arguments로부터 crnum 값을 가져오고, null일 경우 기본값 -1 사용
+        crnum = arguments?.getInt("crnum") ?: -1
         _binding = FragmentPage7SearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -63,7 +68,7 @@ class fragmentPage7_search : Fragment() {
                     searchTitleSecond.text = keyword
 
                     if (userId != null && userId != "Unknown") { // userId가 유효한 경우에만 API 호출
-                        rankingViewModel.fetchSearchRankingResults(keyword, userId)
+                        rankingViewModel.fetchSearchRankingResults(crnum, keyword)
                     }
                 }
                 return true // true를 반환하여 이벤트를 처리했음을 나타냄

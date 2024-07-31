@@ -9,16 +9,17 @@ object RankingRepository {
 
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.45.165:8080/") // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+//            .baseUrl("http://10.0.2.2:8080/") // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
+            .baseUrl(Constants.BASE_URL) // 실제 서버 주소로 변경 // 에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         apiService = retrofit.create(ApiService::class.java)
     }
 
-    suspend fun getBasicRankingResults(userId: String): Map<String, List<String>> {
+    suspend fun getBasicRankingResults(crnum: Int): Map<String, List<String>> {
         return try {
-            val response = apiService.getBasicRankingResults(userId)
+            val response = apiService.getBasicRankingResults(crnum)
             response.body() ?: emptyMap()
         } catch (e: Exception) {
             Log.e("RankingRepository", "Error fetching basic ranking results", e)
@@ -26,9 +27,9 @@ object RankingRepository {
         }
     }
 
-    suspend fun getSearchRankingResults(userId: String, keyword: String): Map<String, List<String>> {
+    suspend fun getSearchRankingResults(crnum: Int, keyword: String): Map<String, List<String>> {
         return try {
-            val response = apiService.getSearchRankingResults(userId, keyword)
+            val response = apiService.getSearchRankingResults(crnum, keyword)
             response.body() ?: emptyMap()
         } catch (e: Exception) {
             Log.e("RankingRepository", "Error fetching search ranking results", e)

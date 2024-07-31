@@ -1,13 +1,9 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 
-import com.talkssogi.TalkSsogi_server.domain.AnalysisResult;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
-import com.talkssogi.TalkSsogi_server.repository.AnalysisResultRepository;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
-import com.talkssogi.TalkSsogi_server.service.AnalysisResultService;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
-import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +21,11 @@ public class Page3Controller {
 
     private final ChattingRoomService chattingRoomService;
     private final ChattingRoomRepository chattingRoomRepository;
-    private final AnalysisResultRepository analysisResultRepository;
 
     @Autowired
-    public Page3Controller(ChattingRoomService chattingRoomService,ChattingRoomRepository chattingRoomRepository, AnalysisResultRepository analysisResultRepository) {
+    public Page3Controller(ChattingRoomService chattingRoomService,ChattingRoomRepository chattingRoomRepository) {
         this.chattingRoomService = chattingRoomService;
         this.chattingRoomRepository = chattingRoomRepository;
-        this.analysisResultRepository=analysisResultRepository;
     }
 
     @PostMapping("/uploadfile")
@@ -51,4 +45,21 @@ public class Page3Controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());
         }
     }
+
+    @PostMapping("/updatefile/{crnum}")
+    public ResponseEntity<?> updateFile(@PathVariable("crnum") int crnum,
+                                        @RequestParam("file") MultipartFile file) {
+        try {
+            ChattingRoom chattingRoom = chattingRoomService.updateFile(crnum, file);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("crNum", chattingRoom.getCrNum());
+            response.put("filePath", chattingRoom.getFilePath());
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 실패: " + e.getMessage());
+        }
+    }
+
 }

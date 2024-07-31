@@ -22,10 +22,10 @@ class RankingViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun fetchBasicRankingResults(userId: String) {
+    fun fetchBasicRankingResults(crnum: Int) {
         viewModelScope.launch {
             try {
-                val basicResults = RankingRepository.getBasicRankingResults(userId)
+                val basicResults = RankingRepository.getBasicRankingResults(crnum)
 
                 Log.d("RankingViewModel", "Basic Results: $basicResults")
                 _basicRankingResults.value = basicResults
@@ -37,10 +37,10 @@ class RankingViewModel : ViewModel() {
         }
     }
 
-    fun fetchSearchRankingResults(userId: String, keyword: String) {
+    fun fetchSearchRankingResults(crnum: Int, keyword: String) {
         viewModelScope.launch {
             try {
-                val searchResults = RankingRepository.getSearchRankingResults(userId,keyword)
+                val searchResults = RankingRepository.getSearchRankingResults(crnum, keyword)
                 Log.d("RankingViewModel", "Search Results: $searchResults")
                 _searchRankingResults.value = searchResults
             } catch (e: Exception) {

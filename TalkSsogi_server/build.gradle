@@ -20,29 +20,22 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	//implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' //웹 안 만듦
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-web' //Multipart 파일 업로드 처리
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' //Multipart 파일 업로드 처리
+	implementation 'org.springframework.boot:spring-boot-starter' // 로그 출력
+	implementation 'org.springframework.boot:spring-boot-starter-logging' // 로그 출력
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.340' // AWS SDK for S3
+	implementation 'com.amazonaws:aws-java-sdk-core:1.12.340' // AWS SDK Core
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	//Multipart 파일 업로드 처리
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-	//for test
 	runtimeOnly 'com.h2database:h2'
-
-	// 로그 출력
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-logging'
-
-	// AWS SDK for S3
-	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.340'
-	// AWS SDK Core
-	implementation 'com.amazonaws:aws-java-sdk-core:1.12.340'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
 }
