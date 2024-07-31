@@ -9,17 +9,16 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
@@ -180,6 +179,7 @@ class Page2Activity : AppCompatActivity() {
         SelectedFileText = dialogView.findViewById(R.id.SelectedFileText)
         uploadButton = dialogView.findViewById(R.id.uploadButton)
         progressBar = dialogView.findViewById(R.id.progressBar)
+        val analysisStatus: TextView = dialogView.findViewById(R.id.analysis_status) // 추가된 부분
 
         SelectedFileText.setOnClickListener {
             openFileChooser()
@@ -199,20 +199,61 @@ class Page2Activity : AppCompatActivity() {
         uploadButton.setOnClickListener {
             uploadButton.isEnabled = false
             progressBar.visibility = ProgressBar.VISIBLE // ProgressBar 표시
+            analysisStatus.visibility = TextView.VISIBLE // 추가된 부분, "분석 중..." 텍스트 표시
             Log.d("SelectedChatRoom", "업로드 버튼 클릭 리스너에서 파일 전송 직전")
             selectedFileUri?.let { uri ->
-                viewModel.updateFile(selectedCrnum, uri)
+                viewModel.updateFile(selectedCrnum, uri,
+                    onSuccess = { crnum ->
+                        // 파일 업로드 성공 후 분석 요청
+                        viewModel.requestBasicPythonAnalysis(crnum) { result ->
+                            when (result) {
+                                in 0..Int.MAX_VALUE -> {
+                                    // 분석 성공
+                                    Log.d("SelectedChatRoom", "찐분석 성공")
+                                    uploadButton.isEnabled = true  // 업로드 버튼 다시 활성화
+                                    progressBar.visibility = View.GONE // ProgressBar 숨김
+                                    analysisStatus.visibility = View.GONE // "분석 중..." 텍스트 숨김
+                                    dialog.dismiss() // 다이얼로그 닫기
+                                    viewModel.fetchChatRooms() // 다이얼로그 꺼지면 2페이지 목록 새로고침
+                                }
+                                -4 -> {
+                                    // 분석 실패
+                                    Log.d("SelectedChatRoom", "분석 실패")
+                                    uploadButton.isEnabled = true
+                                    progressBar.visibility = View.GONE
+                                    analysisStatus.visibility = View.GONE
+                                }
+                                -2 -> {
+                                    // 네트워크 오류
+                                    Log.d("SelectedChatRoom", "네트워크 오류")
+                                    uploadButton.isEnabled = true
+                                    progressBar.visibility = View.GONE
+                                    analysisStatus.visibility = View.GONE
+                                }
+                                else -> {
+                                    Log.d("SelectedChatRoom", "알 수 없는 오류")
+                                    uploadButton.isEnabled = true
+                                    progressBar.visibility = View.GONE
+                                    analysisStatus.visibility = View.GONE
+                                }
+                            }
+                        }
+                    },
+                    onFailure = {
+                        // 파일 업로드 실패
+                        Log.d("SelectedChatRoom", "파일 업로드 실패")
+                        uploadButton.isEnabled = true
+                        progressBar.visibility = View.GONE
+                        analysisStatus.visibility = View.GONE
+                    }
+                )
             } ?: run {
-                // 파일 경로가 null인 경우
                 Log.d("SelectedChatRoom", "selectedFileUri가 null임")
+                uploadButton.isEnabled = true
+                progressBar.visibility = View.GONE
+                analysisStatus.visibility = View.GONE
             }
-            uploadButton.isEnabled = true  // 업로드 버튼 다시 활성화
-            progressBar.visibility = ProgressBar.GONE // ProgressBar 숨김
-            dialog.dismiss()    //업로드 버튼 누르면 dialog 꺼짐
-
         }
-
-
         dialog.show()
     }
 
@@ -257,49 +298,6 @@ class Page2Activity : AppCompatActivity() {
         }
         return file
     }
-//
-//    private fun updateFile() {
-//        selectedFileUri?.let { uri ->
-//            try {
-//                val crnum = selectedCrnum ?: return
-//                val file = getFileFromUri(uri) ?: return
-//
-//                val requestBody = RequestBody.create("application/octet-stream".toMediaType(), file)
-//                val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
-//
-//                // context를 전달하여 updateFile 메서드 호출
-//                viewModel.updateFile(crnum, uri, this).enqueue(object : Callback<Map<String, Any>> {
-//                    override fun onResponse(
-//                        call: Call<Map<String, Any>>,
-//                        response: Response<Map<String, Any>>
-//                    ) {
-//                        uploadButton.isEnabled = true
-//                        progressBar.visibility = ProgressBar.GONE
-//
-//                        if (response.isSuccessful) {
-//                            Log.d("Update", "File updated successfully: ${response.body()?.get("message")}")
-//                        } else {
-//                            Log.e("Update", "File update failed: ${response.errorBody()?.string()}")
-//                        }
-//                    }
-//
-//                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-//                        uploadButton.isEnabled = true
-//                        progressBar.visibility = ProgressBar.GONE
-//
-//                        Log.e("Update", "File update error: ${t.message}")
-//                    }
-//                })
-//            } catch (e: Exception) {
-//                uploadButton.isEnabled = true
-//                progressBar.visibility = ProgressBar.GONE
-//
-//                Log.e("Upload", "Exception during file update: ${e.message}")
-//            }
-//        }
-//    }
-
-
 
     private fun showDeleteConfirmationDialog(chatRoom: ChatRoom) {
         val builder = AlertDialog.Builder(this)

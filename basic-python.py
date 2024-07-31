@@ -10,9 +10,9 @@ def main():
     chat_room = ChatRoom(file_path)
     chat_room.preprocess_and_analyze()
 
-    print(f"채팅방 이름: {chat_room.room_name}")
-    print(f"멤버들: {', '.join(chat_room.get_members())}")
-    print(f"채팅방 인원 수: {chat_room.get_member_count()}")
+    print(chat_room.room_name)
+    print(','.join(chat_room.get_members()))
+    print(chat_room.get_headcount())
 
 if __name__ == "__main__":
     main()

@@ -76,12 +76,11 @@ class Page3Activity : AppCompatActivity() {
 
         // 파일 업로드 버튼 클릭 이벤트 설정
         btnUploadFile.setOnClickListener {
-            showLoadingIndicator() // 분석 중 보이게 바꿈
+            showLoadingIndicator()
             Log.d("fetchChatRooms", "인디케이터 보이게 바꿈")
 
             // 파일과 인원 수를 서버에 업로드
-            uploadFileAndPeopleCount() // 인원수, 모바일 내의 파일 경로 뷰모델에 저장
-            //파일업로드로 옵저버가 관찰 중인 변수가 변하면 실행됨
+            uploadFileAndPeopleCount()
         }
 
 
@@ -93,33 +92,6 @@ class Page3Activity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 handlePeopleCount()
-            }
-        })
-
-        // 파일 업로드 결과를 관찰
-        viewModel.uploadResult.observe(this, Observer { result ->
-            Log.d("fetchChatRooms", "옵저버 안으로 들어옴 현 uploadResult : ${result}")
-            when (result) {
-                is Int -> {
-                    if (result >= 0) {
-                        // 업로드 성공 및 채팅방 번호(crNum) 받음
-                        Log.d("fetchChatRooms", "옵저버 안에서 분석 함수 실행 전  현 uploadResult : ${result}")
-                        analyzeFile(result)
-                        Log.d("fetchChatRooms", "옵저버 안에서 분석 함수 실행 후  현 uploadResult : ${result}")
-
-                        //분석 성공 후 액티비티2로 가기
-                        val intent = Intent(this, Page2Activity::class.java)
-                        startActivity(intent)
-                    } else {
-                        // 업로드 실패로 오류 처리
-                        handleUploadError(result)
-                        hideLoadingIndicator()
-                    }
-                }
-                else -> {
-                    // 기본적으로 인디케이터 숨기기
-                    hideLoadingIndicator()
-                }
             }
         })
 
@@ -166,7 +138,7 @@ class Page3Activity : AppCompatActivity() {
     }
 
     // "분석 중" 상태를 숨기는 함수
-    private fun hideLoadingIndicator() {
+    public fun hideLoadingIndicator() {
         // 애니메이션 멈춤
         (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.stop()
 
@@ -187,22 +159,34 @@ class Page3Activity : AppCompatActivity() {
         val fileUri = tvSelectedFile.text.toString()
         val userId = sharedPreferences.getString("Session_ID", "") ?: ""
 
-        viewModel.setHeadCountAndFile(peopleCount, fileUri)  // 공유 뷰모델에 저장
+        viewModel.setHeadCountAndFile(peopleCount, fileUri)
 
-        // 서버에 파일 업로드
         selectedFileUri?.let { uri ->
-            viewModel.uploadFile(uri, userId, peopleCount)
+            viewModel.uploadFile(uri, userId, peopleCount) { result ->
+                if (result >= 0) {
+                    analyzeFile(result)
+                } else {
+                    handleUploadError(result)
+                    hideLoadingIndicator()
+                }
+            }
         } ?: run {
             tvSelectedFile.text = "파일을 선택해주세요."
-            hideLoadingIndicator() // 파일 선택 오류 시 숨기기
+            hideLoadingIndicator()
         }
     }
-    private fun analyzeFile(crNum: Int) {
-        // crNum을 사용하여 분석 작업을 수행합니다.
-        viewModel.requestBasicPythonAnalysis(crNum)
-        hideLoadingIndicator() // 분석 완료 후 인디케이터 숨기기
-    }
 
+    private fun analyzeFile(crNum: Int) {
+        viewModel.requestBasicPythonAnalysis(crNum) { result ->
+            if (result >= 0) {
+                hideLoadingIndicator()
+                startActivity(Intent(this, Page2Activity::class.java))
+            } else {
+                handleUploadError(result)
+                hideLoadingIndicator()
+            }
+        }
+    }
     private fun handleUploadError(errorCode: Int) {
         when (errorCode) {
             -1 -> Log.e("fetchChatRooms", "업로드 실패")

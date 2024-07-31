@@ -25,7 +25,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
@@ -100,9 +99,22 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         MutableLiveData<Int?>() // 0이상: 채팅방 번호, -1: 업로드 실패, -2: 네트워크 오류, -3: 경로 오류, -4: 분석 실패
     val uploadResult: LiveData<Int?> = _uploadResult
 
+    // 페이지2에서 재분석 요청 시 분석이 끝나고 다음 동작을 하기 위한 라이브데이터
+    private val _REanalysisResult =
+        MutableLiveData<Int?>()// 0이상: 채팅방 번호, -1: 업로드 실패, -2: 네트워크 오류, -3: 경로 오류, -4: 분석 실패
+    val REanalysisResult: MutableLiveData<Int> = MutableLiveData()
+
+    // 페이지3에서 분석 요청 시 분석이 끝나고 다음 동작을 하기 위한 라이브데이터
+    private val _analysisResult =
+        MutableLiveData<Int?>()// 0이상: 채팅방 번호, -1: 업로드 실패, -2: 네트워크 오류, -3: 경로 오류, -4: 분석 실패
+    val analysisResult: MutableLiveData<Int> = MutableLiveData()
+
     // 업로드 결과를 업데이트하는 함수
     fun updateUploadResult(result: Int?) {
         _uploadResult.value = result
+    }
+    fun updateanalysisResult(result: Int?) {
+        _analysisResult.value = result
     }
 
     init {
@@ -242,7 +254,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 파일 업로드 api 실행 메서드 페이지
-    fun uploadFile(fileUri: Uri, userId: String, headcount: Int) {
+    fun uploadFile(fileUri: Uri, userId: String, headcount: Int, callback: (Int) -> Unit) {
         // Uri에서 Path 만들기
         val filePath = getPathFromUri(fileUri)
         val file = filePath?.let { File(it) }
@@ -273,35 +285,31 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                             Log.i("fetchChatRooms", "파일 업로드 직후 변수에 넣기전, crnum: ${crnum}")
                             if (crnum != null) {
                                 Log.i("fetchChatRooms", "파일 업로드 성공하고 아직 분석 전, crnum: $crnum")
-                                _uploadResult.postValue(crnum as Int) // 업로드 성공 코드로 crnum 저장
-                                updateUploadResult(crnum)
-                                Log.i(
-                                    "fetchChatRooms",
-                                    "파일 업로드 후 변수에 값 넣기, _uploadResult: ${_uploadResult.value}"
-                                )
+                                callback(crnum) // 업로드 성공 결과를 콜백으로 전달
                             } else {
                                 Log.e("FileUpload", "crnum을 찾을 수 없음")
-                                _uploadResult.postValue(-1) // 업로드 실패 코드
+                                callback(-1) // 업로드 실패 코드 전달
                             }
                         } else {
                             Log.e("FileUpload", "파일 업로드 실패: ${response.errorBody()?.string()}")
-                            _uploadResult.postValue(-1) // 업로드 실패 코드
+                            callback(-1) // 업로드 실패 코드 전달
                         }
                     }
 
                     override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
                         Log.e("FileUpload", "네트워크 오류: ${t.message}")
-                        _uploadResult.postValue(-2) // 네트워크 오류 코드
+                        callback(-2) // 네트워크 오류 코드 전달
                     }
                 })
         } else {
             Log.e("FileUpload", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
-            _uploadResult.postValue(-3) // 파일 경로 오류 코드
+            callback(-3) // 파일 경로 오류 코드 전달
         }
     }
 
+
     // 파일 업로드 api 실행 메서드 페이지
-    fun updateFile(crnum: Int, fileUri: Uri) {
+    fun updateFile(crnum: Int, fileUri: Uri, onSuccess: (Int) -> Unit, onFailure: () -> Unit) {
         // URI에서 File 객체를 가져옵니다.
         val filePath = getPathFromUri(fileUri)
         val file = filePath?.let { File(it) }
@@ -331,17 +339,26 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                             // 'crNum' 값을 Double인지 확인하고 정수로 변환
                             val crNum = (crNumRaw as? Number)?.toInt()
                             Log.i("SelectedChatRoom", "파일 업데이트 성공 후 응답에 있는 파일 경로: $filePath + crNum: $crNum")
+
+                            if (crNum != null) {
+                                onSuccess(crNum) // 파일 업로드 성공 후 crNum 전달
+                            } else {
+                                onFailure() // crNum이 null일 경우 실패 처리
+                            }
                         } else {
                             Log.e("SelectedChatRoom", "파일 업데이트 실패: ${response.errorBody()?.string()}")
+                            onFailure() // 파일 업데이트 실패
                         }
                     }
 
                     override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
                         Log.e("SelectedChatRoom", "네트워크 오류: ${t.message}")
+                        onFailure() // 네트워크 오류 처리
                     }
                 })
         } else {
             Log.e("SelectedChatRoom", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
+            onFailure() // 파일 경로 오류 처리
         }
     }
 
@@ -379,28 +396,44 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
-
-
-
     // 기본 분석 요청 API 호출 함수
-    public fun requestBasicPythonAnalysis(crnum: Int) {
+    fun RErequestBasicPythonAnalysis(crnum: Int, callback: (Int) -> Unit) {
         apiService.runBasicPythonAnalysis(crnum).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
-                    Log.i("fetchChatRooms", "분석 성공: ${response.body()}")
-                    _uploadResult.postValue(crnum) // 업로드 성공 코드로 crnum 저장
+                    Log.i("SelectedChatRoom", "분석 성공: ${response.body()}")
+                    callback(crnum) // 분석 성공 시 crnum 콜백으로 전달
                 } else {
-                    Log.e("fetchChatRooms", "분석 실패: ${response.errorBody()?.string()}")
-                    _uploadResult.postValue(-4) // 분석 실패 코드
+                    Log.e("SelectedChatRoom", "분석 실패: ${response.errorBody()?.string()}")
+                    callback(-4) // 분석 실패 시 오류 코드 전달
                 }
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.e("fetchChatRooms", "네트워크 오류: ${t.message}")
-                _uploadResult.postValue(-2) // 네트워크 오류 코드
+                Log.e("SelectedChatRoom", "네트워크 오류: ${t.message}")
+                callback(-2) // 네트워크 오류 코드 전달
             }
         })
     }
 
 
+    // 기본 분석 요청 API 호출 함수
+    fun requestBasicPythonAnalysis(crnum: Int, callback: (Int) -> Unit) {
+        apiService.runBasicPythonAnalysis(crnum).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    Log.i("fetchChatRooms", "분석 성공: ${response.body()}")
+                    callback(crnum) // 분석 성공 결과를 콜백으로 전달
+                } else {
+                    Log.e("fetchChatRooms", "분석 실패: ${response.errorBody()?.string()}")
+                    callback(-4) // 분석 실패 코드 전달
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.e("fetchChatRooms", "네트워크 오류: ${t.message}")
+                callback(-2) // 네트워크 오류 코드 전달
+            }
+        })
+    }
 }
