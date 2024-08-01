@@ -8,8 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -40,14 +39,43 @@ public class Page1Controller {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
-        String userId = user.getUserId();
+    public ResponseEntity<Map<String, Object>> login(@RequestParam String userId) {
+        Map<String, Object> response = new HashMap<>();
         if (userService.userIdExistsForPage1(userId)) {
-            User existingUser = userService.findUserById(userId);
-            Set<ChattingRoom> chatList = existingUser.getChatList();
-            return ResponseEntity.ok("Login successful. Chat rooms: " + chatList.size());
+            User user = userService.findUserById(userId);
+            Set<ChattingRoom> chatRooms = userService.getChattingRoomsByUserId(userId);
+            response.put("user", user);
+            response.put("chatRooms", chatRooms);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user ID");
+            response.put("error", "User not found");
+            return ResponseEntity.status(404).body(response);
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> register(@RequestParam String userId) {
+        Map<String, Object> response = new HashMap<>();
+        if (!userService.userIdExistsForPage1(userId)) {
+            User newUser = new User();
+            newUser.setUserId(userId);
+            userService.addUser(newUser);
+            response.put("user", newUser);
+            response.put("chatRooms", new HashSet<>());
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "User ID already exists");
+            return ResponseEntity.status(409).body(response);
+        }
+    }
+
+    @GetMapping("/checkUserId")
+    public ResponseEntity<String> checkUserId(@RequestParam String userId) {
+        if (userService.userIdExistsForPage1(userId)) {
+            return ResponseEntity.ok("사용 중인 아이디입니다");
+        } else {
+            return ResponseEntity.ok("사용 가능한 아이디입니다");
+        }
+    }
+
 }

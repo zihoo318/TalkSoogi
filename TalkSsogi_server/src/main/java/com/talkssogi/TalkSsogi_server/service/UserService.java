@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,12 @@ public class UserService {
     public List<String> getAllUserIds() {
         List<User> users = userRepository.findAll();
         return users.stream().map(User::getUserId).collect(Collectors.toList());
+    }
+
+    // 사용자 ID 존재 여부 확인(페이지7에서 사용)
+    @Transactional
+    public boolean userIdExists(String userId) {
+        return getAllUserIds().contains(userId);
     }
 
     @Transactional
