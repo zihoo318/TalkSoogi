@@ -200,7 +200,7 @@ public class PythonController {
 
             // 분석 결과 파일 (첫 번째 줄에 이미지 URL 출력)
             String resultFilePath = resultLines[0];
-            String resultUrl = "http://192.168.45.232:8080/" + resultFilePath;
+            String resultUrl = "http://172.30.1.66:8080/" + resultFilePath;
 
             return ResponseEntity.ok(resultUrl);
         } catch (Exception e) {
