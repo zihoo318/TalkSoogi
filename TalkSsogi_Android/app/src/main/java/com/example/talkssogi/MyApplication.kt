@@ -142,6 +142,40 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    fun checkUserId(userId: String): LiveData<String> {
+        val result = MutableLiveData<String>()
+        apiService.checkUserId(userId).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                result.value = if (response.isSuccessful) {
+                    response.body() ?: "아이디 중복 확인 실패"
+                } else {
+                    "아이디 중복 확인 실패"
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                result.value = "아이디 중복 확인 실패"
+            }
+        })
+        return result
+    }
+
+    fun registerUser(userId: String): LiveData<Response<Map<String, Any>>> {
+        val result = MutableLiveData<Response<Map<String, Any>>>()
+        apiService.registerUser(userId).enqueue(object : Callback<Map<String, Any>> {
+            override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                result.value = response
+            }
+
+            override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                // 예외 발생 시, 적절한 오류 처리를 수행
+                result.value = Response.error(500, ResponseBody.create(null, t.message ?: "Unknown error"))
+            }
+        })
+        return result
+    }
+
+
     fun getUserIdsLiveData(): LiveData<List<String>> { // 전체 유저 아이디 목록 getter
         return _userIds
     }
