@@ -133,7 +133,7 @@ public class ChattingRoom {
         return basicRankingResults;
     }
 
-    public void setBasicRankingResults(Map<String, List<String>> basicRankingResults) {
+    public void setBasicRankingResults(Map<String, Integer>> basicRankingResults Map<String, Map<String, Integer>> rankingResultsMap) {
         this.basicRankingResults = basicRankingResults != null ? basicRankingResults : new HashMap<>();
     }
 

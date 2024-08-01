@@ -1,6 +1,9 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.processor.PythonResultProcessor;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -24,6 +28,8 @@ public class PythonController {
     private final ChattingRoomService chattingRoomService;
     private final UserService userService;
     //private final S3Uploader s3Uploader;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Autowired
     public PythonController(ChattingRoomService chattingRoomService, UserService userService) { //, S3Uploader s3Uploader 추가
@@ -48,10 +54,10 @@ public class PythonController {
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 파이썬 인터프리터의 절대 경로 설정
-            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
+            String pythonInterpreterPath = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";  // 실행할 Python 스크립트의 경로
+            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
             String command = String.format("%s %s %s", pythonInterpreterPath, pythonScriptPath, filePath);
@@ -95,11 +101,21 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
 
+            // JSON 결과 처리
+            PythonResultProcessor processor = new PythonResultProcessor();
+            Map<String, Map<String, Integer>> rankingResultsMap = processor.extractRankingResults(result.toString());
+
+            // 분석 결과를 ChattingRoom 엔티티에 저장
+            chattingRoom.setBasicRankingResults(rankingResultsMap);
+            chattingRoomService.save(chattingRoom);
+
             // 분석 결과를 저장
             String chatroomName = resultLines[0];
             List<String> memberNames = List.of(resultLines[1].split(","));
             logger.info("제대로 파이썬 결과를 받았는가???? chatroomName: " + chatroomName);
             logger.info("제대로 파이썬 결과를 받았는가???? memberNames: " + memberNames);
+
+
 
             // ChattingRoom 업데이트
             chattingRoom.setChatroomName(chatroomName);
