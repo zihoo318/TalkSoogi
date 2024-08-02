@@ -2,6 +2,13 @@ import re
 from konlpy.tag import Okt
 from collections import defaultdict
 import unicodedata
+from konlpy.tag import Okt
+from collections import Counter
+import os
+import json
+import re
+import sys
+from collections import defaultdict
 
 class User:
     def __init__(self, name):
@@ -10,7 +17,7 @@ class User:
         self.initial_message_count = 0  # 초성 사용 횟수
         self.message_count = 0  # 메시지 보낸 횟수
         self.emoji_count = 0  # 이모티콘 횟수(카톡 임티는 포함X)
-        self.personal_file_path = f'C:/Users/Master/TalkSsogi_Workspace/{self.name}_personal.txt'  # 개인 파일 경로 초기화
+        self.personal_file_path = f'C:/Talkssogi_Workspace/TalkSsogi/{self.name}_personal.txt'  # 개인 파일 경로 초기화
 
 class ChatRoom:
     def __init__(self, file_path):
@@ -20,7 +27,7 @@ class ChatRoom:
         self.user_chats = defaultdict(str)
         self.total_chats = []
         self.okt = Okt()  # Okt 객체 생성
-        self.group_file_path = 'C:/Users/Master/TalkSsogi_Workspace/group.txt'
+        self.group_file_path = 'C:/Talkssogi_Workspace/TalkSsogi/KakaoTalkChats.txt'
         self.excluded_jamo_set = {'ㅋ', 'ㅍ', 'ㅎ', 'ㅌ', 'ㅠ', 'ㅜ', '큐', '쿠', '튜', '투', '퓨', '푸', '튵', '큨', '캬', '컄', '헝', '엉', '어'}  # 제외할 자모음 집합
         self.additional_special_symbols = set(';.,:/?!')  # 제거할 특수 기호 목록
 
@@ -255,3 +262,4 @@ class ChatRoom:
         emoji_counts = [(user.name, user.emoji_count) for user in self.members.values()]
         emoji_counts.sort(key=lambda x: x[1], reverse=True)
         return emoji_counts
+
