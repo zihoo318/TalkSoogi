@@ -1,6 +1,7 @@
 package com.example.talkssogi
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
@@ -14,9 +15,10 @@ class FragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragment_container)
+        val crnum = intent.getIntExtra("crnum", -1) // 채팅방 번호를 가져옴
+        Log.d("FragmentActivity", "page2에서 전달 받은 crnum(fragmentactivity): $crnum")
 
         if (savedInstanceState == null) {
-            val crnum = intent.getIntExtra("crnum", -1) // 채팅방 번호를 가져옴
             val fragment = fragmentPage5().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum) // 채팅방 번호를 arguments에 추가(fragment버전의 intent같은거)

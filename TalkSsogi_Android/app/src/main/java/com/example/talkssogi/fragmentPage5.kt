@@ -2,6 +2,7 @@ package com.example.talkssogi
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ class fragmentPage5 : Fragment() {
 
         // arguments에서 채팅방 번호를 가져옴
         crnum = arguments?.getInt("crnum", -1) ?: -1
+        Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
 
         val btnBack: ImageView = view.findViewById(R.id.imageView) //뒤로가기
         val option1 = view.findViewById<TextView>(R.id.option_1) //페이지6
@@ -40,6 +42,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage6().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
@@ -49,6 +53,8 @@ class fragmentPage5 : Fragment() {
             // 채팅방 번호를 Intent로 전달
             val intent = Intent(requireContext(), Page7Activity::class.java).apply {
                 putExtra("crnum", crnum)
+                Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
             }
             startActivity(intent)
         }
@@ -58,6 +64,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage10().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
@@ -69,6 +77,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage8().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)

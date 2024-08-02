@@ -42,10 +42,12 @@ class Rank7_2 : Fragment() {
 
         // ViewModel 데이터 관찰
         rankingViewModel.basicRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            // "주제2"의 랭킹을 가져와 표시
-            val rankingList = results["주제2"]
-            rankingList?.let {
-                val displayText = it.joinToString(separator = "\n") { name -> "순위: $name" }
+            val messageRankings = results["사진"] // "사진" 키에 대한 값 가져오기
+            messageRankings?.let {
+                val displayText = it.entries
+                    .sortedByDescending { entry -> entry.value.toInt() } // 값을 기준으로 정렬
+                    .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}번" }
+                    .joinToString(separator = "\n")
                 ranking_result.text = displayText
             }
         })
@@ -55,4 +57,18 @@ class Rank7_2 : Fragment() {
 
         return view
     }
+    companion object {
+        private const val ARG_CRNUM = "crnum"
+
+        fun newInstance(crnum: Int): Rank7_2 {
+            val fragment = Rank7_2()
+            val args = Bundle()
+            args.putInt(ARG_CRNUM, crnum)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }
+
+
+

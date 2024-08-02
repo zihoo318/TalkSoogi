@@ -27,9 +27,11 @@ class ChatRoomAdapter(
         holder.chatRoomName.text = chatRoom.name
         holder.profileImage.setImageResource(R.drawable.profile_placeholder)
 
+
         // 기존 클릭 리스너 추가
         holder.itemView.setOnClickListener {
             onItemClick(chatRoom) // 클릭 시 콜백 호출
+
         }
 
         // 길게 눌렀을 때 리스너 추가

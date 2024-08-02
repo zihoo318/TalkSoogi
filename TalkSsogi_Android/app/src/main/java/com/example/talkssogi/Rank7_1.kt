@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class Rank7_1 : Fragment() {
 
         // arguments로부터 crnum 값을 가져오고, null일 경우 기본값 -1 사용
         crnum = arguments?.getInt("crnum") ?: -1
+        Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
 
         // UI 요소 초기화
         val search = view.findViewById<ImageView>(R.id.button_search)
@@ -42,10 +44,12 @@ class Rank7_1 : Fragment() {
 
         // ViewModel 데이터 관찰
         rankingViewModel.basicRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            // "주제1"의 랭킹을 가져와 표시
-            val rankingList = results["주제1"]
-            rankingList?.let {
-                val displayText = it.joinToString(separator = "\n") { name -> "순위: $name" }
+            val messageRankings = results["메시지"] //  "메시지" 키에 대한 값 가져오기
+            messageRankings?.let {
+                val displayText = it.entries
+                    .sortedByDescending { entry -> entry.value.toInt() } // 값을 기준으로 정렬
+                    .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}개" }
+                    .joinToString(separator = "\n")
                 ranking_result.text = displayText
             }
         })
@@ -54,5 +58,17 @@ class Rank7_1 : Fragment() {
         rankingViewModel.fetchBasicRankingResults(crnum)
 
         return view
+    }
+
+    companion object {
+        private const val ARG_CRNUM = "crnum"
+
+        fun newInstance(crnum: Int): Rank7_1 {
+            val fragment = Rank7_1()
+            val args = Bundle()
+            args.putInt(ARG_CRNUM, crnum)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
