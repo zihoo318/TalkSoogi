@@ -14,8 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -29,13 +28,14 @@ public class PythonController {
     private final UserService userService;
     //private final S3Uploader s3Uploader;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     @Autowired
-    public PythonController(ChattingRoomService chattingRoomService, UserService userService) { //, S3Uploader s3Uploader 추가
+    public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가
         this.chattingRoomService = chattingRoomService;
         this.userService = userService;
         //this.s3Uploader = s3Uploader;
+        this.pythonResultProcessor = pythonResultProcessor;  // 추가
     }
 
     // 처음 파일 업로드할 때 진행되는 기본 데이터 분석
@@ -90,7 +90,6 @@ public class PythonController {
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
             logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
-
             if (exitCode != 0) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
             }
@@ -101,9 +100,12 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
 
-            // JSON 결과 처리
-            PythonResultProcessor processor = new PythonResultProcessor();
-            Map<String, Map<String, Integer>> rankingResultsMap = processor.extractRankingResults(result.toString());
+            // JSON 파일에서 결과를 읽어오기
+            File jsonFile = new File("C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json"); // JSON 파일 경로 설정
+            String jsonString = readFileToString(jsonFile);  // 파일을 문자열로 읽기
+
+            // JSON 문자열을 Map으로 변환
+            Map<String, Map<String, String>> rankingResultsMap = pythonResultProcessor.extractRankingResults(jsonString);
 
             // 분석 결과를 ChattingRoom 엔티티에 저장
             chattingRoom.setBasicRankingResults(rankingResultsMap);
@@ -132,6 +134,17 @@ public class PythonController {
             logger.error("Unexpected error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
         }
+    }
+
+    private String readFileToString(File file) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                content.append(line);
+            }
+        }
+        return content.toString();
     }
 
 

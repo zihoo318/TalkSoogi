@@ -39,5 +39,6 @@ public class MapStringListConverter implements AttributeConverter<Map<String, Li
             throw new RuntimeException("Could not convert JSON string to map.", e);
         }
     }
+
 }
 

@@ -3,6 +3,7 @@ package com.talkssogi.TalkSsogi_server.service;
 import com.talkssogi.TalkSsogi_server.controller.PythonController;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
+import com.talkssogi.TalkSsogi_server.processor.PythonResultProcessor;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -27,8 +29,12 @@ public class ChattingRoomService {
 
     private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi"
             ; //테스트용 경로
+    @Autowired
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    private PythonResultProcessor pythonResultProcessor;
 
     @Autowired
     public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
@@ -40,6 +46,24 @@ public class ChattingRoomService {
     @Transactional
     public void save(ChattingRoom chattingRoom) {
         chattingRoomRepository.save(chattingRoom);
+    }
+
+    public void saveRankingResults(Integer crNum, String jsonResults) {
+        Map<String, Map<String, String>> rankingResults = pythonResultProcessor.extractRankingResults(jsonResults);
+
+        if (rankingResults == null) {
+            System.out.println("Error processing ranking results");
+            return;
+        }
+
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crNum).orElse(null);
+
+        if (chattingRoom != null) {
+            chattingRoom.setBasicRankingResults(rankingResults);
+            chattingRoomRepository.save(chattingRoom);
+        } else {
+            System.out.println("ChattingRoom with ID " + crNum + " not found.");
+        }
     }
 
     @Transactional
@@ -129,6 +153,14 @@ public class ChattingRoomService {
             return chattingRoom.getMemberNames();
         }
         return List.of();
+    }
+
+    public Map<String, Map<String, String>> getBasicRankingResults(Integer crNum) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crNum).orElse(null);
+        if (chattingRoom != null) {
+            return chattingRoom.getBasicRankingResults();
+        }
+        return null;
     }
 
     @Transactional

@@ -1,23 +1,29 @@
 package com.talkssogi.TalkSsogi_server.processor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.Map;
 
+@Component
 public class PythonResultProcessor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Map<String, Map<String, Integer>> extractRankingResults(String jsonString) throws IOException {
-        // JSON 문자열을 JsonNode로 변환
-        JsonNode rootNode = objectMapper.readTree(jsonString);
+    public Map<String, Map<String, String>> extractRankingResults(String jsonString) {
+        // BOM 제거
+        if (jsonString.startsWith("\uFEFF")) {
+            jsonString = jsonString.substring(1);
+        }
 
-        // 필요한 부분만 추출
-        JsonNode rankingResultsNode = rootNode;
-
-        // Map으로 변환
-        return objectMapper.convertValue(rankingResultsNode, new TypeReference<Map<String, Map<String, Integer>>>() {});
+        try {
+            // JSON 문자열을 Map으로 변환
+            return objectMapper.readValue(jsonString, new TypeReference<Map<String, Map<String, String>>>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
