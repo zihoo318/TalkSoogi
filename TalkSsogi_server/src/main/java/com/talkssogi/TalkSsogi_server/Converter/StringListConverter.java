@@ -22,4 +22,5 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
     public List<String> convertToEntityAttribute(String dbData) {
         return dbData != null ? Arrays.asList(dbData.split(",")) : List.of();
     }
+
 }

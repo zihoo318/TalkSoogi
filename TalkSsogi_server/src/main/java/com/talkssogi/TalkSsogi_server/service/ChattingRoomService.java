@@ -1,8 +1,11 @@
 package com.talkssogi.TalkSsogi_server.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.talkssogi.TalkSsogi_server.controller.PythonController;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
+import com.talkssogi.TalkSsogi_server.processor.PythonResultProcessor;
 import com.talkssogi.TalkSsogi_server.repository.ChattingRoomRepository;
 import com.talkssogi.TalkSsogi_server.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -13,11 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -25,10 +32,14 @@ public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
 
-    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi"
-            ; //테스트용 경로
+    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi";
+    //테스트용 경로
+    @Autowired
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    private PythonResultProcessor pythonResultProcessor;
 
     @Autowired
     public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
@@ -40,6 +51,24 @@ public class ChattingRoomService {
     @Transactional
     public void save(ChattingRoom chattingRoom) {
         chattingRoomRepository.save(chattingRoom);
+    }
+
+    public void saveRankingResults(Integer crNum, String jsonResults) {
+        Map<String, Map<String, String>> rankingResults = pythonResultProcessor.extractRankingResults(jsonResults);
+
+        if (rankingResults == null) {
+            System.out.println("Error processing ranking results");
+            return;
+        }
+
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crNum).orElse(null);
+
+        if (chattingRoom != null) {
+            chattingRoom.setBasicRankingResults(rankingResults);
+            chattingRoomRepository.save(chattingRoom);
+        } else {
+            System.out.println("ChattingRoom with ID " + crNum + " not found.");
+        }
     }
 
     @Transactional
@@ -129,6 +158,58 @@ public class ChattingRoomService {
             return chattingRoom.getMemberNames();
         }
         return List.of();
+    }
+
+    public Map<String, Map<String, String>> getBasicRankingResults(Integer crNum) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crNum).orElse(null);
+        if (chattingRoom != null) {
+            return chattingRoom.getBasicRankingResults();
+        }
+        return null;
+    }
+
+    public Map<String, Map<String, String>> getSearchRankingResults(int crnum, String keyword) {
+        // 파이썬 스크립트를 실행하여 결과를 가져오는 로직을 추가
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
+        if (chattingRoom == null) {
+            logger.error("ChattingRoom with ID " + crnum + " not found.");
+            return Collections.emptyMap();
+        }
+
+        String filePath = chattingRoom.getFilePath(); // chat file path를 설정해야 함
+        String searchResultsFilePath = "C:/Talkssogi_Workspace/TalkSsogi/search_ranking_results.json"; // 파이썬 스크립트가 생성하는 파일 경로
+
+        ProcessBuilder processBuilder = new ProcessBuilder("python", "C:/Talkssogi_Workspace/TalkSsogi/search_ranking_result.py", filePath, keyword);
+        processBuilder.redirectErrorStream(true);
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            StringBuilder result = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            reader.close();
+            process.waitFor();
+
+            // 생성된 search_results.txt 파일을 읽어와서 JSON 문자열로 변환
+            Path searchResultsPath = Paths.get(searchResultsFilePath);
+            String jsonString = new String(Files.readAllBytes(searchResultsPath));
+
+            // 결과를 JSON으로 파싱
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Map<String, String>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, String>>>(){});
+
+            // 분석 결과를 ChattingRoom 엔티티에 저장
+            chattingRoom.setBasicRankingResults(rankingResultsMap);
+            this.save(chattingRoom); // chattingRoomService.save(chattingRoom) 대신 this.save(chattingRoom) 사용
+
+            return rankingResultsMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        }
     }
 
     @Transactional
