@@ -1,6 +1,7 @@
 package com.example.talkssogi
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,10 @@ class fragmentPage8 : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_page8, container, false)
 
+        // arguments에서 채팅방 번호를 가져옴
+        crnum = arguments?.getInt("crnum", -1) ?: -1
+        Log.d("Page9", "프래그먼트 페이지8이 출력!! 받은 crnum: $crnum")
+
         // UI 요소 초기화
         val btnBack: ImageView = view.findViewById(R.id.imageView) // 뒤로가기
         val imageView1: ImageView = view.findViewById(R.id.imageView)
@@ -43,7 +48,13 @@ class fragmentPage8 : Fragment() {
 
         // 프래그먼트9로 이동할 버튼 클릭 리스너
         imageView3.setOnClickListener {
-            (requireActivity() as FragmentActivity).replaceFragment(fragmentPage9())
+            val fragment = fragmentPage9().apply {
+                arguments = Bundle().apply {
+                    putInt("crnum", crnum) // 채팅방 번호를 arguments에 추가
+                    Log.d("Page9", "프래그먼트페이지8에서 argument로 넣은 crnum : $crnum")
+                }
+            }
+            (requireActivity() as FragmentActivity).replaceFragment(fragment)
         }
 
         // API 호출 및 결과 가공 후 TextView에 출력

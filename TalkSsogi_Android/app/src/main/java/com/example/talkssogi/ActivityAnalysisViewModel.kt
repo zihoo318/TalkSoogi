@@ -90,16 +90,19 @@ class ActivityAnalysisViewModel : ViewModel() {
     fun loadParticipants(crnum: Int) {
         viewModelScope.launch {
             try {
-                val response = apiService.getChattingRoomMembers(crnum).execute()
+                Log.d("Page9", "참여자 가져오는 API 호출 직전")
+                val response = apiService.getChattingRoomMembers(crnum)
+                Log.d("Page9", "API 호출 후")
                 if (response.isSuccessful) {
+                    Log.d("Page9", "참여자 가져오는 API 호출 성공")
                     val participantsList = response.body() ?: emptyList()
                     _participants.postValue(participantsList)
                 } else {
-                    // 에러 처리
+                    Log.e("Page9", "API 호출 실패: ${response.errorBody()?.string()}")
                     _participants.postValue(emptyList())
                 }
             } catch (e: Exception) {
-                // 예외 처리
+                Log.e("Page9", "API 호출 예외 발생", e)
                 _participants.postValue(emptyList())
             }
         }

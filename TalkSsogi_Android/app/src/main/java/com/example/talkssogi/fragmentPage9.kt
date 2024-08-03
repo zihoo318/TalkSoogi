@@ -2,6 +2,7 @@ package com.example.talkssogi
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ class fragmentPage9 : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             crnum = it.getInt("crnum", -1)
+            Log.d("Page9", "프래그먼트페이지9에서 argument 받음 crnum: $crnum")
         }
     }
 
@@ -82,6 +84,7 @@ class fragmentPage9 : Fragment() {
             })
         }
 
+        Log.d("Page9", "프래그먼트페이지9에서 onCreate() 참여자 이름 요청 전")
         // 스피너 아이템 설정
         // 대화방 참가자 목록 로드 및 스피너 업데이트
         activityAnalysisViewModel.loadParticipants(crnum)
@@ -90,6 +93,7 @@ class fragmentPage9 : Fragment() {
             val participantAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, participants)
             participantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             searchSpinner.adapter = participantAdapter
+            Log.d("Page9", "참여자 가져와서 바꿈")
         })
 
         val resultsItems = arrayOf("보낸 메시지 수 그래프", "활발한 시간대 그래프", "대화를 보내지 않은 날짜")

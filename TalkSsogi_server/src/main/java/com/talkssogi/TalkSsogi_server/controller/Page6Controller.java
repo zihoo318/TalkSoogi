@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
 page6Service에서 파이썬 코드를 실행해서 생성된 AnalysisResult의 wordCloudImageUrl을 전달하도록 할건데
@@ -31,11 +34,24 @@ public class Page6Controller {
 
     @GetMapping("/members/{crnum}")
     public ResponseEntity<List<String>> getChattingRoomMembers(@PathVariable Integer crnum) {
-        List<String> members = chattingRoomService.getChattingRoomMembers(crnum);
-        if (members.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<String> members = null;
+        try {
+            members = chattingRoomService.getChattingRoomMembers(crnum);
+            if (members == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // 수정 가능한 리스트로 변환
+            List<String> modifiableMembers = new ArrayList<>(members);
+            // "전체"를 리스트의 첫 번째 위치에 추가
+            modifiableMembers.add(0, "전체");
+
+            return new ResponseEntity<>(modifiableMembers, HttpStatus.OK);
+        } catch (Exception e) {
+            // 예외 발생 시 로그 기록
+            Logger.getLogger(Page6Controller.class.getName()).log(Level.SEVERE, "Error occurred while fetching members", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
     @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
