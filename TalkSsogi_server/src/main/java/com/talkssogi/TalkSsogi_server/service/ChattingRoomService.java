@@ -203,7 +203,7 @@ public class ChattingRoomService {
             Map<String, Map<String, String>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, String>>>(){});
 
             // 분석 결과를 ChattingRoom 엔티티에 저장
-            chattingRoom.setBasicRankingResults(rankingResultsMap);
+            chattingRoom.setSearchRankingResults(rankingResultsMap);
             this.save(chattingRoom); // chattingRoomService.save(chattingRoom) 대신 this.save(chattingRoom) 사용
 
             return rankingResultsMap;
