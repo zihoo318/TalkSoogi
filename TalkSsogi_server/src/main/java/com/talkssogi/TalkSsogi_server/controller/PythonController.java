@@ -100,9 +100,10 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
 
-            // JSON 파일에서 결과를 읽어오기(basic)
-            File basicJsonFile = new File("C:/Talkssogi_Workspace/TalkSsogi/basic_ranking_results.json"); // JSON 파일 경로 설정
-            String jsonString = readFileToString(basicJsonFile);  // 파일을 문자열로 읽기
+
+            // JSON 파일에서 결과를 읽어오기
+            File jsonFile = new File("C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json"); // JSON 파일 경로 설정
+            String jsonString = readFileToString(jsonFile);  // 파일을 문자열로 읽기
 
             // JSON 문자열을 Map으로 변환
             Map<String, Map<String, String>> rankingResultsMap = pythonResultProcessor.extractRankingResults(jsonString);

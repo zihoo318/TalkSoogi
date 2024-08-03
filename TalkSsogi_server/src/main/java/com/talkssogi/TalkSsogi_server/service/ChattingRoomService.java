@@ -34,6 +34,7 @@ public class ChattingRoomService {
 
     private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi";
     //테스트용 경로
+
     @Autowired
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;

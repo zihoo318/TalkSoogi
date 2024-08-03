@@ -35,10 +35,23 @@ public class Page7Controller {
     }
 
     @GetMapping("/searchRankingResults")
-    public Map<String, Map<String, String>> getSearchRankingResults(@RequestParam Integer crnum, @RequestParam String keyword) {
+    public Map<String, List<String>> getSearchRankingResults(@RequestParam Integer crnum, @RequestParam String keyword) {
         // 기본 제공 랭킹 결과를 생성
-        Map<String, Map<String, String>> searchRankingResults = chattingRoomService.getSearchRankingResults(crnum, keyword);
-        logger.info("Search Ranking Results for crnum {} and keyword {}: {}", crnum, keyword, searchRankingResults);
-        return searchRankingResults;
+        Map<String, List<String>> searchRankingResults = new HashMap<>();
+        searchRankingResults.put("qqq", List.of("이름1", "이름2", "이름3"));
+        searchRankingResults.put("www", List.of("이름4", "이름5", "이름6"));
+        searchRankingResults.put("eee", List.of("이름7", "이름8", "이름9"));
+        searchRankingResults.put("rrr", List.of("이름10", "이름11", "이름12"));
+        searchRankingResults.put("ttt", List.of("이름13", "이름14", "이름15"));
+        searchRankingResults.put("yyy", List.of("이름16", "이름17", "이름18"));
+        // 검색어에 따라 결과를 필터링
+        Map<String, List<String>> filteredResults = searchRankingResults.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(keyword))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        // 결과값 로그 출력
+        logger.info("Search Ranking Results for crnum {} and keyword {}: {}", crnum, keyword, filteredResults);
+
+        return filteredResults;
     }
 }
