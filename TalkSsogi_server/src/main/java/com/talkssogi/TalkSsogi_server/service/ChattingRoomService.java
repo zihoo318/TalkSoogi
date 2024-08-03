@@ -183,26 +183,39 @@ public class ChattingRoomService {
         ProcessBuilder processBuilder = new ProcessBuilder("python", "C:/Talkssogi_Workspace/TalkSsogi/search_ranking_result.py", filePath, keyword);
         processBuilder.redirectErrorStream(true);
 
+        // 환경 변수 설정
+        Map<String, String> env = processBuilder.environment();
+        env.put("PYTHONIOENCODING", "utf-8");
+
         try {
+            // 기존 결과 파일 삭제
+            Files.deleteIfExists(Paths.get(searchResultsFilePath));
+
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             StringBuilder result = new StringBuilder();
             while ((line = reader.readLine()) != null) {
+                logger.info(line); // 파이썬 스크립트 실행 로그 출력
                 result.append(line);
             }
             reader.close();
-            process.waitFor();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                logger.error("Python script execution failed with exit code 실패 " + exitCode);
+                return Collections.emptyMap();
+            }
 
-            // 생성된 search_results.txt 파일을 읽어와서 JSON 문자열로 변환
             Path searchResultsPath = Paths.get(searchResultsFilePath);
-            String jsonString = new String(Files.readAllBytes(searchResultsPath));
+            if (!Files.exists(searchResultsPath)) {
+                logger.error("Python script did not generate expected output file.");
+                return Collections.emptyMap();
+            }
 
-            // 결과를 JSON으로 파싱
+            String jsonString = new String(Files.readAllBytes(searchResultsPath));
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Map<String, String>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, String>>>(){});
 
-            // 분석 결과를 ChattingRoom 엔티티에 저장
             chattingRoom.setSearchRankingResults(rankingResultsMap);
             this.save(chattingRoom); // chattingRoomService.save(chattingRoom) 대신 this.save(chattingRoom) 사용
 
