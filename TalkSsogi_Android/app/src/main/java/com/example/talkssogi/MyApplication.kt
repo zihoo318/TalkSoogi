@@ -142,7 +142,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun checkUserId(userId: String): LiveData<String> {
+    /*fun checkUserId(userId: String): LiveData<String> {
         val result = MutableLiveData<String>()
         apiService.checkUserId(userId).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -173,7 +173,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             }
         })
         return result
-    }
+    }*/
 
 
     fun getUserIdsLiveData(): LiveData<List<String>> { // 전체 유저 아이디 목록 getter
