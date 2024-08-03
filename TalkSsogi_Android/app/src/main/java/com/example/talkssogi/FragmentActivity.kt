@@ -36,6 +36,7 @@ class FragmentActivity : AppCompatActivity() {
         if (fragment is fragmentPage9) {
             fragment.viewModel = viewModel
         }
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)  // 옵션 1, 2, 4 클릭 후 뒤로 가기 버튼을 눌렀을 때 이전 상태로 되돌리기 위해 백 스택에 추가

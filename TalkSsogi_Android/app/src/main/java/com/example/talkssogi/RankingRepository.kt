@@ -39,18 +39,25 @@ object RankingRepository {
         }
     }
 
-    suspend fun getSearchRankingResults(crnum: Int, keyword: String): Map<String, List<String>> {
-        return try {
-            val response = apiService.getSearchRankingResults(crnum, keyword)
-            if (response.isSuccessful) {
-                response.body() ?: emptyMap()
-            } else {
-                Log.e("RankingRepository", "Error: ${response.errorBody()?.string()}")
-                emptyMap()
+    fun getSearchRankingResults(crnum: Int, keyword: String, callback: (Map<String, Map<String, String>>?) -> Unit) {
+        val call = apiService.getSearchRankingResults(crnum, keyword)
+        call.enqueue(object : Callback<Map<String, Map<String, String>>> {
+            override fun onResponse(
+                call: Call<Map<String, Map<String, String>>>,
+                response: Response<Map<String, Map<String, String>>>
+            ) {
+                if (response.isSuccessful) {
+                    callback(response.body())
+                } else {
+                    Log.e("RankingRepository", "Error: ${response.errorBody()?.string()}")
+                    callback(null)
+                }
             }
-        } catch (e: Exception) {
-            Log.e("RankingRepository", "Error fetching search ranking results", e)
-            emptyMap()
-        }
+
+            override fun onFailure(call: Call<Map<String, Map<String, String>>>, t: Throwable) {
+                Log.e("RankingRepository", "Error fetching search ranking results", t)
+                callback(null)
+            }
+        })
     }
 }

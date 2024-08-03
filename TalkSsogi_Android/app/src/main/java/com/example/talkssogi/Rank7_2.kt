@@ -36,7 +36,9 @@ class Rank7_2 : Fragment() {
 
         // 검색 버튼 클릭 시 동작
         search.setOnClickListener {
-            val intent = Intent(requireContext(), Page7_search_Activity::class.java)
+            val intent = Intent(requireContext(), Page7_search_Activity::class.java).apply {
+                putExtra("crnum", crnum) // crnum 값을 Intent에 추가
+            }
             startActivity(intent)
         }
 
