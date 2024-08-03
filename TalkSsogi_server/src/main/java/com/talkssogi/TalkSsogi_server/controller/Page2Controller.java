@@ -35,6 +35,7 @@ public class Page2Controller {
 
     @GetMapping(value = "/chatrooms", produces="application/json; charset=utf8") // 채팅방 목록 보내기
     public ResponseEntity<Map<Integer, String>> getChatRooms(@RequestParam String ID) {
+        logger.info("Fetching chat rooms for user ID: {}", ID);
 
         // 응답 헤더에 Content-Type과 charset을 명시적으로 설정
         HttpHeaders headers = new HttpHeaders();
@@ -45,6 +46,7 @@ public class Page2Controller {
         User user = userService.findUserById(ID);
 
         if (user == null) {
+            logger.warn("User not found: {}", ID);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -62,21 +64,31 @@ public class Page2Controller {
             chatRoomsMap.put(roomNumber, roomName); // 채팅방 번호와 이름을 Map에 추가합니다.
         }
 
-        logger.info("여기여여여여여여겨고ㅑ 인코딩 설정 확인 : {}", chatRoomsMap);
+        logger.info("Returning chat rooms for user ID 여기여여여여여여겨고ㅑ 인코딩 설정 확인 : {}", chatRoomsMap);
         // 생성된 채팅방 목록을 HttpStatus OK와 함께 ResponseEntity로 반환합니다.
-        return new ResponseEntity<>(chatRoomsMap, HttpStatus.OK);
+        return new ResponseEntity<>(chatRoomsMap, headers, HttpStatus.OK);
     }
 
+    // 클라이언트로부터 채팅방 번호를 받아 ChattingRoomService의 deleteChattingRoom 메서드를 호출하여 삭제를 시도함
+    // 삭제 성공 여부에 따라 적절한 HTTP 상태 코드 (204 NO_CONTENT 또는 404 NOT_FOUND)를 반환함
     @DeleteMapping("/chatrooms/{crNum}")
     public ResponseEntity<?> deleteChatRoom(@PathVariable Integer crNum) {
-        ChattingRoom room = chattingRoomService.findByCrNum(crNum);
+        try {
+            logger.info("Deleting chat room with ID: {}", crNum);
 
-        if (room == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            boolean isDeleted = chattingRoomService.deleteChattingRoom(crNum);
+
+            if (isDeleted) {
+                logger.info("Successfully deleted chat room with ID: {}", crNum);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                logger.warn("Chat room not found with ID: {}", crNum);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting chat room with ID(채팅방 삭제 중 오류 발생): {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        chattingRoomService.deleteChattingRoom(crNum);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

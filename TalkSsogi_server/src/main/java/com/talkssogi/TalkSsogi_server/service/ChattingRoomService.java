@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -154,11 +155,16 @@ public class ChattingRoomService {
 
     @Transactional
     public List<String> getChattingRoomMembers(Integer crnum) {
-        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
-        if (chattingRoom != null && chattingRoom.getMemberNames() != null) {
-            return chattingRoom.getMemberNames();
+        try {
+            ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
+            if (chattingRoom != null && chattingRoom.getMemberNames() != null) {
+                return chattingRoom.getMemberNames();
+            }
+            return List.of();
+        } catch (DataAccessException e) {
+            logger.error("채팅방 멤버 조회 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("채팅방 멤버 조회에 실패했습니다.", e);
         }
-        return List.of();
     }
 
     public Map<String, Map<String, String>> getBasicRankingResults(Integer crNum) {
@@ -227,28 +233,55 @@ public class ChattingRoomService {
     }
 
     @Transactional
-    public void deleteChattingRoom(Integer crNum) { // 채팅방 삭제 메서드
-        chattingRoomRepository.deleteById(crNum);
+    public boolean deleteChattingRoom(Integer crNum) {
+        try {
+            if (chattingRoomRepository.existsById(crNum)) {
+                chattingRoomRepository.deleteById(crNum);
+                logger.info("채팅방 삭제 성공, ID: {}", crNum);
+                return true;
+            } else {
+                logger.warn("채팅방 삭제 실패, 채팅방 ID가 존재하지 않음: {}", crNum);
+                return false;
+            }
+        } catch (DataAccessException e) {
+            logger.error("채팅방 삭제 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("채팅방 삭제에 실패했습니다.", e);
+        }
     }
 
     @Transactional
     public String findActivityAnalysisImageUrlByCrnum(Integer crnum) {
-        return chattingRoomRepository.findByCrNum(crnum)
-                .map(ChattingRoom::getActivityAnalysisImageUrl)
-                .orElse(null);
+        try {
+            return chattingRoomRepository.findByCrNum(crnum)
+                    .map(ChattingRoom::getActivityAnalysisImageUrl)
+                    .orElse(null);
+        } catch (DataAccessException e) {
+            logger.error("활동 분석 이미지 URL 조회 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("활동 분석 이미지 URL 조회에 실패했습니다.", e);
+        }
     }
 
     @Transactional
     public String findWordCloudImageUrlByCrnum(Integer crnum) {
-        return chattingRoomRepository.findByCrNum(crnum)
-                .map(ChattingRoom::getWordCloudImageUrl)
-                .orElse(null);
+        try {
+            return chattingRoomRepository.findByCrNum(crnum)
+                    .map(ChattingRoom::getWordCloudImageUrl)
+                    .orElse(null);
+        } catch (DataAccessException e) {
+            logger.error("워드 클라우드 이미지 URL 조회 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("워드 클라우드 이미지 URL 조회에 실패했습니다.", e);
+        }
     }
 
     @Transactional
     public String findWordCloudImageUrlByCrnumAndUserId(Integer crnum, String userId) {
-        return chattingRoomRepository.findByCrNumAndUser_UserId(crnum, userId)
-                .map(ChattingRoom::getWordCloudImageUrl)
-                .orElse(null);
+        try {
+            return chattingRoomRepository.findByCrNumAndUser_UserId(crnum, userId)
+                    .map(ChattingRoom::getWordCloudImageUrl)
+                    .orElse(null);
+        } catch (DataAccessException e) {
+            logger.error("워드 클라우드 이미지 URL 조회 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("워드 클라우드 이미지 URL 조회에 실패했습니다.", e);
+        }
     }
 }

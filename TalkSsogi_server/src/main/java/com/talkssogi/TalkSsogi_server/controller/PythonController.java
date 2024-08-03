@@ -192,7 +192,7 @@ public class PythonController {
             @RequestParam("crnum") Integer crnum) {
         try {
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/testpy.py";
+            String pythonScriptPath = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi/testpy.py";
 
             // 파이썬 스크립트를 실행할 명령어를 설정
             String command = String.format("python %s %s %s %s %s %s",
@@ -228,7 +228,7 @@ public class PythonController {
 
             // 분석 결과 파일 (첫 번째 줄에 이미지 URL 출력)
             String resultFilePath = resultLines[0];
-            String resultUrl = "http://192.168.45.232:8080/" + resultFilePath;
+            String resultUrl = "http://192.168.244.142:8080/" + resultFilePath;
 
             return ResponseEntity.ok(resultUrl);
         } catch (Exception e) {

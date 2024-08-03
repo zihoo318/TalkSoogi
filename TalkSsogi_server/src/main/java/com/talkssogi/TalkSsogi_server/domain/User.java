@@ -37,8 +37,16 @@ public class User {
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public Set<ChattingRoom> getChatList() {
         return chatList;
+    }
+
+    public void setChatList(Set<ChattingRoom> chatList) {
+        this.chatList = chatList;
     }
 
     public void addChatRoom(ChattingRoom room) {
