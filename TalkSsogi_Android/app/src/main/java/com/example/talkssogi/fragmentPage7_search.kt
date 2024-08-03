@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.talkssogi.databinding.FragmentPage7SearchBinding
 import android.widget.SearchView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class fragmentPage7_search : Fragment() {
     private var _binding: FragmentPage7SearchBinding? = null
@@ -69,7 +71,10 @@ class fragmentPage7_search : Fragment() {
                     searchTitleSecond.text = keyword
 
                     if (userId != null && userId != "Unknown") { // userId가 유효한 경우에만 API 호출
-                        rankingViewModel.fetchSearchRankingResults(crnum, keyword)
+                        // 데이터 가져오기 요청을 코루틴 내에서 호출
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            rankingViewModel.fetchSearchRankingResults(crnum, keyword)
+                        }
                     }
                 }
                 return true // true를 반환하여 이벤트를 처리했음을 나타냄

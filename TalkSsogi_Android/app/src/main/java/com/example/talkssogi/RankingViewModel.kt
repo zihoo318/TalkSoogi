@@ -25,7 +25,7 @@ class RankingViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
-    fun fetchBasicRankingResults(crnum: Int) {
+    suspend fun fetchBasicRankingResults(crnum: Int) {
         viewModelScope.launch {
             try {
                 val results = RankingRepository.getBasicRankingResults(crnum)
@@ -39,7 +39,7 @@ class RankingViewModel : ViewModel() {
         }
     }
 
-    fun fetchSearchRankingResults(crnum: Int, keyword: String) {
+    suspend fun fetchSearchRankingResults(crnum: Int, keyword: String) {
         RankingRepository.getSearchRankingResults(crnum, keyword) { results ->
             if (results != null) {
                 Log.d("ApiRequest", "출력된 crnum에 해당하는 search ranking result 요청: $crnum")

@@ -12,6 +12,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class Rank7_7 : Fragment() {
 
@@ -47,15 +49,17 @@ class Rank7_7 : Fragment() {
             val messageRankings = results["초성"] // "초성" 키에 대한 값 가져오기
             messageRankings?.let {
                 val displayText = it.entries
-                    .sortedByDescending { entry -> entry.value.toInt() } // 값을 기준으로 정렬
+                    .sortedByDescending { entry -> entry.value } // 값을 기준으로 정렬
                     .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}번" }
                     .joinToString(separator = "\n")
                 ranking_result.text = displayText
             }
         })
 
-        // 데이터 가져오기 요청
-        rankingViewModel.fetchBasicRankingResults(crnum)
+        // 데이터 가져오기 요청을 코루틴 내에서 호출
+        viewLifecycleOwner.lifecycleScope.launch {
+            rankingViewModel.fetchBasicRankingResults(crnum)
+        }
 
         return view
     }

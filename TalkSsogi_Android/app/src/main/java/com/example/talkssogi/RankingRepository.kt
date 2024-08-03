@@ -39,7 +39,7 @@ object RankingRepository {
         }
     }
 
-    fun getSearchRankingResults(crnum: Int, keyword: String, callback: (Map<String, Map<String, String>>?) -> Unit) {
+    suspend fun getSearchRankingResults(crnum: Int, keyword: String, callback: (Map<String, Map<String, String>>?) -> Unit) {
         val call = apiService.getSearchRankingResults(crnum, keyword)
         call.enqueue(object : Callback<Map<String, Map<String, String>>> {
             override fun onResponse(
