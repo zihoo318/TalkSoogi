@@ -48,10 +48,10 @@ public class PythonController {
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 파이썬 인터프리터의 절대 경로 설정
-            String pythonInterpreterPath = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
+            String pythonInterpreterPath = "C:/Users/KYJ/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
 
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";  // 실행할 Python 스크립트의 경로
+            String pythonScriptPath = "C:/Users/KYJ/TalkSsogi_Workspace/basic-python.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
             String command = String.format("%s %s %s", pythonInterpreterPath, pythonScriptPath, filePath);
@@ -164,7 +164,7 @@ public class PythonController {
             @RequestParam("crnum") Integer crnum) {
         try {
             // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/testpy.py";
+            String pythonScriptPath = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi/testpy.py";
 
             // 파이썬 스크립트를 실행할 명령어를 설정
             String command = String.format("python %s %s %s %s %s %s",
@@ -200,7 +200,7 @@ public class PythonController {
 
             // 분석 결과 파일 (첫 번째 줄에 이미지 URL 출력)
             String resultFilePath = resultLines[0];
-            String resultUrl = "http://192.168.45.232:8080/" + resultFilePath;
+            String resultUrl = "http://192.168.244.142:8080/" + resultFilePath;
 
             return ResponseEntity.ok(resultUrl);
         } catch (Exception e) {

@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
@@ -43,8 +44,7 @@ data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
-//    private val BASE_URL = "http://172.32.76.111:8080/"  // 실제 안드로이드 기기에서 실행 할 때
-
+    private val BASE_URL = "http://192.168.45.165:8080/"    // 실제 안드로이드 기기에서 실행 할 때
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
@@ -141,6 +141,40 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             }
         })
     }
+
+    /*fun checkUserId(userId: String): LiveData<String> {
+        val result = MutableLiveData<String>()
+        apiService.checkUserId(userId).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                result.value = if (response.isSuccessful) {
+                    response.body() ?: "아이디 중복 확인 실패"
+                } else {
+                    "아이디 중복 확인 실패"
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                result.value = "아이디 중복 확인 실패"
+            }
+        })
+        return result
+    }
+
+    fun registerUser(userId: String): LiveData<Response<Map<String, Any>>> {
+        val result = MutableLiveData<Response<Map<String, Any>>>()
+        apiService.registerUser(userId).enqueue(object : Callback<Map<String, Any>> {
+            override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                result.value = response
+            }
+
+            override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                // 예외 발생 시, 적절한 오류 처리를 수행
+                result.value = Response.error(500, ResponseBody.create(null, t.message ?: "Unknown error"))
+            }
+        })
+        return result
+    }*/
+
 
     fun getUserIdsLiveData(): LiveData<List<String>> { // 전체 유저 아이디 목록 getter
         return _userIds
