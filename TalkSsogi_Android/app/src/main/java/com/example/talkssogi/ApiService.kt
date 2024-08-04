@@ -65,10 +65,10 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Response<Map<String, List<String>>>
 
-    @GET("/members/{crnum}") // 채팅방 멤버 목록 가져오기
-    fun getChattingRoomMembers(
+    @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기
+    suspend  fun getChattingRoomMembers(
         @Path("crnum") crnum: Int
-    ): Call<List<String>>
+    ): Response<List<String>> // Response 객체
 
     @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(

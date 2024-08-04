@@ -26,7 +26,7 @@ public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
 
-    private static final String UPLOAD_DIR = "C:/Users/KYJ/TalkSsogi_Workspace/"; //테스트용 경로
+    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace/"; //테스트용 경로
 
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
@@ -136,7 +136,7 @@ public class ChattingRoomService {
         }
     }
 
-    
+
     // 채팅방 존재 여부를 확인하고, 존재할 경우 삭제를 수행
     @Transactional
     public boolean deleteChattingRoom(Integer crNum) {
