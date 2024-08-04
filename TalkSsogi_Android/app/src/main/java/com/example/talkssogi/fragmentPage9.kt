@@ -49,6 +49,9 @@ class fragmentPage9 : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView_graph) //이미지 넣을 리싸이클러뷰
         recyclerView.layoutManager = LinearLayoutManager(context)
 
+        // 가로 스크롤을 위한 레이아웃 매니저 설정
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
         // 뒤로가기 이미지 리스너
         btnBack.setOnClickListener {
             // 프래그먼트 매니저를 통해 뒤로 가기 동작
@@ -67,6 +70,9 @@ class fragmentPage9 : Fragment() {
         searchbtn.setOnClickListener {
             val selectedSearchItem = searchSpinner.selectedItem.toString()
             val selectedResultsItem = resultsSpinner.selectedItem.toString()
+            // 로그를 통해 선택된 항목의 값을 확인
+            Log.d("Page9", "선택된 항목의 값을 확인 Search Item: $selectedSearchItem")
+            Log.d("Page9", "선택된 항목의 값을 확인 Results Item: $selectedResultsItem")
 
             // 서버에 이미지 요청하기
             activityAnalysisViewModel.getActivityAnalysisImage(
@@ -79,6 +85,7 @@ class fragmentPage9 : Fragment() {
 
             // 이미지 URL을 LiveData로 관찰하여 업데이트
             activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageUrls ->
+                Log.d("Page9", "이미지 생성 후에 변할 url변수의 옵저버 안에 들어옴")
                 val adapter = Page9RecyclerViewAdapter(imageUrls)
                 recyclerView.adapter = adapter
             })

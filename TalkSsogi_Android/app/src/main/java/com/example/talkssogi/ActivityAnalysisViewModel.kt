@@ -63,6 +63,7 @@ class ActivityAnalysisViewModel : ViewModel() {
         crnum: Int
     ) {
         // 모든 필드가 null이 아니어야 API 호출을 진행합니다
+        Log.d("Page9", "이미지 생성을 위한 api전송")
         if (startDate != null && endDate != null && searchWho.isNotEmpty() && resultsItem.isNotEmpty()) {
             apiService.getActivityAnalysisImage(startDate, endDate, searchWho, resultsItem, crnum)
                 .enqueue(object : Callback<List<ImageURL>> {
@@ -73,14 +74,14 @@ class ActivityAnalysisViewModel : ViewModel() {
                         if (response.isSuccessful) {
                             val ImageURL = response.body()
                             ImageURL?.let { _imageUrls.value = it }
-                            Log.d("FileUpload", "이미지 생성 및 전달 받기 성공 : ${ImageURL}")
+                            Log.d("Page9", "이미지 생성 및 전달 받기 성공 : ${ImageURL}")
                         } else {
-                            Log.d("FileUpload", "이미지 생성 및 전달 받기 실패")
+                            Log.d("Page9", "이미지 생성 및 전달 받기 실패")
                         }
                     }
 
                     override fun onFailure(call: Call<List<ImageURL>>, t: Throwable) {
-                        Log.d("FileUpload", "이미지 생성 및 전달 받기 실패 네트워크 에러")
+                        Log.d("Page9", "이미지 생성 및 전달 받기 실패 네트워크 에러")
                     }
                 })
         }
@@ -92,7 +93,6 @@ class ActivityAnalysisViewModel : ViewModel() {
             try {
                 Log.d("Page9", "참여자 가져오는 API 호출 직전")
                 val response = apiService.getChattingRoomMembers(crnum)
-                Log.d("Page9", "API 호출 후")
                 if (response.isSuccessful) {
                     Log.d("Page9", "참여자 가져오는 API 호출 성공")
                     val participantsList = response.body() ?: emptyList()

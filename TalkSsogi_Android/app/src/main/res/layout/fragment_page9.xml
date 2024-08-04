@@ -130,10 +130,11 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_graph"
-                android:layout_width="400dp"
-                android:layout_height="400dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginBottom="40dp" />
+                android:layout_marginBottom="40dp"
+                tools:listitem="@layout/recyclerview_layout" />
 
 
         </FrameLayout>
