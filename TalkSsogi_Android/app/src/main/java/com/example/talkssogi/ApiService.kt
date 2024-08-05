@@ -1,7 +1,6 @@
 package com.example.talkssogi
 
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -48,16 +47,17 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Call<String>
 
-    @GET("/api/rankings/basicRankingResults")   //페이지7에서 사용할 랭킹 배열
-    suspend fun getBasicRankingResults(
-        @Query("crnum") crnum: Int     //userId를 넘겨준다.
-    ): Response<Map<String, List<String>>>
+
+    @GET("/api/rankings/basicRankingResults")
+    fun getBasicRankingResults(
+        @Query("crnum") crnum: Int
+    ): Call<Map<String, Map<String, String>>>
 
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
-    suspend fun getSearchRankingResults(
+    fun getSearchRankingResults(
         @Query("crnum") crnum: Int,
         @Query("keyword") keyword: String      //keyword와 userId를 넘겨준다.
-    ): Response<Map<String, List<String>>>
+    ): Call<Map<String, Map<String, String>>>
 
     //가을 api 수정사항(페이지8)
     @GET("/api/basics/activityAnalysis")
@@ -65,10 +65,10 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Response<Map<String, List<String>>>
 
-    @GET("/members/{crnum}") // 채팅방 멤버 목록 가져오기
-    fun getChattingRoomMembers(
+    @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기
+    suspend  fun getChattingRoomMembers(
         @Path("crnum") crnum: Int
-    ): Call<List<String>>
+    ): Response<List<String>> // Response 객체
 
     @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(

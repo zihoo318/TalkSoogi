@@ -21,7 +21,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web' //Multipart 파일 업로드 처리
-	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation 'mysql:mysql-connector-java:8.0.30'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' //Multipart 파일 업로드 처리
 	implementation 'org.springframework.boot:spring-boot-starter' // 로그 출력
 	implementation 'org.springframework.boot:spring-boot-starter-logging' // 로그 출력

@@ -13,9 +13,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.talkssogi.databinding.FragmentPage7SearchBinding
 import android.widget.SearchView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class fragmentPage7_search : Fragment() {
-
     private var _binding: FragmentPage7SearchBinding? = null
     // 클래스 멤버 변수로 crnum 선언 및 초기화
     private var crnum: Int = -1 // 기본값을 -1로 설정
@@ -29,14 +30,16 @@ class fragmentPage7_search : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // ViewBinding을 사용하여 레이아웃을 인플레이트
-        // arguments로부터 crnum 값을 가져오고, null일 경우 기본값 -1 사용
-        crnum = arguments?.getInt("crnum") ?: -1
         _binding = FragmentPage7SearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // arguments로부터 crnum 값을 가져오고, null일 경우 기본값 -1 사용
+        crnum = arguments?.getInt("crnum") ?: -1
+        Log.d("searchranking", "arguments에 있는 crnum: ${arguments}")
+        Log.d("searchranking", "searchranking의 crnum 값: $crnum") // crnum 값 로그 출력
         initSearchView()
         observeViewModel()
     }
@@ -68,7 +71,10 @@ class fragmentPage7_search : Fragment() {
                     searchTitleSecond.text = keyword
 
                     if (userId != null && userId != "Unknown") { // userId가 유효한 경우에만 API 호출
-                        rankingViewModel.fetchSearchRankingResults(crnum, keyword)
+                        // 데이터 가져오기 요청을 코루틴 내에서 호출
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            rankingViewModel.fetchSearchRankingResults(crnum, keyword)
+                        }
                     }
                 }
                 return true // true를 반환하여 이벤트를 처리했음을 나타냄
@@ -90,13 +96,19 @@ class fragmentPage7_search : Fragment() {
 
     private fun observeViewModel() {
         rankingViewModel.searchRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            // 결과가 비어있다면
-            if (results.isEmpty()) {
-                binding.rankingResult.text = "No results found"
+            if (results != null) {
+                val messageRankings = results["검색어"]
+                messageRankings?.let {
+                    val displayText = it.entries
+                        .sortedByDescending { entry -> entry.value.toInt() }
+                        .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}개" }
+                        .joinToString(separator = "\n")
+                    binding.rankingResult.text = displayText
+                } ?: run {
+                    binding.rankingResult.text = "해당 검색어를 보낸 사람이 없습니다."
+                }
             } else {
-                val rankingList = results.values.flatten()
-                val displayText = rankingList.joinToString(separator = "\n") { name -> "순위: $name" }
-                binding.rankingResult.text = displayText
+                binding.rankingResult.text = "해당 검색어를 보낸 사람이 없습니다."
             }
         })
 
@@ -105,5 +117,18 @@ class fragmentPage7_search : Fragment() {
                 Log.e("fragmentPage7Search", it)
             }
         })
+    }
+
+
+    companion object {
+        private const val ARG_CRNUM = "crnum"
+
+        fun newInstance(crnum: Int): fragmentPage7_search {
+            val fragment = fragmentPage7_search()
+            val args = Bundle()
+            args.putInt(ARG_CRNUM, crnum)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

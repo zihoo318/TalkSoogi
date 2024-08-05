@@ -1,6 +1,7 @@
 package com.talkssogi.TalkSsogi_server.domain;
 
 import com.talkssogi.TalkSsogi_server.Converter.MapStringListConverter;
+import com.talkssogi.TalkSsogi_server.Converter.MapStringMapConverter;
 import com.talkssogi.TalkSsogi_server.Converter.StringListConverter;
 import jakarta.persistence.*;
 
@@ -47,13 +48,13 @@ public class ChattingRoom {
     @Column(name = "word_cloud_image_url", length = 255)
     private String wordCloudImageUrl = ""; // 빈 문자열로 초기화
 
-    @Convert(converter = MapStringListConverter.class)
-    @Column(name = "basic_ranking_results") // Column name updated to match MySQL schema
-    private Map<String, List<String>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+    @Convert(converter = MapStringMapConverter.class)
+    @Column(name = "basic_ranking_results", columnDefinition = "LONGTEXT", length = 10000) // Column name updated to match MySQL schema
+    private Map<String, Map<String, String>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
-    @Convert(converter = MapStringListConverter.class)
+    @Convert(converter = MapStringMapConverter.class)
     @Column(name = "search_ranking_results") // Column name updated to match MySQL schema
-    private Map<String, List<String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+    private Map<String, Map<String, String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
 
     // Getters and setters
@@ -129,19 +130,19 @@ public class ChattingRoom {
         this.wordCloudImageUrl = wordCloudImageUrl != null ? wordCloudImageUrl : "";
     }
 
-    public Map<String, List<String>> getBasicRankingResults() {
+    public Map<String, Map<String, String>> getBasicRankingResults() {
         return basicRankingResults;
     }
 
-    public void setBasicRankingResults(Map<String, List<String>> basicRankingResults) {
-        this.basicRankingResults = basicRankingResults != null ? basicRankingResults : new HashMap<>();
+    public void setBasicRankingResults(Map<String, Map<String, String>> basicRankingResults) {
+        this.basicRankingResults = basicRankingResults;
     }
 
-    public Map<String, List<String>> getSearchRankingResults() {
+    public Map<String, Map<String, String>> getSearchRankingResults() {
         return searchRankingResults;
     }
 
-    public void setSearchRankingResults(Map<String, List<String>> searchRankingResults) {
+    public void setSearchRankingResults(Map<String, Map<String, String>> searchRankingResults) {
         this.searchRankingResults = searchRankingResults != null ? searchRankingResults : new HashMap<>();
     }
 }
