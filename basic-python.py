@@ -13,6 +13,8 @@ def main():
     file_path = sys.argv[1]
     chat_room = ChatRoom(file_path)
     chat_room.preprocess_and_analyze()
+    chat_room.save_daily_message_count()
+    chat_room.save_daily_hourly_message_count()
 
     print(chat_room.room_name)
     print(','.join(chat_room.get_members()))

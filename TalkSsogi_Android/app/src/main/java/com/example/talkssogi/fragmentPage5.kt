@@ -22,7 +22,7 @@ class fragmentPage5 : Fragment() {
 
         // arguments에서 채팅방 번호를 가져옴
         crnum = arguments?.getInt("crnum", -1) ?: -1
-        Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+        Log.d("Page9", "프래그먼트 페이지5가 출력!! 받은 crnum: $crnum")
 
         val btnBack: ImageView = view.findViewById(R.id.imageView) //뒤로가기
         val option1 = view.findViewById<TextView>(R.id.option_1) //페이지6
