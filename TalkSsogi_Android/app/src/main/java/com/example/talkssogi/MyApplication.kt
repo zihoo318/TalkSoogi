@@ -63,7 +63,23 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             .build()
         chain.proceed(newRequest)
     }
-    val client = OkHttpClient.Builder()
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    private val apiService = Retrofit.Builder()
+        .baseUrl(Constants.BASE_URL)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(ApiService::class.java)
+
+    /*val client = OkHttpClient.Builder()
         .addInterceptor(logging)
         .addInterceptor(acceptHeaderInterceptor) // Accept 헤더 인터셉터
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -77,8 +93,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
         .addConverterFactory(GsonConverterFactory.create(gson)) // JSON 변환
         .build()
-        .create(ApiService::class.java)
-
+        .create(ApiService::class.java)*/
 
     private val _userIds = MutableLiveData<List<String>>() // 전체 유저 아이디 목록
     val userIds: LiveData<List<String>>
@@ -147,40 +162,6 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
             }
         })
     }
-
-    /*fun checkUserId(userId: String): LiveData<String> {
-        val result = MutableLiveData<String>()
-        apiService.checkUserId(userId).enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                result.value = if (response.isSuccessful) {
-                    response.body() ?: "아이디 중복 확인 실패"
-                } else {
-                    "아이디 중복 확인 실패"
-                }
-            }
-
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                result.value = "아이디 중복 확인 실패"
-            }
-        })
-        return result
-    }
-
-    fun registerUser(userId: String): LiveData<Response<Map<String, Any>>> {
-        val result = MutableLiveData<Response<Map<String, Any>>>()
-        apiService.registerUser(userId).enqueue(object : Callback<Map<String, Any>> {
-            override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
-                result.value = response
-            }
-
-            override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                // 예외 발생 시, 적절한 오류 처리를 수행
-                result.value = Response.error(500, ResponseBody.create(null, t.message ?: "Unknown error"))
-            }
-        })
-        return result
-    }*/
-
 
     fun getUserIdsLiveData(): LiveData<List<String>> { // 전체 유저 아이디 목록 getter
         return _userIds
@@ -488,14 +469,65 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // 사용자가 입력한 ID가 데이터베이스에 있는지 확인
+    // 사용자 ID 체크 API 호출
     fun checkUserIdExists(userId: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
-        val exists = _userIds.value?.contains(userId) ?: false
-        result.value = exists
+        apiService.checkUserId(userId).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()?.string()
+                    result.value = responseBody == "Username is available"
+                } else {
+                    Log.e("checkUserIdExists", "Error: ${response.code()} - ${response.message()}")
+                    result.value = false
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("checkUserIdExists", "Network error: ${t.message}")
+                result.value = false
+            }
+        })
         return result
     }
 
+    // 사용자 ID 등록 API 호출
+    fun registerUserId(userId: String, callback: (Boolean) -> Unit) {
+        apiService.register(RegisterRequest(userId)).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    callback(true)
+                } else {
+                    Log.e("registerUserId", "Error: ${response.code()} - ${response.message()}")
+                    callback(false)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("registerUserId", "Network error: ${t.message}")
+                callback(false)
+            }
+        })
+    }
+
+    // 로그인 API 호출
+    fun loginUserId(userId: String, callback: (Boolean) -> Unit) {
+        apiService.login(LoginRequest(userId)).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    callback(true)
+                } else {
+                    Log.e("loginUserId", "Error: ${response.code()} - ${response.message()}")
+                    callback(false)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("loginUserId", "Network error: ${t.message}")
+                callback(false)
+            }
+        })
+    }
 
     // 다음 페이지로 이동
     fun navigateToNextPage(activity: AppCompatActivity, nextPage: Class<*>) {

@@ -57,9 +57,14 @@ class Page1_2Activity : AppCompatActivity() {
             if (newID.isNotEmpty()) {
                 viewModel.checkUserIdExists(newID).observe(this, Observer { exists ->
                     if (!exists) {
-                        viewModel.saveUserIdToSharedPreferences(newID)
-                        viewModel.addUserId(newID) // DB에 사용자 아이디 저장
-                        viewModel.navigateToNextPage(this, Page2Activity::class.java)
+                        viewModel.registerUserId(newID) { success ->
+                            if (success) {
+                                viewModel.saveUserIdToSharedPreferences(newID)
+                                viewModel.navigateToNextPage(this, Page2Activity::class.java)
+                            } else {
+                                Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     } else {
                         Toast.makeText(this, "아이디가 이미 사용 중입니다.", Toast.LENGTH_SHORT).show()
                     }
