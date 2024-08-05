@@ -41,7 +41,7 @@
 
     <TextView
         android:id="@+id/IDConfirm"
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="42dp"
         android:text="존재하지 않는 아이디 입니다."
         android:textSize="20sp"
@@ -54,7 +54,7 @@
 
     <TextView
         android:id="@+id/IDConfirm2"
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="42dp"
         android:text="존재하는 아이디 입니다."
         android:textColor="#FF0000"
@@ -68,12 +68,12 @@
     <ImageButton
         android:id="@+id/btnUploadName"
         android:layout_width="170dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="280dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="300dp"
         android:background="@android:color/transparent"
-        android:padding="16dp"
         android:contentDescription="@string/upload_file"
-        android:src="@drawable/accept"
+        android:padding="16dp"
+        android:src="@drawable/login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -83,13 +83,14 @@
         android:id="@+id/btnMoveToSignUpPage"
         android:layout_width="252dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="132dp"
+        android:layout_marginBottom="105dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/upload_file"
         android:padding="16dp"
-        android:src="@drawable/signup"
+        android:src="@drawable/movetosignuppage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
