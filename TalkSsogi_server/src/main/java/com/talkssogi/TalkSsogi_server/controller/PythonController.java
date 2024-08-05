@@ -442,6 +442,7 @@ public class PythonController {
 
             // 결과 이미지 URL 생성 (정적 파일 경로로 변환)
             String resultUrl = SERVER_IP_FOR_IMAGE + resultFilePath.substring(resultFilePath.lastIndexOf("/") + 1);  // 파일명 추출
+
             logger.info("Generated result URL: " + resultUrl);
 
             return ResponseEntity.ok(resultUrl);
