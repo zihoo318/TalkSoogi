@@ -3,11 +3,13 @@ package com.example.talkssogi
 import com.example.talkssogi.model.ChatRoom
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -133,11 +135,13 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                     userIdResponse?.let { _userIds.value = it.userIds }
                 } else {
                     // 오류 처리
+                    Log.e("fetchUserIds", "Error: ${response.code()} - ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<UserIdResponse>, t: Throwable) {
                 // 네트워크 오류 처리
+                Log.e("fetchUserIds", "Network error: ${t.message}")
             }
         })
     }
@@ -181,7 +185,9 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addUserId(newID: String) {
-        val currentList = _userIds.value?.toMutableList() ?: mutableListOf()
+        // 예시로 로컬 LiveData에 추가하는 코드
+        // 실제로는 서버나 데이터베이스에 추가해야 함
+        val currentList = userIds.value?.toMutableList() ?: mutableListOf()
         currentList.add(newID)
         _userIds.value = currentList
     }
@@ -469,5 +475,29 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
                 callback(-2) // 네트워크 오류 코드 전달
             }
         })
+    }
+
+    // SharedPreferences에 사용자 ID를 저장
+    fun saveUserIdToSharedPreferences(userId: String) {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("Session_ID", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("Session_ID", userId)
+            apply()
+        }
+    }
+
+    // 사용자가 입력한 ID가 데이터베이스에 있는지 확인
+    fun checkUserIdExists(userId: String): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        val exists = _userIds.value?.contains(userId) ?: false
+        result.value = exists
+        return result
+    }
+
+
+    // 다음 페이지로 이동
+    fun navigateToNextPage(activity: AppCompatActivity, nextPage: Class<*>) {
+        val intent = Intent(activity, nextPage)
+        activity.startActivity(intent)
     }
 }
