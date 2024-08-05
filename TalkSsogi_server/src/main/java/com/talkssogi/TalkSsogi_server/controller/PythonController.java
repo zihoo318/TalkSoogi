@@ -278,7 +278,7 @@ public class PythonController {
             String resultFilePath = resultOutput;  // 결과 파일 경로는 Python 스크립트에서 생성된 파일 경로
 
             // 결과 이미지 URL 생성
-            String resultUrl = "http://192.168.45.129:8080/" + resultFilePath;
+            String resultUrl = "http://192.168.45.165:8080/" + resultFilePath;
             logger.info("Generated result URL: " + resultUrl);
 
             return ResponseEntity.ok(resultUrl);
