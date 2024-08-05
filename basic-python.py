@@ -18,7 +18,7 @@ def main():
     print(','.join(chat_room.get_members()))
     print(chat_room.get_headcount())
 
-    # 랭킹을 저장할 딕셔너리
+    # basic 랭킹을 저장할 딕셔너리
     ranking_results_map = {}
 
     def safe_read_file(file_path):
@@ -31,7 +31,7 @@ def main():
 
     # ----------------메시지 수 기준 랭킹 출력----------------
     message_count_ranking = chat_room.rank_users_by_message_count()
-    ranking_results_map['메시지'] = {user_name: f"{count}개" for user_name, count in message_count_ranking}
+    ranking_results_map['메시지'] = {user_name: str(count) for user_name, count in message_count_ranking}
 
     # ----------------오타 수 기준 랭킹 출력----------------
     typo_count_ranking = chat_room.rank_users_by_typo_count()
@@ -113,27 +113,6 @@ def main():
     emoji = count_emojis(chat_room)
     ranking_results_map['이모티콘'] = {user_name: str(count) for user_name, count in emoji.items()}
 
-    # ----------------검색어 받아서 검색하는 함수 만들기----------------
-    def search_keyword_in_personal_files(chat_room, keyword):
-        members = chat_room.get_members()
-        search_results = defaultdict(int)
-
-        for user_name in members:
-            personal_file_path = chat_room.get_personal_file_path(user_name)
-            if not os.path.exists(personal_file_path):
-                continue
-
-            messages = safe_read_file(personal_file_path).split(';')
-            for message in messages:
-                if keyword.strip() in message:
-                    search_results[user_name] += 1
-
-        sorted_results = dict(sorted(search_results.items(), key=lambda item: item[1], reverse=True))
-        return sorted_results
-
-    keyword = '안뇽'
-    results = search_keyword_in_personal_files(chat_room, keyword)
-    ranking_results_map['검색어'] = {user_name: str(count) for user_name, count in results.items()}
 
     # ----------------메시지 삭제 횟수----------------
     def deleted_message_results(chat_room):
@@ -178,12 +157,13 @@ def main():
     average_length = calculate_average_message_length(chat_room)
     ranking_results_map['평균 길이'] = {user_name: str(avg_length) for user_name, avg_length in average_length.items()}
 
-    # 결과를 JSON으로 변환하여 파일로 저장
-    output_file = 'C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
+    # basic result 결과를 JSON으로 변환하여 파일로 저장
+    basic_output_file = 'C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json'
+    with open(basic_output_file, 'w', encoding='utf-8') as f:
         json.dump(ranking_results_map, f, ensure_ascii=False, indent=4)
 
-    print(f"\n전체 랭킹 결과가 '{output_file}' 파일로 저장되었습니다.")
+
+    print(f"\nbasic 랭킹 결과가 '{basic_output_file}' 파일로 저장되었습니다.")
 
 if __name__ == "__main__":
     main()
