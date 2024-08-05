@@ -43,6 +43,8 @@ class MyApplication : Application() {
 data class UserIdResponse(val userIds: List<String>) // 전체 유저 아이디들 페이지1
 data class User(val userId: String) //유저 아이디 db저장을 위한 클래스 페이지1
 data class ImageURL(val imageUrl: String) // 서버에서 반환하는 이미지 URL 담아 옴 페이지9
+data class LoginRequest(val userId: String)
+data class RegisterRequest(val userId: String)
 
 class MyViewModel(application: Application) : AndroidViewModel(application) {
     // private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
