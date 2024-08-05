@@ -61,27 +61,6 @@ class fragmentPage6 : Fragment() {
                 val adapter = Page9RecyclerViewAdapter(wordCloudImageUrl)
                 recyclerView.adapter = adapter
             })
-
-            // 서버에 이미지 요청하기
-            // Retrofit을 사용한 서버 요청
-            //mainViewModel.fetchImages(selectedSearchItem, selectedResultsItem))
-            // 서버에서 이미지를 url로 받아서 어댑터에 넣기(?)
-//            val imageUrl = "android.resource://${requireContext().packageName}/${R.drawable.test_img_page9}" // 서버 구축 전 테스트 사진
-//            val testImageResponse = ImageResponse(imageUrl)
-//            // RecyclerViewAdapter_page9 초기화
-//            val itemList = listOf(testImageResponse)
-//            val adapter = RecyclerViewAdapter_page9(itemList)
-//            recyclerView.adapter = adapter
-
-            // 일단 테스트용 코드
-            val imageUrl = "https://example.com/test_img_page6.jpg" // 실제 URL로 변경해야 함
-            val testImageResponse = ImageURL(imageUrl)
-            val itemList = listOf(testImageResponse)
-
-            // 리싸이클러뷰 어댑터 초기화 (모든 프래그먼트에서 같은 어댑터를 사용)
-            val page9RecyclerViewAdapter = Page9RecyclerViewAdapter(itemList)
-            recyclerView.adapter = page9RecyclerViewAdapter
-
         }
 
         // 스피너 아이템 설정

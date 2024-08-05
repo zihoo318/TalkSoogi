@@ -23,14 +23,15 @@ page8 서버에서 가져올 데이터
 @RequestMapping("/api/basics")
 public class Page8Controller {
 
-    @GetMapping("/activityAnalysis")
-    public Map<String, List<String>> getActivityAnalysis() {
-        // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
-        Map<String, List<String>> activityAnalysis = new HashMap<>();
-        activityAnalysis.put("메세지 수가 가장 많았던 날", List.of("2024-07-20")); // 예: 20일
-        activityAnalysis.put("대화를 하지 않은 날", List.of("2024-05-06")); // 예: 5월 6일
-        activityAnalysis.put("평균적으로 가장 활발한 시간대", List.of("오후 3시~6시")); // 예: 오후 3시~6시
-
-        return activityAnalysis;
-    }
+    // 파이썬컨트롤러에 있음
+//    @GetMapping("/activityAnalysis")
+//    public Map<String, List<String>> getActivityAnalysis() {
+//        // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
+//        Map<String, List<String>> activityAnalysis = new HashMap<>();
+//        activityAnalysis.put("메세지 수가 가장 많았던 날", List.of("2024-07-20")); // 예: 20일
+//        activityAnalysis.put("대화를 하지 않은 날", List.of("2024-05-06")); // 예: 5월 6일
+//        activityAnalysis.put("평균적으로 가장 활발한 시간대", List.of("오후 3시~6시")); // 예: 오후 3시~6시
+//
+//        return activityAnalysis;
+//    }
 }

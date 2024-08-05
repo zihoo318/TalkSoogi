@@ -55,6 +55,14 @@ class ActivityAnalysisViewModel : ViewModel() {
     private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>(emptyList()) // 빈 리스트로 초기화
     val wordCloudImageUrl: LiveData<List<ImageURL>> get() = _wordCloudImageUrl
 
+    // 페이지8 기본제공 데이터 값
+    private val _messageCountResult = MutableLiveData<String>()
+    val messageCountResult: LiveData<String> get() = _messageCountResult
+    private val _zeroCountResult = MutableLiveData<String>()
+    val zeroCountResult: LiveData<String> get() = _zeroCountResult
+    private val _hourlyCountResult = MutableLiveData<String>()
+    val hourlyCountResult: LiveData<String> get() = _hourlyCountResult
+
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
     fun getActivityAnalysisImage(
@@ -124,24 +132,42 @@ class ActivityAnalysisViewModel : ViewModel() {
     }
 
 }*/
-    // crnum을 매개변수로 받아서 API 호출
-    suspend fun fetchActivityAnalysis(crnum: Int): Map<String, List<String>> {
+    // crnum을 매개변수로 받아서 API 호출 // 페이지8에서 기본제공 활동분석 결과 받기
+    suspend fun fetchActivityAnalysis(crnum: Int): List<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.getActivityAnalysis(crnum)
                 if (response.isSuccessful) {
-                    response.body() ?: emptyMap()
+                    response.body() ?: emptyList() // 리스트가 없으면 빈 리스트 반환
                 } else {
                     Log.e("ActivityAnalysisViewModel", "Error: ${response.code()}")
-                    emptyMap()
+                    emptyList()
                 }
             } catch (e: Exception) {
                 Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
-                emptyMap()
+                emptyList()
             }
-
         }
     }
+    // 위의 메서드를 통해 받은 리스트 데이터를 받아서 LiveData에 설정하는 메소드
+    fun fetchAndSetActivityAnalysis(crnum: Int) {
+        viewModelScope.launch {
+            try {
+                val resultList = fetchActivityAnalysis(crnum)
+
+                // 값이 있으면 각 LiveData에 설정
+                _messageCountResult.value = if (resultList.size > 0) resultList[0] else ""
+                _zeroCountResult.value = if (resultList.size > 1) resultList[1] else ""
+                _hourlyCountResult.value = if (resultList.size > 2) resultList[2] else ""
+            } catch (e: Exception) {
+                // 오류 처리
+                _messageCountResult.value = "분석 실패. 채팅방 업데이트를 해주세요."
+                _zeroCountResult.value = "분석 실패. 채팅방 업데이트를 해주세요."
+                _hourlyCountResult.value = "분석 실패. 채팅방 업데이트를 해주세요."
+            }
+        }
+    }
+
 
     // 워드 클라우드 이미지 URL 가져오기
     fun loadWordCloudImageUrl(crnum: Int, userId: Int) {

@@ -13,9 +13,11 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -23,6 +25,7 @@ import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import com.example.talkssogi.model.ChatRoom
+import kotlinx.coroutines.launch
 
 
 class Page2Activity : AppCompatActivity() {
@@ -34,6 +37,7 @@ class Page2Activity : AppCompatActivity() {
     private val viewModel: MyViewModel by lazy {
         (application as MyApplication).viewModel
     }
+    private val activityviewModel: ActivityAnalysisViewModel by viewModels()
 
     private lateinit var sharedPreferences: SharedPreferences
     private val PICK_FILE_REQUEST_CODE = 1
@@ -216,6 +220,9 @@ class Page2Activity : AppCompatActivity() {
                                     analysisStatus.visibility = View.GONE // "분석 중..." 텍스트 숨김
                                     dialog.dismiss() // 다이얼로그 닫기
                                     viewModel.fetchChatRooms() // 다이얼로그 꺼지면 2페이지 목록 새로고침
+                                    lifecycleScope.launch {
+                                        activityviewModel.fetchAndSetActivityAnalysis(crnum)
+                                    }
                                 }
                                 -4 -> {
                                     // 분석 실패

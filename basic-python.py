@@ -20,6 +20,19 @@ def main():
     print(','.join(chat_room.get_members()))
     print(chat_room.get_headcount())
 
+    file_paths = [
+        'group.txt',
+        'group_daily_message_count.txt',
+        'group_daily_hourly_message_count.txt'
+    ]
+
+    for user_name in chat_room.get_members():
+        file_paths.append(f"{user_name}_personal.txt")
+        file_paths.append(f"{user_name}_daily_message_count.txt")
+        file_paths.append(f"{user_name}_daily_hourly_message_count.txt")
+
+    chat_room.upload_files_to_s3(file_paths, "bucket_name")
+
     # basic 랭킹을 저장할 딕셔너리
     ranking_results_map = {}
 
