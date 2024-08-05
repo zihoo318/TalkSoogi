@@ -56,8 +56,14 @@ interface ApiService {
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
     fun getSearchRankingResults(
         @Query("crnum") crnum: Int,
-        @Query("keyword") keyword: String      //keyword와 userId를 넘겨준다.
+        @Query("keyword") keyword: String      //keyword와 crnum을 넘겨준다.
     ): Call<Map<String, Map<String, String>>>
+
+    @GET("/api/analysis/caller-prediction")  //페이지10 발신자 예측
+    fun getCallerPrediction(
+        @Query("crnum") crnum: Int,
+        @Query("keyword") keyword: String      //keyword와 crnum을 넘겨준다.
+    ): Call<String>
 
     //가을 api 수정사항(페이지8)
     @GET("/api/basics/activityAnalysis")
