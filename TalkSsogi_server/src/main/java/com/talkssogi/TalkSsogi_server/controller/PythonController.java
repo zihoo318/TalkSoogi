@@ -34,11 +34,11 @@ public class PythonController {
     private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/Master/TalkSsogi_Workspace/page9python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
-    private static final String PYTHON_newimage_PATH = "C:/Users/Master/TalkSsogi_Workspace"; // page9python후에 생길 이미지 파일 저장할 경로
+    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";
+    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page9python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_newimage_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // page9python후에 생길 이미지 파일 저장할 경로
 
     @Autowired
     public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가
@@ -62,12 +62,6 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File path is not set.");
             }
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
-
-            // 파이썬 인터프리터의 절대 경로 설정
-            String pythonInterpreterPath = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
-
-            // 파이썬 스크립트의 절대 경로 설정
-            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
             String command = String.format("%s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_basic_PATH, filePath);
@@ -112,7 +106,8 @@ public class PythonController {
 
 
             // JSON 파일에서 결과를 읽어오기
-            File jsonFile = new File("C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json"); // JSON 파일 경로 설정
+            String jsonFilePath = PYTHON_BASIC_RESULT_FILE_PATH + "/ranking_results.json";
+            File jsonFile = new File(jsonFilePath); // JSON 파일 경로 설정
             String jsonString = readFileToString(jsonFile);  // 파일을 문자열로 읽기
 
             // JSON 문자열을 Map으로 변환
