@@ -199,6 +199,7 @@ class Page3Activity : AppCompatActivity() {
         viewModel.requestBasicPythonAnalysis(crNum) { result ->
             if (result >= 0) {
                 lifecycleScope.launch {
+                    Log.d("Page9", "페이지3에서 페이지8 분석 api호출 직전")
                     activityviewModel.fetchAndSetActivityAnalysis(crNum)
                 }
                 hideLoadingIndicator()

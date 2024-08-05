@@ -12,7 +12,7 @@ from typing import List
 
 # 이미지 저장 디렉토리 설정 (Spring Boot의 resources/static 디렉토리)
 #IMAGE_DIR = '/ec2에서 복사할 스프링부트 경로/src/main/resources/static/'
-IMAGE_DIR = 'C:\Users\Master\TalkSsogi_Workspace/' #테스트용
+IMAGE_DIR = 'C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server/src/main/resources/static/' #테스트용
 
 def save_image(output_file: str, image: Image.Image):
     file_path = os.path.join(IMAGE_DIR, output_file)

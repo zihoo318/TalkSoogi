@@ -63,7 +63,7 @@ interface ApiService {
     @GET("/api/analysis/basicActivityAnalysis")
     fun getActivityAnalysis(
         @Query("crnum") crnum: Int
-    ): Response<List<String>>
+    ): Call<List<String>>
 
     @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기
     suspend  fun getChattingRoomMembers(
@@ -83,7 +83,7 @@ interface ApiService {
         @Query("searchWho") searchWho: String,
         @Query("resultsItem") resultsItem: String,
         @Query("crnum") crnum: Int
-    ): Call<List<ImageURL>>
+    ): Call<String>
 
 
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기

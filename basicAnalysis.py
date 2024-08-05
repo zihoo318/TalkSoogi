@@ -325,14 +325,14 @@ class ChatRoom:
                 hours_str = ",".join(f"{slot:02d}-{slot+2:02d}:{count}" for slot, count in sorted(hourly_counts.items()))
                 file.write(f"{date}({hours_str})\n")
 
-    def upload_files_to_s3(self, file_paths, crnum):
-        s3 = boto3.client('s3')
-        bucket_name = 'your-s3-bucket-name'
+#    def upload_files_to_s3(self, file_paths, crnum):
+#        s3 = boto3.client('s3')
+#        bucket_name = 'your-s3-bucket-name'
 
-        for file_path in file_paths:
-            try:
-                s3_key = f"{crnum}/{os.path.basename(file_path)}"  # S3에 저장될 파일명 설정
-                s3.upload_file(file_path, bucket_name, s3_key)
-                os.remove(file_path)
-            except Exception as e:
-                print(f"Failed to upload {file_path}: {e}")
+#        for file_path in file_paths:
+#            try:
+#                s3_key = f"{crnum}_{os.path.basename(file_path)}"  # S3에 저장될 파일명 설정
+#                s3.upload_file(file_path, bucket_name, s3_key)
+#                os.remove(file_path)
+#            except Exception as e:
+#                print(f"Failed to upload {file_path}: {e}")

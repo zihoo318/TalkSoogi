@@ -222,6 +222,7 @@ class Page2Activity : AppCompatActivity() {
                                     viewModel.fetchChatRooms() // 다이얼로그 꺼지면 2페이지 목록 새로고침
                                     lifecycleScope.launch {
                                         activityviewModel.fetchAndSetActivityAnalysis(crnum)
+                                        Log.d("Page9", "업데이트 후 기본제공 분석 시작")
                                     }
                                 }
                                 -4 -> {

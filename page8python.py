@@ -1,4 +1,7 @@
 import sys
+from collections import defaultdict
+import re
+
 
 #메시지 수가 가장 많았던 날
 def find_date_with_max_count(file_path):
@@ -14,7 +17,7 @@ def find_date_with_max_count(file_path):
                     max_count = count
                     max_date = date
     except Exception as e:
-        print(f"Error reading file {file_path}: {e}")
+        #print(f"Error reading file {file_path}: {e}")
         return None
 
     return max_date, max_count
@@ -31,7 +34,7 @@ def find_dates_with_zero_count(file_path):
                 if count == 0:
                     zero_count_dates.append(date)
     except Exception as e:
-        print(f"Error reading file {file_path}: {e}")
+        #print(f"Error reading file {file_path}: {e}")
         return None
 
     #zero_count_dates.append("2024-07-05")
@@ -76,7 +79,7 @@ def find_max_message_time_slot(file_path):
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python main_script.py <file_path>")
+        print("Usage: python main_script.py <daily_file_path> <hourly_file_path>")
         sys.exit(1)
 
     daily_file_path = sys.argv[1]

@@ -74,4 +74,15 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.2") // 로깅을 위한 Interceptor (선택 사항)
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")    //
 
+    // 내장 서버로 이미지 받기
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation ("com.squareup.okio:okio:2.8.0")
+    implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // Gson converter
+    implementation ("com.squareup.retrofit2:adapter-rxjava2:2.9.0") // RxJava adapter
+
+
 }

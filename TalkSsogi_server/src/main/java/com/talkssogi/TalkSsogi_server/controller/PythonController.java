@@ -41,11 +41,13 @@ public class PythonController {
     private static final String PYTHON_INTERPRETER_PATH = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";
     private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";
     private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/Master/TalkSsogi_Workspace/page9python.py";
+    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Users/Master/TalkSsogi_Workspace/page8python.py";
     private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Users/Master/TalkSsogi_Workspace/page6python.py";
     private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/Master/TalkSsogi_Workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
-    private static final String PYTHON_newimage_PATH = "C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server"; // page9python후에 생길 이미지 파일 저장할 경로
-    private final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
-    private final String bucketName = "your-s3-bucket-name"; // S3 버킷 이름
+    private static final String PYTHON_newimage_PATH = "C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server/"; // page9python후에 생길 이미지 파일 저장할 경로
+    private static final String SERVER_IP_FOR_IMAGE = "http://192.168.45.129:8080/";
+    //private final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+    //private final String bucketName = "your-s3-bucket-name"; // S3 버킷 이름
 
     @Autowired
     public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가
@@ -157,7 +159,7 @@ public class PythonController {
             // file_path 설정
             // S3에서 가져오기
             //filePath = downloadFileFromS3(String.format(crnum + (searchWho.equals("group") ? "/group.txt" : "/" + searchWho + "_personal.txt"));
-            String filePath = PYTHON_newimage_PATH + crnum + (searchWho.equals("group") ? "/group.txt" : "/" + searchWho + "_personal.txt"); // 테스트용
+            String filePath = PYTHON_newimage_PATH + crnum + (searchWho.equals("group") ? "_group.txt" : "_" + searchWho + "_personal.txt"); // 테스트용
 
             // 명령어 설정
             String command = String.format(
@@ -241,11 +243,11 @@ public class PythonController {
             // S3에서 파일 다운로드
             //String dailyFilePath = downloadFileFromS3(String.format("%d/group_daily_message_count.txt", crnum));
             //String hourlyFilePath = downloadFileFromS3(String.format("%d/group_daily_hourly_message_count.txt", crnum));
-            String dailyFilePath = PYTHON_newimage_PATH + String.format("%d/group_daily_message_count.txt", crnum);
-            String hourlyFilePath = PYTHON_newimage_PATH + String.format("%d/group_daily_hourly_message_count.txt", crnum);
+            String dailyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_message_count.txt", crnum);
+            String hourlyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_hourly_message_count.txt", crnum);
 
             // 명령어 설정
-            String command = String.format("%s %s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_basic_PATH, dailyFilePath, hourlyFilePath);
+            String command = String.format("%s %s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_PAGE8_PATH, dailyFilePath, hourlyFilePath);
             logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
 
             // ProcessBuilder를 사용하여 프로세스 생성
@@ -258,9 +260,16 @@ public class PythonController {
             // 프로세스의 출력 읽기
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             List<String> resultLines = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                resultLines.add(line);
+            String outputLine;
+            while ((outputLine = reader.readLine()) != null) {
+                resultLines.add(outputLine);
+            }
+
+            // 프로세스의 오류 출력 읽기
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String errorLine;
+            while ((errorLine = errorReader.readLine()) != null) {
+                System.err.println("Error: " + errorLine); // 오류 확인
             }
 
             // 프로세스 종료 대기
@@ -271,10 +280,53 @@ public class PythonController {
             Files.deleteIfExists(Paths.get(hourlyFilePath));
 
             if (exitCode == 0) {
-                // 필요한 데이터 추출
-                String maxDateAndCount = resultLines.size() > 0 ? resultLines.get(0) : "분석 실패";
-                String zeroCountDates = resultLines.size() > 1 ? resultLines.get(1) : "분석 실패";
-                String maxTimeSlotAndCount = resultLines.size() > 2 ? resultLines.get(2) : "분석 실패";
+                // 기본 값 설정
+                // 최대 날짜 및 메시지 수를 저장할 변수 초기화
+                String maxDateAndCount = "";
+                // 메시지가 없는 날짜 저장할 변수 초기화
+                String zeroCountDates = "";
+                // 시간대 저장할 변수 초기화
+                String maxTimeSlotAndCount = "";
+
+                // 최대 날짜 및 메시지 수와 최대 시간대 및 메시지 수를 찾았는지 여부를 추적하는 변수 초기화
+                boolean foundMaxDateAndCount = false;
+                boolean foundMaxTimeSlotAndCount = false;
+
+                // resultLines의 모든 줄을 순회하며 적절한 변수에 값을 할당
+                List<String> zeroCountList = new ArrayList<>();
+                for (String resultLine : resultLines) {
+                    if (resultLine.matches("\\d{4}-\\d{2}-\\d{2}\\(\\d+건\\)")) {
+                        maxDateAndCount = resultLine;
+                        foundMaxDateAndCount = true;
+                    } else if (resultLine.matches(".*\\(\\d+건\\)")) {
+                        if (foundMaxDateAndCount) {
+                            zeroCountList.add(resultLine);
+                        } else {
+                            maxTimeSlotAndCount = resultLine;
+                            foundMaxTimeSlotAndCount = true;
+                        }
+                    } else {
+                        zeroCountList.add(resultLine);
+                    }
+                }
+
+                // zeroCountList에서 마지막에 추가된 줄바꿈 문자를 제거
+                StringBuilder zeroCountDatesBuilder = new StringBuilder();
+                if (!zeroCountList.isEmpty()) {
+                    int size = zeroCountList.size();
+                    if (size > 6) {
+                        for (int i = 0; i < 6; i++) {
+                            zeroCountDatesBuilder.append(zeroCountList.get(i)).append("\n");
+                        }
+                        zeroCountDatesBuilder.append("외 ").append(size - 6).append("일");
+                    } else {
+                        for (String date : zeroCountList) {
+                            zeroCountDatesBuilder.append(date).append("\n");
+                        }
+                    }
+                }
+
+                zeroCountDates = zeroCountDatesBuilder.toString().trim();
 
                 // 리스트 생성 및 값 추가
                 List<String> outputList = new ArrayList<>();
@@ -294,6 +346,7 @@ public class PythonController {
             );
         }
     }
+
 
     // 날짜 형식을 바꿔주는 메서드
     private String convertDateFormat(String dateStr) throws ParseException {
@@ -319,21 +372,24 @@ public class PythonController {
             // SearchWho 값 처리
             String SearchWho = "전체".equals(searchWho) ? "group" : searchWho;
 
+            logger.info("제대로 resultsItem이 넘어왔는가 resultsItem: " + resultsItem);
+
             // crnum을 가지고 s3에서 파일 찾고 가져오는 과정
             String filePath = null; // 검색할 파일
             // resultsItem에 따라 파일 경로를 설정
             switch (resultsItem) {
                 case "보낸 메시지 수 그래프":
                     //filePath = downloadFileFromS3(String.format("%d/%s_daily_message_count.txt", crnum, SearchWho));
-                    filePath = PYTHON_newimage_PATH + String.format("%d/%s_daily_message_count.txt", crnum, SearchWho); //테스트용
+                    filePath = PYTHON_newimage_PATH + String.format("%d_%s_daily_message_count.txt", crnum, SearchWho); //테스트용
                     break;
                 case "활발한 시간대 그래프":
                     //filePath = downloadFileFromS3(String.format("%d/%s_daily_hourly_message_count.txt", crnum, SearchWho));
-                    filePath = PYTHON_newimage_PATH + String.format("%d/%s_daily_hourly_message_count.txt", crnum, SearchWho); //테스트용
+                    filePath = PYTHON_newimage_PATH + String.format("%d_%s_daily_hourly_message_count.txt", crnum, SearchWho); //테스트용
                     break;
                 case "대화를 보내지 않은 날짜":
                     //filePath = downloadFileFromS3(String.format("%d/%s_daily_message_count.txt", crnum, SearchWho));
-                    filePath = PYTHON_newimage_PATH + String.format("%d/%s_daily_message_count.txt", crnum, SearchWho); //테스트용
+                    filePath = PYTHON_newimage_PATH + String.format("%d_%s_daily_message_count.txt", crnum, SearchWho); //테스트용
+                    break;
                 default:
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("resultsItem이 이상함 Unknown resultsItem: " + resultsItem);
             }
@@ -384,8 +440,8 @@ public class PythonController {
             // 분석 결과 파일 경로 추출
             String resultFilePath = resultOutput;  // 결과 파일 경로는 Python 스크립트에서 생성된 파일 경로
 
-            // 결과 이미지 URL 생성
-            String resultUrl = PYTHON_BASIC_RESULT_FILE_PATH + resultFilePath;
+            // 결과 이미지 URL 생성 (정적 파일 경로로 변환)
+            String resultUrl = SERVER_IP_FOR_IMAGE + resultFilePath.substring(resultFilePath.lastIndexOf("/") + 1);  // 파일명 추출
             logger.info("Generated result URL: " + resultUrl);
 
             return ResponseEntity.ok(resultUrl);
