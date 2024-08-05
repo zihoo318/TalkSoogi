@@ -1,4 +1,4 @@
-package com.talkssogi.TalkSsogi_server.domain;
+package com.talkssogi.TalkSsogi_server.controller;
 
 public class LoginRequest {
     private String userId;

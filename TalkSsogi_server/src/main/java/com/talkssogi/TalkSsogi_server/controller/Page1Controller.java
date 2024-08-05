@@ -1,8 +1,8 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
-import com.talkssogi.TalkSsogi_server.domain.LoginRequest;
-import com.talkssogi.TalkSsogi_server.domain.RegisterRequest;
+import com.talkssogi.TalkSsogi_server.controller.LoginRequest;
+import com.talkssogi.TalkSsogi_server.controller.RegisterRequest;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
