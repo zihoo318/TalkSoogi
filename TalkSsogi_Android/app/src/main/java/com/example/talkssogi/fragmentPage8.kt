@@ -36,10 +36,24 @@ class fragmentPage8 : Fragment() {
 
         // UI 요소 초기화
         val btnBack: ImageView = view.findViewById(R.id.imageView) // 뒤로가기
-        val imageView1: ImageView = view.findViewById(R.id.imageView)
-        val imageView2: ImageView = view.findViewById(R.id.imgResult)
-        val textView: TextView = view.findViewById(R.id.txtViewResult)
-        val imageView3: ImageView = view.findViewById(R.id.BtnGotoPage9)
+        val messageCountResult: TextView = view.findViewById(R.id.messageCountResult)
+        val zeroCountResult: TextView = view.findViewById(R.id.zeroCountResult)
+        val hourlyCountResult: TextView = view.findViewById(R.id.hourlyCountResult)
+        val btnGotoPage9: ImageView = view.findViewById(R.id.BtnGotoPage9)
+
+        // ViewModel을 사용하여 데이터 설정
+        viewModel.messageCountResult.observe(viewLifecycleOwner) { count ->
+            messageCountResult.text = count.toString()
+        }
+
+        viewModel.zeroCountResult.observe(viewLifecycleOwner) { count ->
+            zeroCountResult.text = count.toString()
+        }
+
+        viewModel.hourlyCountResult.observe(viewLifecycleOwner) { count ->
+            hourlyCountResult.text = count.toString()
+        }
+
 
         // 뒤로가기 버튼 클릭 리스너
         btnBack.setOnClickListener {
@@ -47,7 +61,7 @@ class fragmentPage8 : Fragment() {
         }
 
         // 프래그먼트9로 이동할 버튼 클릭 리스너
-        imageView3.setOnClickListener {
+        btnGotoPage9.setOnClickListener {
             val fragment = fragmentPage9().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum) // 채팅방 번호를 arguments에 추가
@@ -57,28 +71,38 @@ class fragmentPage8 : Fragment() {
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
         }
 
-        // API 호출 및 결과 가공 후 TextView에 출력
+        // ViewModel을 통해 데이터를 요청
         lifecycleScope.launch {
             try {
-                // API 호출
-                val results = viewModel.fetchActivityAnalysis(crnum)
-
-                // 결과 가공
-                val displayText = buildString {
-                    results.forEach { (key, value) ->
-                        append("$key:\n")
-                        value.forEach { item ->
-                            append("- $item\n")
+                viewModel.fetchActivityAnalysis(crnum) { result ->
+                    // 결과 처리
+                    // result가 List<String>이므로 이를 적절히 가공하여 UI에 반영
+                    if (result.isNotEmpty()) {
+                        // 예를 들어, 결과 리스트의 첫 번째 요소를 메시지 카운트로 사용
+                        if (result.size > 0) {
+                            messageCountResult.text = result[0]
                         }
-                        append("\n")
+                        // 두 번째 요소를 제로 카운트 날짜로 사용
+                        if (result.size > 1) {
+                            zeroCountResult.text = result[1]
+                        }
+                        // 세 번째 요소를 시간대 카운트로 사용
+                        if (result.size > 2) {
+                            hourlyCountResult.text = result[2]
+                        }
+                    } else {
+                        // 결과가 비어있을 때의 처리
+                        messageCountResult.text = "No data"
+                        zeroCountResult.text = "No data"
+                        hourlyCountResult.text = "No data"
                     }
                 }
-
-                // 결과 출력
-                textView.text = displayText
-
             } catch (e: Exception) {
-                textView.text = "데이터를 가져오는 데 실패했습니다."
+                Log.e("Page8", "Error fetching activity analysis", e)
+                // 에러 메시지 설정
+                messageCountResult.text = "Error"
+                zeroCountResult.text = "Error"
+                hourlyCountResult.text = "Error"
             }
         }
 

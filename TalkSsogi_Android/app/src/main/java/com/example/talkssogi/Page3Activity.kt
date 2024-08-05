@@ -19,6 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 //가을 추가 코두
 import android.graphics.drawable.AnimationDrawable
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 
 class Page3Activity : AppCompatActivity() {
@@ -40,6 +44,7 @@ class Page3Activity : AppCompatActivity() {
     private val viewModel: MyViewModel by lazy { //공유 뷰모델
         (application as MyApplication).viewModel
     }
+    private val activityviewModel: ActivityAnalysisViewModel by viewModels()
     private var selectedFileUri: Uri? = null // 파일 경로
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -164,7 +169,10 @@ class Page3Activity : AppCompatActivity() {
         selectedFileUri?.let { uri ->
             viewModel.uploadFile(uri, userId, peopleCount) { result ->
                 if (result >= 0) {
-                    analyzeFile(result)
+                    //analyzeFile(result)
+                    lifecycleScope.launch {
+                        analyzeFile(result)
+                    }
                 } else {
                     handleUploadError(result)
                     hideLoadingIndicator()
@@ -176,17 +184,33 @@ class Page3Activity : AppCompatActivity() {
         }
     }
 
-    private fun analyzeFile(crNum: Int) {
+//    private fun analyzeFile(crNum: Int) {
+//        viewModel.requestBasicPythonAnalysis(crNum) { result ->
+//            if (result >= 0) {
+//                hideLoadingIndicator()
+//                startActivity(Intent(this, Page2Activity::class.java))
+//            } else {
+//                handleUploadError(result)
+//                hideLoadingIndicator()
+//            }
+//        }
+//    }
+    private suspend fun analyzeFile(crNum: Int) {
         viewModel.requestBasicPythonAnalysis(crNum) { result ->
             if (result >= 0) {
+                lifecycleScope.launch {
+                    Log.d("Page9", "페이지3에서 페이지8 분석 api호출 직전")
+                    activityviewModel.fetchAndSetActivityAnalysis(crNum)
+                }
                 hideLoadingIndicator()
-                startActivity(Intent(this, Page2Activity::class.java))
+                startActivity(Intent(this@Page3Activity, Page2Activity::class.java))
             } else {
                 handleUploadError(result)
                 hideLoadingIndicator()
             }
         }
     }
+
     private fun handleUploadError(errorCode: Int) {
         when (errorCode) {
             -1 -> Log.e("fetchChatRooms", "업로드 실패")

@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,11 +19,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 
 
-//data class ImageResponse(
-//    val imageUrl: Int //서버 만들면 String으로 바꾸고 주소로 받아야함
-//)
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
     private val BASE_URL = "http://192.168.45.165:8080/"  // 실제 안드로이드 기기에서 실행 할 때
@@ -37,13 +37,14 @@ class ActivityAnalysisViewModel : ViewModel() {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-
+    var gson = GsonBuilder().setLenient().create()
     private val apiService = Retrofit.Builder() //api 사용을 위한 객체
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
-        .addConverterFactory(ScalarsConverterFactory.create()) // 문자열 변환
+        .baseUrl(Constants.BASE_URL)
+        .client(client) // OkHttpClient를 Retrofit에 설정 (원인 분석을 위한 로그를 보기위한 설정)
+        .addConverterFactory(GsonConverterFactory.create(gson)) // JSON 변환
         .build()
         .create(ApiService::class.java)
+
 
     private val _imageUrls = MutableLiveData<List<ImageURL>>() //페이지9 이미지url
     val imageUrls: LiveData<List<ImageURL>> get() = _imageUrls
@@ -55,6 +56,14 @@ class ActivityAnalysisViewModel : ViewModel() {
     private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>(emptyList()) // 빈 리스트로 초기화
     val wordCloudImageUrl: LiveData<List<ImageURL>> get() = _wordCloudImageUrl
 
+    // 페이지8 기본제공 데이터 값
+    private val _messageCountResult = MutableLiveData<String>()
+    val messageCountResult: LiveData<String> get() = _messageCountResult
+    private val _zeroCountResult = MutableLiveData<String>()
+    val zeroCountResult: LiveData<String> get() = _zeroCountResult
+    private val _hourlyCountResult = MutableLiveData<String>()
+    val hourlyCountResult: LiveData<String> get() = _hourlyCountResult
+
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
     fun getActivityAnalysisImage(
@@ -64,26 +73,27 @@ class ActivityAnalysisViewModel : ViewModel() {
         resultsItem: String,
         crnum: Int
     ) {
-        // 모든 필드가 null이 아니어야 API 호출을 진행합니다
-        Log.d("Page9", "이미지 생성을 위한 api전송")
         if (startDate != null && endDate != null && searchWho.isNotEmpty() && resultsItem.isNotEmpty()) {
             apiService.getActivityAnalysisImage(startDate, endDate, searchWho, resultsItem, crnum)
-                .enqueue(object : Callback<List<ImageURL>> {
+                .enqueue(object : Callback<String> {
                     override fun onResponse(
-                        call: Call<List<ImageURL>>,
-                        response: Response<List<ImageURL>>
+                        call: Call<String>,
+                        response: Response<String>
                     ) {
                         if (response.isSuccessful) {
-                            val ImageURL = response.body()
-                            ImageURL?.let { _imageUrls.value = it }
-                            Log.d("Page9", "이미지 생성 및 전달 받기 성공 : ${ImageURL}")
+                            val imageUrl = response.body()
+                            imageUrl?.let {
+                                _imageUrls.value = listOf(ImageURL(it))
+                            }
+                            Log.d("Page9", "이미지 생성 및 전달 받기 성공 : $imageUrl")
                         } else {
-                            Log.d("Page9", "이미지 생성 및 전달 받기 실패")
+                            Log.d("Page9", "이미지 생성 및 전달 받기 실패: ${response.errorBody()?.string()}")
                         }
                     }
 
-                    override fun onFailure(call: Call<List<ImageURL>>, t: Throwable) {
-                        Log.d("Page9", "이미지 생성 및 전달 받기 실패 네트워크 에러")
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        Log.d("Page9", "이미지 생성 및 전달 받기 실패 네트워크 에러: ${t.message}")
+                        t.printStackTrace()
                     }
                 })
         }
@@ -124,24 +134,57 @@ class ActivityAnalysisViewModel : ViewModel() {
     }
 
 }*/
-    // crnum을 매개변수로 받아서 API 호출
-    suspend fun fetchActivityAnalysis(crnum: Int): Map<String, List<String>> {
-        return withContext(Dispatchers.IO) {
+    // crnum을 매개변수로 받아서 API 호출 // 페이지8에서 기본제공 활동분석 결과 받기
+    fun fetchActivityAnalysis(crnum: Int, callback: (List<String>) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = apiService.getActivityAnalysis(crnum)
-                if (response.isSuccessful) {
-                    response.body() ?: emptyMap()
-                } else {
-                    Log.e("ActivityAnalysisViewModel", "Error: ${response.code()}")
-                    emptyMap()
-                }
-            } catch (e: Exception) {
-                Log.e("ActivityAnalysisViewModel", "Exception: ${e.message}", e)
-                emptyMap()
-            }
+                // API 호출
+                val call = apiService.getActivityAnalysis(crnum)
+                call.enqueue(object : Callback<List<String>> {
+                    override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
+                        // 메인 스레드에서 결과 처리
+                        viewModelScope.launch(Dispatchers.Main) {
+                            if (response.isSuccessful) {
+                                Log.e("Page9", "기본제공분석 api응답 받음")
+                                val body = response.body() ?: emptyList()
+                                callback(body)
+                            } else {
+                                Log.e("Page9", "Error: ${response.code()}")
+                                callback(emptyList())
+                            }
+                        }
+                    }
 
+                    override fun onFailure(call: Call<List<String>>, t: Throwable) {
+                        // 메인 스레드에서 예외 처리
+                        viewModelScope.launch(Dispatchers.Main) {
+                            Log.e("Page9", "Exception: ${t.message}", t)
+                            callback(emptyList())
+                        }
+                    }
+                })
+            } catch (e: Exception) {
+                // 예외 처리
+                Log.e("Page9", "Exception: ${e.message}", e)
+                viewModelScope.launch(Dispatchers.Main) {
+                    callback(emptyList())
+                }
+            }
         }
     }
+
+    // 위의 메서드를 통해 받은 리스트 데이터를 받아서 LiveData에 설정하는 메소드
+    fun fetchAndSetActivityAnalysis(crnum: Int) {
+        // fetchActivityAnalysis 호출 시, 결과를 처리하기 위한 callback 정의
+        fetchActivityAnalysis(crnum) { resultList ->
+            // 값이 있으면 각 LiveData에 설정
+            _messageCountResult.value = if (resultList.size > 0) resultList[0] else ""
+            _zeroCountResult.value = if (resultList.size > 1) resultList[1] else ""
+            _hourlyCountResult.value = if (resultList.size > 2) resultList[2] else ""
+        }
+    }
+
+
 
     // 워드 클라우드 이미지 URL 가져오기
     fun loadWordCloudImageUrl(crnum: Int, userId: Int) {

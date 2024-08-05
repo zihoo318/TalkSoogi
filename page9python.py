@@ -10,6 +10,14 @@ import io
 from PIL import Image
 from typing import List
 
+# 이미지 저장 디렉토리 설정 (Spring Boot의 resources/static 디렉토리)
+#IMAGE_DIR = '/ec2에서 복사할 스프링부트 경로/src/main/resources/static/'
+IMAGE_DIR = 'C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server/src/main/resources/static/' #테스트용
+
+def save_image(output_file: str, image: Image.Image):
+    file_path = os.path.join(IMAGE_DIR, output_file)
+    image.save(file_path)
+
 # 한글 폰트 설정
 def set_korean_font():
     path ='C:/Users/Master/AppData/Local/Microsoft/Windows/Fonts/D2Coding-Ver1.3.2-20180524-all.ttc'  # 내 노트북에 설치된 한글 폰트 경로
@@ -38,7 +46,7 @@ def create_message_count_graph(file_path, start_date, end_date, user_name=None):
 
     plt.figure(figsize=(10, 5))
     plt.plot(dates, counts, marker='o')
-    plt.title(f"{'전체' if user_name is None else user_name}님의 메시지 수")
+    plt.title(f"{'전체' if user_name is None else user_name}의 메시지 수")
     plt.xlabel("날짜")
     plt.ylabel("메시지 수")
     plt.grid(True)
@@ -46,8 +54,14 @@ def create_message_count_graph(file_path, start_date, end_date, user_name=None):
     plt.tight_layout()
 
     output_file = f"{'group' if user_name is None else user_name}_message_count_graph.png"
-    plt.savefig(output_file)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0)
     plt.close()
+    
+    image = Image.open(buf)
+    save_image(output_file, image)
+
     return output_file
 
 # 활발한 시간대 그래프
@@ -73,16 +87,22 @@ def create_hourly_message_graph(file_path, start_date, end_date, user_name=None)
 
     plt.figure(figsize=(10, 5))
     plt.bar(hours, counts)
-    plt.title(f"Hourly Message Activity for {'Group' if user_name is None else user_name}")
-    plt.xlabel("Hour Range")
-    plt.ylabel("Message Count")
+    plt.title(f"{'Group' if user_name is None else user_name}의 시간대별 메시지 수")
+    plt.xlabel("시간대")
+    plt.ylabel("메시지 수")
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.tight_layout()
 
     output_file = f"{'group' if user_name is None else user_name}_hourly_message_activity_graph.png"
-    plt.savefig(output_file)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    buf.seek(0)
     plt.close()
+    
+    image = Image.open(buf)
+    save_image(output_file, image)
+
     return output_file
 
 # 대화를 보내지 않은 날짜를 담은 달력 그래프를 위한 메서드들
@@ -194,11 +214,10 @@ def create_combined_calendar_image(file_path, start_date, end_date):
         combined_image.paste(img, (x_offset, 0))
         x_offset += img.width
 
-    # 현재 작업 디렉토리의 파일 이름 설정
-    output_path = os.path.join(os.getcwd(), "combined_calendar.png")
-    combined_image.save(output_path)
+    output_file = "combined_calendar.png"
+    save_image(output_file, combined_image)
 
-    return output_path  # 생성된 파일 경로 반환
+    return output_file  # 생성된 파일 경로 반환
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
