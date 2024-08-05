@@ -59,6 +59,7 @@ class Page1_2Activity : AppCompatActivity() {
                     if (!exists) {
                         viewModel.registerUserId(newID) { success ->
                             if (success) {
+                                Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
                                 viewModel.saveUserIdToSharedPreferences(newID)
                                 viewModel.navigateToNextPage(this, Page2Activity::class.java)
                             } else {

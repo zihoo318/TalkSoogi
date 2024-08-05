@@ -469,14 +469,14 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // 사용자 ID 체크 API 호출
+    // 서버에 사용자 ID 존재 여부를 확인하는 요청 API 호출
     fun checkUserIdExists(userId: String): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         apiService.checkUserId(userId).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val responseBody = response.body()?.string()
-                    result.value = responseBody == "Username is available"
+                    result.value = responseBody == "Username is already in use"
                 } else {
                     Log.e("checkUserIdExists", "Error: ${response.code()} - ${response.message()}")
                     result.value = false
@@ -491,7 +491,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         return result
     }
 
-    // 사용자 ID 등록 API 호출
+    // 서버에 회원가입 요청 (사용자 ID 등록) API 호출
     fun registerUserId(userId: String, callback: (Boolean) -> Unit) {
         apiService.register(RegisterRequest(userId)).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -510,7 +510,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    // 로그인 API 호출
+    // 서버에 로그인 요청 API 호출
     fun loginUserId(userId: String, callback: (Boolean) -> Unit) {
         apiService.login(LoginRequest(userId)).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -529,7 +529,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    // 다음 페이지로 이동
+    // 지정된 페이지로 이동
     fun navigateToNextPage(activity: AppCompatActivity, nextPage: Class<*>) {
         val intent = Intent(activity, nextPage)
         activity.startActivity(intent)
