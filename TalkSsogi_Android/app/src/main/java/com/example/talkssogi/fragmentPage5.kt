@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.app.fragmentPage10Result
-import fragmentPage10
+import com.example.app.fragmentPage10
+
 
 class fragmentPage5 : Fragment() {
     private var crnum: Int = -1 // 채팅방 번호를 저장할 변수
@@ -42,6 +42,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage6().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
@@ -51,6 +53,8 @@ class fragmentPage5 : Fragment() {
             // 채팅방 번호를 Intent로 전달
             val intent = Intent(requireContext(), Page7Activity::class.java).apply {
                 putExtra("crnum", crnum)
+                Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
             }
             startActivity(intent)
         }
@@ -60,6 +64,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage10().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
@@ -71,6 +77,8 @@ class fragmentPage5 : Fragment() {
             val fragment = fragmentPage8().apply {
                 arguments = Bundle().apply {
                     putInt("crnum", crnum)
+                    Log.d("fragmentPage5", "crnum in fragmentPage5: $crnum") // crnum 값 로그 출력
+
                 }
             }
             (requireActivity() as FragmentActivity).replaceFragment(fragment)

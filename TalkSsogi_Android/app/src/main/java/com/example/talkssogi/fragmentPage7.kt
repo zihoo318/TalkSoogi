@@ -27,8 +27,11 @@ class fragmentPage7 : Fragment() {
         indicator = view.findViewById(R.id.ranking_indicator)
         textView = view.findViewById(R.id.ranking_title)
 
+        // Intent로부터 crnum 값 받기
+        val crnum = activity?.intent?.getIntExtra("crnum", -1) ?: -1
+
         // ViewPager2 어댑터 설정
-        val adapter = ViewPagerAdapter(requireActivity())
+        val adapter = ViewPagerAdapter(requireActivity(), crnum)
         viewPager2.adapter = adapter
 
         // CircleIndicator3 설정

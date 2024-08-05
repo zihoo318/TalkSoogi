@@ -1,6 +1,9 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.processor.PythonResultProcessor;
 import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,12 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -27,6 +30,8 @@ public class PythonController {
     private final ChattingRoomService chattingRoomService;
     private final UserService userService;
     //private final S3Uploader s3Uploader;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
     private static final String PYTHON_INTERPRETER_PATH = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";
@@ -36,10 +41,11 @@ public class PythonController {
     private static final String PYTHON_newimage_PATH = "C:/Users/Master/TalkSsogi_Workspace"; // page9python후에 생길 이미지 파일 저장할 경로
 
     @Autowired
-    public PythonController(ChattingRoomService chattingRoomService, UserService userService) { //, S3Uploader s3Uploader 추가
+    public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가
         this.chattingRoomService = chattingRoomService;
         this.userService = userService;
         //this.s3Uploader = s3Uploader;
+        this.pythonResultProcessor = pythonResultProcessor;  // 추가
     }
 
     // 처음 파일 업로드할 때 진행되는 기본 데이터 분석
@@ -56,6 +62,12 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File path is not set.");
             }
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
+
+            // 파이썬 인터프리터의 절대 경로 설정
+            String pythonInterpreterPath = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";  // Python 3.12 인터프리터의 경로
+
+            // 파이썬 스크립트의 절대 경로 설정
+            String pythonScriptPath = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";  // 실행할 Python 스크립트의 경로
 
             // 명령어 설정
             String command = String.format("%s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_basic_PATH, filePath);
@@ -88,7 +100,6 @@ public class PythonController {
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
             logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
-
             if (exitCode != 0) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
             }
@@ -98,6 +109,18 @@ public class PythonController {
             if (resultLines.length < 2) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
+
+
+            // JSON 파일에서 결과를 읽어오기
+            File jsonFile = new File("C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json"); // JSON 파일 경로 설정
+            String jsonString = readFileToString(jsonFile);  // 파일을 문자열로 읽기
+
+            // JSON 문자열을 Map으로 변환
+            Map<String, Map<String, String>> rankingResultsMap = pythonResultProcessor.extractRankingResults(jsonString);
+
+            // 분석 결과를 ChattingRoom 엔티티에 저장
+            chattingRoom.setBasicRankingResults(rankingResultsMap);
+            chattingRoomService.save(chattingRoom);
 
             // 분석 결과를 저장
             String chatroomName = resultLines[0];
@@ -120,6 +143,17 @@ public class PythonController {
             logger.error("Unexpected error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
         }
+    }
+
+    private String readFileToString(File file) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                content.append(line);
+            }
+        }
+        return content.toString();
     }
 
 

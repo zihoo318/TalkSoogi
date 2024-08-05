@@ -78,6 +78,7 @@ class Page2Activity : AppCompatActivity() {
             val intent = Intent(this, FragmentActivity::class.java)
             intent.putExtra("crnum", chatRoom.crnum) // 채팅방 ID를 전달
             startActivity(intent)
+            Log.d("page2activity", "선택된 채팅방의 crnum: page2activity: ${chatRoom.crnum}") // crnum 값 로그 출력
         }, { chatRoom ->
             // 길게 눌렀을 때 삭제 다이얼로그 표시
             showDeleteConfirmationDialog(chatRoom)
