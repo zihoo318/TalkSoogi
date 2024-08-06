@@ -2,17 +2,20 @@ package com.example.talkssogi
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.talkssogi.databinding.FragmentPage7SearchBinding
 import android.widget.SearchView
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -23,6 +26,8 @@ class fragmentPage7_search : Fragment() {
     private val binding get() = _binding!!
     private val rankingViewModel: RankingViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences // Intent를 위한 유저 아이디
+    private lateinit var loadingIndicator: ProgressBar // 분석 중 띄우는 바
+
 
 
     override fun onCreateView(
@@ -31,7 +36,13 @@ class fragmentPage7_search : Fragment() {
     ): View? {
         // ViewBinding을 사용하여 레이아웃을 인플레이트
         _binding = FragmentPage7SearchBinding.inflate(inflater, container, false)
+        loadingIndicator = binding.loadingIndicator // 분석 중 띄우는 바(띄워져 있는데 안 보이게 해둠)
+
+        // AnimationDrawable 설정
+        val animationDrawable = context?.let { getDrawable(it, R.drawable.animation_loding) } as? AnimationDrawable
+        loadingIndicator.indeterminateDrawable = animationDrawable
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,6 +51,7 @@ class fragmentPage7_search : Fragment() {
         crnum = arguments?.getInt("crnum") ?: -1
         Log.d("searchranking", "arguments에 있는 crnum: ${arguments}")
         Log.d("searchranking", "searchranking의 crnum 값: $crnum") // crnum 값 로그 출력
+
         initSearchView()
         observeViewModel()
     }
@@ -47,6 +59,24 @@ class fragmentPage7_search : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // "분석 중" 상태를 표시하는 함수
+    private fun showLoadingIndicator() {
+        //loadingindicator가 작동하는지 확인하는 로그
+        Log.d("fragmentPage7Search", "LoadingIndicator 작동")
+        // 애니메이션 시작
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.start()
+        loadingIndicator.visibility = View.VISIBLE
+    }
+
+    // "분석 중" 상태를 숨기는 함수
+    public fun hideLoadingIndicator() {
+        //loadingindicator가 꺼지는지 확인하는 로그
+        Log.d("fragmentPage7Search", "LoadingIndicator 꺼짐")
+        // 애니메이션 멈춤
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.stop()
+        loadingIndicator.visibility = View.GONE
     }
 
     // SearchView 설정
@@ -64,20 +94,23 @@ class fragmentPage7_search : Fragment() {
         val userId = sharedPreferences.getString("Session_ID", "Unknown") // "Session_ID"에서 "userToken"으로 키 수정
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { // 메서드 시그니처 수정
+            override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let { keyword ->
                     // 검색 버튼을 누르면 clearFocus() 호출하고, TextView 업데이트 및 데이터 로드
                     searchView.clearFocus()
                     searchTitleSecond.text = keyword
+                    showLoadingIndicator()
 
-                    if (userId != null && userId != "Unknown") { // userId가 유효한 경우에만 API 호출
+                    if (userId != null && userId != "Unknown") {
                         // 데이터 가져오기 요청을 코루틴 내에서 호출
                         viewLifecycleOwner.lifecycleScope.launch {
                             rankingViewModel.fetchSearchRankingResults(crnum, keyword)
                         }
+                    } else {
+                        hideLoadingIndicator()
                     }
                 }
-                return true // true를 반환하여 이벤트를 처리했음을 나타냄
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -96,6 +129,7 @@ class fragmentPage7_search : Fragment() {
 
     private fun observeViewModel() {
         rankingViewModel.searchRankingResults.observe(viewLifecycleOwner, Observer { results ->
+            hideLoadingIndicator()
             if (results != null) {
                 val messageRankings = results["검색어"]
                 messageRankings?.let {
@@ -113,6 +147,7 @@ class fragmentPage7_search : Fragment() {
         })
 
         rankingViewModel.error.observe(viewLifecycleOwner, Observer { error ->
+            hideLoadingIndicator()
             error?.let {
                 Log.e("fragmentPage7Search", it)
             }
