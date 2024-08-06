@@ -44,7 +44,7 @@ def generate_wordcloud_from_file(personal_file_path):
 
     # 워드 클라우드 생성
     wordcloud = WordCloud(
-        font_path='C:/Users/Master/AppData/Local/Microsoft/Windows/Fonts/D2Coding-Ver1.3.2-20180524-all.ttc',  # 한글 폰트 경로
+        font_path='/usr/share/fonts/nanum/NanumGothic.ttf',  # 나눔고딕체가 설치된 절대경로로 수정
         background_color='white',
         width=800,
         height=600
