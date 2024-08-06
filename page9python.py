@@ -20,7 +20,7 @@ def save_image(output_file: str, image: Image.Image):
 
 # 한글 폰트 설정
 def set_korean_font():
-    path ='C:/Windows/Fonts/HancomEQN.ttf'  # 내 노트북에 설치된 한글 폰트 경로
+    path ='/usr/share/fonts/nanum/NanumGothic.ttf'  # 나눔고딕체가 설치된된 절대경로로 수정
     font_name = fm.FontProperties(fname=path, size=10).get_name()
     plt.rc('font', family=font_name)
 
