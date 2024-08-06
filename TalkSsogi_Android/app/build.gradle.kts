@@ -48,6 +48,7 @@ dependencies {
     // Indicator (page7)
     implementation(libs.circleIndicator)
     implementation(libs.androidx.ui.desktop)
+    implementation(libs.mediation.test.suite)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

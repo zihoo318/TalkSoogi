@@ -20,7 +20,7 @@ def save_image(output_file: str, image: Image.Image):
 
 # 한글 폰트 설정
 def set_korean_font():
-    path ='C:/Users/Master/AppData/Local/Microsoft/Windows/Fonts/D2Coding-Ver1.3.2-20180524-all.ttc'  # 내 노트북에 설치된 한글 폰트 경로
+    path ='C:/Windows/Fonts/HancomEQN.ttf'  # 내 노트북에 설치된 한글 폰트 경로
     font_name = fm.FontProperties(fname=path, size=10).get_name()
     plt.rc('font', family=font_name)
 

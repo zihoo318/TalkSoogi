@@ -173,7 +173,7 @@ def main():
     ranking_results_map['평균 길이'] = {user_name: str(avg_length) for user_name, avg_length in average_length.items()}
 
     # basic result 결과를 JSON으로 변환하여 파일로 저장
-    basic_output_file = 'C:/Users/Master/TalkSsogi_Workspace/ranking_results.json'
+    basic_output_file = 'C:/Talkssogi_Workspace/TalkSsogi/ranking_results.json'
     with open(basic_output_file, 'w', encoding='utf-8') as f:
         json.dump(ranking_results_map, f, ensure_ascii=False, indent=4)
 

@@ -38,16 +38,18 @@ public class PythonController {
     private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/Master/AppData/Local/Programs/Python/Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/Master/TalkSsogi_Workspace/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/Master/TalkSsogi_Workspace/page9python.py";
-    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Users/Master/TalkSsogi_Workspace/page8python.py";
-    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Users/Master/TalkSsogi_Workspace/page6python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/Master/TalkSsogi_Workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
-    private static final String PYTHON_newimage_PATH = "C:/Users/Master/TalkSsogi_Workspace/TalkSsogi_server/"; // page9python후에 생길 이미지 파일 저장할 경로
-    private static final String SERVER_IP_FOR_IMAGE = "http://192.168.45.129:8080/";
+    private static final String PYTHON_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // workspace 밑에 저장된 파이썬 파일 경로
+    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";
+    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page9python.py";
+    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page8python.py";
+    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page6python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_newimage_PATH = "C:/Talkssogi_Workspace/TalkSsogi/TalkSsogi_server/"; // page9python후에 생길 이미지 파일 저장할 경로
+    private static final String SERVER_IP_FOR_IMAGE = "http://172.32.47.6:8080/";
     //private final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
     //private final String bucketName = "your-s3-bucket-name"; // S3 버킷 이름
+
 
     @Autowired
     public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가
@@ -451,4 +453,75 @@ public class PythonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
         }
     }
+
+
+    public ResponseEntity<String> getCallerPrediction(@RequestParam int crnum, String keyword) {
+        try {
+            // ChattingRoom을 찾아서 파일 경로를 가져온다
+            ChattingRoom chattingRoom = chattingRoomService.findByCrNum(crnum);
+            if (chattingRoom == null || chattingRoom.getCrNum() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ChattingRoom not found or invalid.");
+            }
+            String filePath = chattingRoom.getFilePath(); // 파일 경로 가져오기
+            if (filePath == null || filePath.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File path is not set.");
+            }
+
+            String predictPythonPath = PYTHON_FILE_PATH + "/caller_prediction.py";
+
+            // 명령어 설정
+            String command = String.format("%s %s %s %s", PYTHON_INTERPRETER_PATH, predictPythonPath, filePath, keyword);
+            logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
+
+
+            // ProcessBuilder를 사용하여 프로세스 생성
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.redirectErrorStream(true);
+            processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
+
+            // 프로세스 시작
+            Process process = processBuilder.start();
+
+            // 프로세스의 출력 읽기
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream())); // 표준 오류 스트림 읽기
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
+
+            // 표준 오류 스트림 읽기
+            StringBuilder errorResult = new StringBuilder();
+            while ((line = errorReader.readLine()) != null) {
+                errorResult.append(line).append("\n");
+            }
+
+            // 프로세스 종료 대기
+            int exitCode = process.waitFor();
+            logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
+            if (exitCode != 0) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
+            }
+
+            // 결과 처리
+            String callerPrediction = result.toString().trim();
+
+            logger.info(keyword + "의Caller Prediction 결과: " + callerPrediction);
+
+
+            // ChattingRoom에 callerPrediction 저장
+            chattingRoom.setCallerPrediction(callerPrediction);
+            chattingRoomService.save(chattingRoom);
+
+            return ResponseEntity.ok("Success");
+        } catch (EntityNotFoundException e) {
+            logger.error("Entity not found: ", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
+        }
+    }
+
 }

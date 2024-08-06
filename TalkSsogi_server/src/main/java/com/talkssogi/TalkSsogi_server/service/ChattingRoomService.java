@@ -33,7 +33,7 @@ import java.util.Map;
 public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
-    private static final String UPLOAD_DIR = "C:/Users/Master/TalkSsogi_Workspace";
+    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi";
     //테스트용 경로
 
     @Autowired
@@ -185,7 +185,7 @@ public class ChattingRoomService {
 
         String filePath = chattingRoom.getFilePath(); // chat file path를 설정해야 함
         String searchResultsFilePath = UPLOAD_DIR + "/search_ranking_results.json"; // 파이썬 스크립트가 생성하는 파일 경로
-        String pythonFilePath = UPLOAD_DIR + "/search_ranking_results.py";
+        String pythonFilePath = UPLOAD_DIR + "/search_ranking_result.py";
 
         ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath , filePath, keyword);
         processBuilder.redirectErrorStream(true);

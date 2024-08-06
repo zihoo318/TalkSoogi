@@ -25,7 +25,6 @@ public class ChattingRoom {
     @Column(name = "headcount")
     private int headcount;
 
-
     @ManyToOne
     @JoinColumn(name = "user_id") // 외래 키 컬럼 이름과 매핑
 
@@ -55,6 +54,9 @@ public class ChattingRoom {
     @Convert(converter = MapStringMapConverter.class)
     @Column(name = "search_ranking_results") // Column name updated to match MySQL schema
     private Map<String, Map<String, String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+
+    @Column(name = "caller_prediction") // 발신자 예측 결과값 저장
+    private String callerPrediction;
 
 
     // Getters and setters
@@ -145,4 +147,14 @@ public class ChattingRoom {
     public void setSearchRankingResults(Map<String, Map<String, String>> searchRankingResults) {
         this.searchRankingResults = searchRankingResults != null ? searchRankingResults : new HashMap<>();
     }
+
+
+    public String getCallerPrediction() {
+        return callerPrediction;
+    }
+
+    public void setCallerPrediction(String callerPrediction) {
+        this.callerPrediction = callerPrediction;
+    }
+
 }
