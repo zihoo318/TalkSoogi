@@ -2,13 +2,16 @@ package com.example.app
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ProgressBar
 import android.widget.SearchView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,9 +23,11 @@ import com.example.talkssogi.Constants
 import com.example.talkssogi.R
 import com.example.talkssogi.databinding.FragmentPage10Binding
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 class fragmentPage10 : Fragment() {
     private var _binding: FragmentPage10Binding? = null
@@ -30,7 +35,7 @@ class fragmentPage10 : Fragment() {
     private var crnum: Int = -1 // 기본값을 -1로 설정
     private lateinit var callerPredictionViewModel: CallerPredictionViewModel
     private lateinit var sharedPreferences: SharedPreferences // Intent를 위한 유저 아이디
-
+    private lateinit var loadingIndicator: ProgressBar // 분석 중 띄우는 바
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +43,16 @@ class fragmentPage10 : Fragment() {
     ): View? {
         // ViewBinding을 사용하여 레이아웃을 인플레이트
         _binding = FragmentPage10Binding.inflate(inflater, container, false)
+        loadingIndicator = binding.loadingIndicator // 분석 중 띄우는 바(띄워져 있는데 안 보이게 해둠)
+
+        // AnimationDrawable 설정
+        val animationDrawable = context?.let {
+            AppCompatResources.getDrawable(
+                it,
+                R.drawable.animation_loding
+            )
+        } as? AnimationDrawable
+        loadingIndicator.indeterminateDrawable = animationDrawable
         return binding.root
     }
 
@@ -50,10 +65,36 @@ class fragmentPage10 : Fragment() {
         observeViewModel()
     }
 
-    private fun initViewModel() {
+    // "분석 중" 상태를 표시하는 함수
+    private fun showLoadingIndicator() {
+        //loadingindicator가 작동하는지 확인하는 로그
+        Log.d("fragmentPage10", "LoadingIndicator 작동")
+        // 애니메이션 시작
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.start()
+        loadingIndicator.visibility = View.VISIBLE
+    }
+
+    // "분석 중" 상태를 숨기는 함수
+    public fun hideLoadingIndicator() {
+        //loadingindicator가 꺼지는지 확인하는 로그
+        Log.d("fragmentPage10", "LoadingIndicator 꺼짐")
+        // 애니메이션 멈춤
+        (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.stop()
+        loadingIndicator.visibility = View.GONE
+    }
+
+    private fun initViewModel()  {
+        // OkHttpClient에 타임아웃 설정 추가
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
+
         // Retrofit 인스턴스 생성
         val retrofit = Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -65,6 +106,7 @@ class fragmentPage10 : Fragment() {
         val factory = CallerPredictionViewModelFactory(apiService)
         callerPredictionViewModel = ViewModelProvider(this, factory).get(CallerPredictionViewModel::class.java)
     }
+
     // SearchView 설정
     private fun initSearchView() {
         val searchView = binding.searchView
@@ -79,10 +121,14 @@ class fragmentPage10 : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean { // 메서드 시그니처 수정
                 query?.let { keyword ->
                     if (userId != null && userId != "Unknown") { // userId가 유효한 경우에만 API 호출
+                        searchView.clearFocus()
+                        showLoadingIndicator()
                         // 데이터 가져오기 요청을 코루틴 내에서 호출
                         viewLifecycleOwner.lifecycleScope.launch {
                             callerPredictionViewModel.fetchCallerPrediction(crnum, keyword)
                         }
+                    } else{
+                        hideLoadingIndicator()
                     }
                 }
                 return true // true를 반환하여 이벤트를 처리했음을 나타냄
@@ -104,12 +150,14 @@ class fragmentPage10 : Fragment() {
 
     private fun observeViewModel() {
         callerPredictionViewModel.callerPrediction.observe(viewLifecycleOwner, Observer { result ->
+            hideLoadingIndicator()
             if (result != null) {
                 performSearch(result)
             }
         })
 
         callerPredictionViewModel.error.observe(viewLifecycleOwner, Observer { error ->
+            hideLoadingIndicator()
             error?.let {
                 Log.e("fragmentPage10", it)
             }
