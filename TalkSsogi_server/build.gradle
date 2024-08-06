@@ -14,9 +14,22 @@ java {
 	}
 }
 
+jar {
+	enabled = false
+}
+
 repositories {
 	mavenCentral()
 }
+
+tasks.named('bootJar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('jar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
