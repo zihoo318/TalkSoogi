@@ -54,12 +54,13 @@ public class Page6Controller {
         }
     }
 
-    @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
-    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer crnum, @PathVariable String userId) {
-        String wordCloudImageUrl = chattingRoomService.findWordCloudImageUrlByCrnumAndUserId(crnum, userId);
-        if (wordCloudImageUrl == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(wordCloudImageUrl, HttpStatus.OK);
-    }
+    // 파이썬컨트롤러에 있음
+//    @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
+//    public ResponseEntity<String> getWordCloudImageUrl(@PathVariable Integer crnum, @PathVariable String userId) {
+//        String wordCloudImageUrl = chattingRoomService.findWordCloudImageUrlByCrnumAndUserId(crnum, userId);
+//        if (wordCloudImageUrl == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(wordCloudImageUrl, HttpStatus.OK);
+//    }
 }

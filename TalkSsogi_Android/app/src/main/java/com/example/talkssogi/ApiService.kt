@@ -66,17 +66,17 @@ interface ApiService {
     ): Call<String>
 
     //가을 api 수정사항(페이지8)
-    @GET("/api/basics/activityAnalysis")
+    @GET("/api/analysis/basicActivityAnalysis")
     fun getActivityAnalysis(
         @Query("crnum") crnum: Int
-    ): Response<Map<String, List<String>>>
+    ): Call<List<String>>
 
     @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기
     suspend  fun getChattingRoomMembers(
         @Path("crnum") crnum: Int
     ): Response<List<String>> // Response 객체
 
-    @GET("/api/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
+    @GET("/api/analysis/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
     fun getWordCloudImageUrl(
         @Path("crnum") crnum: Int,
         @Path("userId") userId: Int
@@ -89,7 +89,7 @@ interface ApiService {
         @Query("searchWho") searchWho: String,
         @Query("resultsItem") resultsItem: String,
         @Query("crnum") crnum: Int
-    ): Call<List<ImageURL>>
+    ): Call<String>
 
 
     @GET("/api/participants/{chatRoomId}") // 페이지 9에서 사용한 검색 대상 선택을 위해 대화 참가자 이름 목록 가져오기
@@ -100,22 +100,22 @@ interface ApiService {
     @DELETE("/api/chatrooms/{crnum}")
     fun deleteChatRoom(@Path("crnum") crnum: Int): Call<Void>
 
-    // 로그인 API
+    // 로그인 API 호출
     @POST("/api/login")
-    fun loginUser(
-        @Query("userId") userId: String
-    ): Call<Map<String, Any>>
+    fun login(
+        @Body loginRequest: LoginRequest
+    ): Call<ResponseBody>
 
-    // 회원가입 API
+    // 회원가입 API 호출
     @POST("/api/register")
-    fun registerUser(
-        @Query("userId") userId: String
-    ): Call<Map<String, Any>>
+    fun register(
+        @Body registerRequest: RegisterRequest
+    ): Call<ResponseBody>
 
-    // 사용자 ID 중복 확인 API
+    // 사용자 ID 유효성 확인 API 호출
     @GET("/api/checkUserId")
     fun checkUserId(
         @Query("userId") userId: String
-    ): Call<String>
+    ): Call<ResponseBody>
 
 }
