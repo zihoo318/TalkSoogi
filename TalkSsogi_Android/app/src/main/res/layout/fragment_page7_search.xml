@@ -99,4 +99,17 @@
         app:layout_constraintTop_toTopOf="@+id/board" />
     <!-- 검색 버튼 -->
 
+    <!--분석 중 띄우기-->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
+        android:indeterminateDrawable="@drawable/animation_loding"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
