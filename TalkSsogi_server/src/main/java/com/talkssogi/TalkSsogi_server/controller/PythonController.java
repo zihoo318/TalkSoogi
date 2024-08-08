@@ -36,13 +36,13 @@ public class PythonController {
     private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace"; // workspace 밑에 저장된 파이썬 파일 경로
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/KJH/AppData/Local/Programs/Python/Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/KJH/TalkSsogi_Workspace/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page9python.py";
-    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page8python.py";
-    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page6python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // workspace 밑에 저장된 파이썬 파일 경로
+    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";
+    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page9python.py";
+    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page8python.py";
+    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page6python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
 
 
     @Autowired
@@ -55,10 +55,14 @@ public class PythonController {
 
     // 기본분석으로 생긴 텍스트 파일들 s3에 업로드하는 함수(api호출해야해서 분리)
     private void uploadFilesToS3(String[] resultLines, int headcount, int crnum) throws IOException {
+        logger.info("Starting uploadFilesToS3 with resultLines length: " + resultLines.length);
+
         List<File> filesToUpload = new ArrayList<>();
+
         for (int i = 2; i < 2 + headcount * 2; i++) {
             File file = new File(resultLines[i]);
             filesToUpload.add(file);
+            logger.info("File to upload: " + file.getAbsolutePath());
         }
 
         // S3에 파일 업로드(파일 타입을 가지고 프리픽스(=폴더 같은 개념의 파일이름 앞의 경로이름) 설정함)
@@ -142,6 +146,12 @@ public class PythonController {
 
             // 결과 처리
             String[] resultLines = result.toString().split("\n");
+            // 디버깅 로그 추가
+            logger.info("Result lines length: " + resultLines.length);
+            for (int i = 0; i < resultLines.length; i++) {
+                logger.info("Result line " + i + ": " + resultLines[i]);
+            }
+
             if (resultLines.length < 2) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
@@ -289,20 +299,48 @@ public class PythonController {
         return content.toString();
     }
 
-
+    // 파일 내용을 로그에 출력하는 헬퍼 메서드
+    private void logFileContents(String filePath) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                logger.info(line);
+            }
+        } catch (IOException e) {
+            logger.error("Error reading file contents: ", e);
+        }
+    }
     // 5페이지에서 8로 갈 때 실행될 기본 제공 데이터
     @GetMapping("/basicActivityAnalysis")
-    public ResponseEntity<List<String>> commonPythonScript(@RequestParam(value = "crnum") int crnum) {
+    public ResponseEntity<List<String>> getActivityAnalysis(@RequestParam(value = "crnum") int crnum) {
+        logger.info("Starting getActivityAnalysis for crnum: " + crnum);
+        return commonPythonScript(crnum);
+    }
+
+    // 실제 분석 수행 로직을 처리하는 메서드
+    public ResponseEntity<List<String>> commonPythonScript(int crnum) {
+        logger.info("Starting commonPythonScript with crnum: " + crnum); // 메서드 시작 로그
+
         try {
-            // S3에서 파일 다운로드
-            String dailyFilePath = s3DownLoader.getFileUrl(String.format("%d/group_daily_message_count.txt", crnum));
-            String hourlyFilePath = s3DownLoader.getFileUrl(String.format("%d/group_daily_hourly_message_count.txt", crnum));
-            //String dailyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_message_count.txt", crnum);
-            //String hourlyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_hourly_message_count.txt", crnum);
+            // S3에서 파일 URL 가져오기
+            String bucketName = "gaeul0904";
+            String dailyFilePath = s3DownLoader.getFileUrl(String.format("%d_group_daily_message_count.txt", crnum));
+            String hourlyFilePath = s3DownLoader.getFileUrl(String.format("%d_group_daily_hourly_message_count.txt", crnum));
+            // 파일 내용을 로그에 출력
+            logger.info("데일리 파일을 s3에서 읽어오기 :" + dailyFilePath);
+
+            logger.info("hourly 파일을 s3에서 읽어오기 : " + hourlyFilePath);
 
             // 명령어 설정
             String command = String.format("%s %s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_PAGE8_PATH, dailyFilePath, hourlyFilePath);
             logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
+
+            // S3에서 파일 다운로드
+            //String dailyFilePath = s3DownLoader.getFileUrl(String.format("%d/group_daily_message_count.txt", crnum));
+            //String hourlyFilePath = s3DownLoader.getFileUrl(String.format("%d/group_daily_hourly_message_count.txt", crnum));
+            //String dailyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_message_count.txt", crnum);
+            //String hourlyFilePath = PYTHON_newimage_PATH + String.format("%d_group_daily_hourly_message_count.txt", crnum);
+
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
@@ -326,12 +364,14 @@ public class PythonController {
                 System.err.println("Error: " + errorLine); // 오류 확인
             }
 
-            // 프로세스 종료 대기
+            /// 프로세스 종료 대기
             int exitCode = process.waitFor();
+            logger.info("Process exited with code: " + exitCode);
 
-            // 다운로드한 파일 삭제
-            Files.deleteIfExists(Paths.get(dailyFilePath));
-            Files.deleteIfExists(Paths.get(hourlyFilePath));
+
+//            // 다운로드한 파일 삭제
+//            Files.deleteIfExists(Paths.get(dailyFilePath.toString()));
+//            Files.deleteIfExists(Paths.get(hourlyFilePath.toString()));
 
             if (exitCode == 0) {
                 // 기본 값 설정
