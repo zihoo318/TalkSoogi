@@ -134,6 +134,7 @@ class ActivityAnalysisViewModel : ViewModel() {
 }*/
 
     fun startBasicActivityAnalysis(crnum: Int) {
+        Log.d("ActivityAnalysisViewModel", "파일 업로드 후 기본 분석 요청 실행 : $crnum")
         val call = apiService.getActivityAnalysis(crnum)
         call.enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
@@ -152,42 +153,33 @@ class ActivityAnalysisViewModel : ViewModel() {
 
     // 페이지8에서 기본제공 활동분석 결과 출력
     fun fetchActivityAnalysis(crnum: Int, callback: (List<String>) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                // API 호출
                 val call = apiService.getBasicActivityAnalysis(crnum)
                 call.enqueue(object : Callback<List<String>> {
                     override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-                        // 메인 스레드에서 결과 처리
-                        viewModelScope.launch(Dispatchers.Main) {
-                            if (response.isSuccessful) {
-                                Log.e("Page9", "기본제공분석 api응답 받음")
-                                val body = response.body() ?: emptyList()
-                                callback(body)
-                            } else {
-                                Log.e("Page9", "Error: ${response.code()}")
-                                callback(emptyList())
-                            }
+                        if (response.isSuccessful) {
+                            val body = response.body() ?: emptyList()
+                            Log.e("Page8", "기본제공분석 API 응답 받음: $body")
+                            callback(body)
+                        } else {
+                            Log.e("Page8", "API 응답 오류: ${response.code()}")
+                            callback(emptyList())
                         }
                     }
 
                     override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                        // 메인 스레드에서 예외 처리
-                        viewModelScope.launch(Dispatchers.Main) {
-                            Log.e("Page9", "Exception: ${t.message}", t)
-                            callback(emptyList())
-                        }
+                        Log.e("Page8", "API 호출 실패: ${t.message}", t)
+                        callback(emptyList())
                     }
                 })
             } catch (e: Exception) {
-                // 예외 처리
-                Log.e("Page9", "Exception: ${e.message}", e)
-                viewModelScope.launch(Dispatchers.Main) {
-                    callback(emptyList())
-                }
+                Log.e("Page8", "예외 발생: ${e.message}", e)
+                callback(emptyList())
             }
         }
     }
+
 
     // 위의 메서드를 통해 받은 리스트 데이터를 받아서 LiveData에 설정하는 메소드
     fun fetchAndSetActivityAnalysis(crnum: Int) {

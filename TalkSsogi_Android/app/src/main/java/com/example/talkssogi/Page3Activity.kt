@@ -195,7 +195,7 @@ class Page3Activity : AppCompatActivity() {
 //            }
 //        }
 //    }
-    private suspend fun analyzeFile(crNum: Int) {
+    private fun analyzeFile(crNum: Int) {
         viewModel.requestBasicPythonAnalysis(crNum) { result ->
             if (result >= 0) {
                 lifecycleScope.launch {

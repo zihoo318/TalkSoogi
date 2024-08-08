@@ -22,12 +22,14 @@ import com.example.talkssogi.CallerPredictionViewModelFactory
 import com.example.talkssogi.Constants
 import com.example.talkssogi.R
 import com.example.talkssogi.databinding.FragmentPage10Binding
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
+
 
 class fragmentPage10 : Fragment() {
     private var _binding: FragmentPage10Binding? = null
@@ -91,12 +93,16 @@ class fragmentPage10 : Fragment() {
             .writeTimeout(60, TimeUnit.SECONDS)
             .build()
 
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         // Retrofit 인스턴스 생성
         val retrofit = Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         // ApiService 생성
