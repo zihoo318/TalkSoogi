@@ -1,6 +1,5 @@
 package com.example.talkssogi
 
-import com.example.talkssogi.model.ChatRoom
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -9,27 +8,30 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.talkssogi.model.ChatRoom
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
+
 
 class MyApplication : Application() {
     //page2Activity에서 사용할 apiService
@@ -72,10 +74,14 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
+    var gson: Gson = GsonBuilder()
+        .setLenient()
+        .create()
+
     private val apiService = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
         .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)
 
@@ -441,20 +447,25 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // 기본 분석 요청 API 호출 함수
-    fun requestBasicPythonAnalysis(crnum: Int, callback: (Int) -> Unit) {
+    fun requestBasicPythonAnalysis(crnum: Int, context: Context, callback: (Int) -> Unit) {
         apiService.runBasicPythonAnalysis(crnum).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     Log.i("fetchChatRooms", "분석 성공: ${response.body()}")
                     callback(crnum) // 분석 성공 결과를 콜백으로 전달
                 } else {
-                    Log.e("fetchChatRooms", "분석 실패: ${response.errorBody()?.string()}")
+                    // 서버에서 반환한 오류 메시지를 출력하고 Toast로 띄우기
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("fetchChatRooms", "분석 실패: $errorBody")
+                    Toast.makeText(context, "$errorBody", Toast.LENGTH_LONG).show()
                     callback(-4) // 분석 실패 코드 전달
                 }
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
+                // 네트워크 오류 시
                 Log.e("fetchChatRooms", "네트워크 오류: ${t.message}")
+                Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_LONG).show()
                 callback(-2) // 네트워크 오류 코드 전달
             }
         })

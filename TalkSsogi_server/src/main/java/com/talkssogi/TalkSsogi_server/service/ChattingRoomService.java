@@ -27,13 +27,14 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
 public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
-    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi";
+    private static final String UPLOAD_DIR = "C:/Users/KJH/TalkSsogi_Workspace/"; // "/"까지 해야됨!
     //테스트용 경로
 
     @Autowired
@@ -47,7 +48,6 @@ public class ChattingRoomService {
     public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
         this.chattingRoomRepository = chattingRoomRepository;
         this.userRepository = userRepository;
-
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class ChattingRoomService {
     }
 
     public void saveRankingResults(Integer crNum, String jsonResults) {
-        Map<String, Map<String, String>> rankingResults = pythonResultProcessor.extractRankingResults(jsonResults);
+        Map<String, Map<String, Integer>> rankingResults = pythonResultProcessor.extractRankingResults(jsonResults);
 
         if (rankingResults == null) {
             System.out.println("Error processing ranking results");
@@ -167,7 +167,7 @@ public class ChattingRoomService {
         }
     }
 
-    public Map<String, Map<String, String>> getBasicRankingResults(Integer crNum) {
+    public Map<String, Map<String, Integer>> getBasicRankingResults(Integer crNum) {
         ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crNum).orElse(null);
         if (chattingRoom != null) {
             return chattingRoom.getBasicRankingResults();
@@ -175,7 +175,7 @@ public class ChattingRoomService {
         return null;
     }
 
-    public Map<String, Map<String, String>> getSearchRankingResults(int crnum, String keyword) {
+    public Map<String, Map<String, Integer>> getSearchRankingResults(int crnum, String keyword) {
         // 파이썬 스크립트를 실행하여 결과를 가져오는 로직을 추가
         ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
         if (chattingRoom == null) {
@@ -184,8 +184,8 @@ public class ChattingRoomService {
         }
 
         String filePath = chattingRoom.getFilePath(); // chat file path를 설정해야 함
-        String searchResultsFilePath = UPLOAD_DIR + "/search_ranking_results.json"; // 파이썬 스크립트가 생성하는 파일 경로
-        String pythonFilePath = UPLOAD_DIR + "/search_ranking_result.py";
+        String searchResultsFilePath = UPLOAD_DIR + "search_ranking_results.json"; // 파이썬 스크립트가 생성하는 파일 경로
+        String pythonFilePath = UPLOAD_DIR + "search_ranking_result.py";
 
         ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath , filePath, keyword);
         processBuilder.redirectErrorStream(true);
@@ -221,7 +221,7 @@ public class ChattingRoomService {
 
             String jsonString = new String(Files.readAllBytes(searchResultsPath));
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Map<String, String>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, String>>>(){});
+            Map<String, Map<String, Integer>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, Integer>>>(){});
 
             chattingRoom.setSearchRankingResults(rankingResultsMap);
             this.save(chattingRoom); // chattingRoomService.save(chattingRoom) 대신 this.save(chattingRoom) 사용
@@ -250,16 +250,16 @@ public class ChattingRoomService {
         }
     }
 
-    @Transactional
-    public String findActivityAnalysisImageUrlByCrnum(Integer crnum) {
-        try {
-            return chattingRoomRepository.findByCrNum(crnum)
-                    .map(ChattingRoom::getActivityAnalysisImageUrl)
-                    .orElse(null);
-        } catch (DataAccessException e) {
-            logger.error("활동 분석 이미지 URL 조회 중 데이터베이스 오류 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("활동 분석 이미지 URL 조회에 실패했습니다.", e);
+    public List<String> getBasicActivityAnalysis(int crnum) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findById(crnum).orElse(null);
+
+        // chattingroom 있는지 확인
+        if (chattingRoom != null) {
+            return chattingRoom.getBasicActivityAnalysis();
         }
+
+        // chattingroom 없으면 빈 리스트 반환
+        return List.of();
     }
 
     @Transactional
@@ -285,4 +285,24 @@ public class ChattingRoomService {
             throw new RuntimeException("워드 클라우드 이미지 URL 조회에 실패했습니다.", e);
         }
     }
+
+    // 인덱스를 이용해 멤버 이름을 가져오는 메서드
+    public String getMemberNameByIndex(int crnum, int index) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
+        List<String> memberNames = chattingRoom.getMemberNames();
+        if (index >= 0 && index < memberNames.size()) {
+            return memberNames.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    // 멤버 이름을 이용해 인덱스를 가져오는 메서드
+    public Integer getMemberIndexByName(int crnum, String name) {
+        ChattingRoom chattingRoom = chattingRoomRepository.findByCrNum(crnum).orElse(null);
+        List<String> memberNames = chattingRoom.getMemberNames();
+        int index = memberNames.indexOf(name);
+        return index >= 0 ? index : null;
+    }
+
 }

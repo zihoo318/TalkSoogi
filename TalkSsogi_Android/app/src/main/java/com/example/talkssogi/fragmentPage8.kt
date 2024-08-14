@@ -71,40 +71,11 @@ class fragmentPage8 : Fragment() {
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
         }
 
-        // ViewModel을 통해 데이터를 요청
-        lifecycleScope.launch {
-            try {
-                viewModel.fetchActivityAnalysis(crnum) { result ->
-                    // 결과 처리
-                    // result가 List<String>이므로 이를 적절히 가공하여 UI에 반영
-                    if (result.isNotEmpty()) {
-                        // 예를 들어, 결과 리스트의 첫 번째 요소를 메시지 카운트로 사용
-                        if (result.size > 0) {
-                            messageCountResult.text = result[0]
-                        }
-                        // 두 번째 요소를 제로 카운트 날짜로 사용
-                        if (result.size > 1) {
-                            zeroCountResult.text = result[1]
-                        }
-                        // 세 번째 요소를 시간대 카운트로 사용
-                        if (result.size > 2) {
-                            hourlyCountResult.text = result[2]
-                        }
-                    } else {
-                        // 결과가 비어있을 때의 처리
-                        messageCountResult.text = "No data"
-                        zeroCountResult.text = "No data"
-                        hourlyCountResult.text = "No data"
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("Page8", "Error fetching activity analysis", e)
-                // 에러 메시지 설정
-                messageCountResult.text = "Error"
-                zeroCountResult.text = "Error"
-                hourlyCountResult.text = "Error"
-            }
-        }
+        // ViewModel을 통해 데이터를 요청하고 결과를 LiveData에 설정
+        viewModel.fetchAndSetActivityAnalysis(crnum)
+
+        // 분석은 됐는데 다른예외처리에 걸려서 실행 못하는 중이라 일단 여기서 호출
+        //viewModel.startBasicActivityAnalysis(crnum)
 
         return view
     }

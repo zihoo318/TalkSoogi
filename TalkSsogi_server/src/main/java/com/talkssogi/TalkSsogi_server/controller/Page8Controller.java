@@ -1,9 +1,14 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
+import com.talkssogi.TalkSsogi_server.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,15 +28,18 @@ page8 서버에서 가져올 데이터
 @RequestMapping("/api/basics")
 public class Page8Controller {
 
-    // 파이썬컨트롤러에 있음
-//    @GetMapping("/activityAnalysis")
-//    public Map<String, List<String>> getActivityAnalysis() {
-//        // 여기에 기본 제공 랭킹 결과를 생성하는 로직을 추가합니다.
-//        Map<String, List<String>> activityAnalysis = new HashMap<>();
-//        activityAnalysis.put("메세지 수가 가장 많았던 날", List.of("2024-07-20")); // 예: 20일
-//        activityAnalysis.put("대화를 하지 않은 날", List.of("2024-05-06")); // 예: 5월 6일
-//        activityAnalysis.put("평균적으로 가장 활발한 시간대", List.of("오후 3시~6시")); // 예: 오후 3시~6시
-//
-//        return activityAnalysis;
-//    }
+    private final ChattingRoomService chattingRoomService;
+    private final UserService userService;
+
+    @Autowired
+    public Page8Controller(ChattingRoomService chattingRoomService, UserService userService) {
+        this.chattingRoomService = chattingRoomService;
+        this.userService = userService;
+    }
+
+    // db에 저장된 리스트를 전달
+    @GetMapping("/activityAnalysis")
+    public List<String> getActivityAnalysis(@RequestParam("crnum") int crnum) {
+        return chattingRoomService.getBasicActivityAnalysis(crnum);
+    }
 }

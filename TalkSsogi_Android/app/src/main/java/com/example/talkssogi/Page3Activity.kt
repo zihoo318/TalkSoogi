@@ -195,12 +195,12 @@ class Page3Activity : AppCompatActivity() {
 //            }
 //        }
 //    }
-    private suspend fun analyzeFile(crNum: Int) {
-        viewModel.requestBasicPythonAnalysis(crNum) { result ->
+    private fun analyzeFile(crNum: Int) {
+        viewModel.requestBasicPythonAnalysis(crNum, this) { result ->
             if (result >= 0) {
                 lifecycleScope.launch {
                     Log.d("Page9", "페이지3에서 페이지8 분석 api호출 직전")
-                    activityviewModel.fetchAndSetActivityAnalysis(crNum)
+                    activityviewModel.startBasicActivityAnalysis(crNum)
                 }
                 hideLoadingIndicator()
                 startActivity(Intent(this@Page3Activity, Page2Activity::class.java))

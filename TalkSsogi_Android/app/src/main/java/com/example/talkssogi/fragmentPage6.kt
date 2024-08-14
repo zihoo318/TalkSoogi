@@ -51,7 +51,8 @@ class fragmentPage6 : Fragment() {
 
         // 검색 버튼 클릭 리스너 설정
         searchbtn.setOnClickListener {
-            val selectedItem = spinner.selectedItem.toString().toInt() // String을 Int로 변환
+            //val selectedItem = spinner.selectedItem.toString().toInt() // String을 Int로 변환
+            val selectedItem = spinner.selectedItem.toString()
 
             // API 호출을 통해 이미지 URL 가져오기
             activityAnalysisViewModel.loadWordCloudImageUrl(crnum, selectedItem)
@@ -71,13 +72,6 @@ class fragmentPage6 : Fragment() {
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = spinnerAdapter
         })
-
-        // 초기 버튼 클릭 전에 보여질 리싸이클러뷰 아이템 설정 (테스트용 코드)
-        val imageUrlForRecyclerView = "https://example.com/test_img_page6.jpg" // 실제 URL로 변경해야 함
-        val testImageResponseForRecyclerView = ImageURL(imageUrlForRecyclerView)
-        val itemListForRecyclerView = listOf(testImageResponseForRecyclerView)
-        val page9RecyclerViewAdapter = Page9RecyclerViewAdapter(itemListForRecyclerView)
-        recyclerView.adapter = page9RecyclerViewAdapter
 
         // 인플레이트된 뷰를 반환합니다.
         return view

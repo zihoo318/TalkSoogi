@@ -47,17 +47,16 @@ interface ApiService {
         @Query("crnum") crnum: Int
     ): Call<String>
 
-
     @GET("/api/rankings/basicRankingResults")
     fun getBasicRankingResults(
         @Query("crnum") crnum: Int
-    ): Call<Map<String, Map<String, String>>>
+    ): Call<Map<String, Map<String, Int>>>
 
     @GET("/api/rankings/searchRankingResults")  //페이지7에서 사용할 랭킹 배열(검색 시)
     fun getSearchRankingResults(
         @Query("crnum") crnum: Int,
         @Query("keyword") keyword: String      //keyword와 crnum을 넘겨준다.
-    ): Call<Map<String, Map<String, String>>>
+    ): Call<Map<String, Map<String, Int>>>
 
     @GET("/api/analysis/caller-prediction")  //페이지10 발신자 예측
     fun getCallerPrediction(
@@ -66,10 +65,15 @@ interface ApiService {
     ): Call<String>
 
     //가을 api 수정사항(페이지8)
-    @GET("/api/analysis/basicActivityAnalysis")
+    @GET("/api/analysis/basicActivityAnalysis") // 미리 분석 시키고 db에 결과 저장시켜두는 api
     fun getActivityAnalysis(
         @Query("crnum") crnum: Int
-    ): Call<List<String>>
+    ): Call<Unit> // 분석 시작 API는 결과가 없으므로 `Unit` 사용
+
+    @GET("/api/basics/activityAnalysis") // 저장해둔 결과 가져오는 api
+    fun getBasicActivityAnalysis(
+            @Query("crnum") crnum: Int
+    ): Call<List<String>> // DB에서 결과를 가져오는 API
 
     @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기
     suspend  fun getChattingRoomMembers(
@@ -77,10 +81,10 @@ interface ApiService {
     ): Response<List<String>> // Response 객체
 
     @GET("/api/analysis/wordCloudImageUrl/{crnum}/{userId}") // 특정 사용자의 워드 클라우드 이미지 URL 가져오기
-    fun getWordCloudImageUrl(
+    suspend fun getWordCloudImageUrl(
         @Path("crnum") crnum: Int,
-        @Path("userId") userId: Int
-    ): Call<List<ImageURL>>
+        @Path("userId") userId: String
+    ): Response<String>
 
     @POST("/api/analysis/personalActivityAnalysisImage")
     fun getActivityAnalysisImage(

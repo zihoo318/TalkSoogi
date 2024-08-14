@@ -37,9 +37,9 @@ public class ChattingRoom {
     @Column(name = "member_names") // Column name updated to match MySQL schema
     private List<String> memberNames = new ArrayList<>(); // 빈 리스트로 초기화
 
-    @Convert(converter = MapStringListConverter.class)
-    @Column(name = "basic_activity_analysis") // Column name updated to match MySQL schema
-    private Map<String, List<String>> basicActivityAnalysis = new HashMap<>(); // 빈 맵으로 초기화
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "basic_activity_analysis", columnDefinition = "LONGTEXT", length = 10000) // Column name updated to match MySQL schema
+    private List<String> basicActivityAnalysis = new ArrayList<>(); // 빈 맵으로 초기화
 
     @Column(name = "activity_analysis_image_url", length = 255)
     private String activityAnalysisImageUrl = ""; // 빈 문자열로 초기화
@@ -49,11 +49,11 @@ public class ChattingRoom {
 
     @Convert(converter = MapStringMapConverter.class)
     @Column(name = "basic_ranking_results", columnDefinition = "LONGTEXT", length = 10000) // Column name updated to match MySQL schema
-    private Map<String, Map<String, String>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+    private Map<String, Map<String, Integer>> basicRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
     @Convert(converter = MapStringMapConverter.class)
     @Column(name = "search_ranking_results") // Column name updated to match MySQL schema
-    private Map<String, Map<String, String>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
+    private Map<String, Map<String, Integer>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
     @Column(name = "caller_prediction") // 발신자 예측 결과값 저장
     private String callerPrediction;
@@ -108,12 +108,12 @@ public class ChattingRoom {
         this.memberNames = memberNames != null ? memberNames : new ArrayList<>();
     }
 
-    public Map<String, List<String>> getBasicActivityAnalysis() {
+    public List<String> getBasicActivityAnalysis() {
         return basicActivityAnalysis;
     }
 
-    public void setBasicActivityAnalysis(Map<String, List<String>> basicActivityAnalysis) {
-        this.basicActivityAnalysis = basicActivityAnalysis != null ? basicActivityAnalysis : new HashMap<>();
+    public void setBasicActivityAnalysis(List<String> basicActivityAnalysis) {
+        this.basicActivityAnalysis = basicActivityAnalysis != null ? basicActivityAnalysis : new ArrayList<>();
     }
 
     public String getActivityAnalysisImageUrl() {
@@ -132,19 +132,19 @@ public class ChattingRoom {
         this.wordCloudImageUrl = wordCloudImageUrl != null ? wordCloudImageUrl : "";
     }
 
-    public Map<String, Map<String, String>> getBasicRankingResults() {
+    public Map<String, Map<String, Integer>> getBasicRankingResults() {
         return basicRankingResults;
     }
 
-    public void setBasicRankingResults(Map<String, Map<String, String>> basicRankingResults) {
+    public void setBasicRankingResults(Map<String, Map<String, Integer>> basicRankingResults) {
         this.basicRankingResults = basicRankingResults;
     }
 
-    public Map<String, Map<String, String>> getSearchRankingResults() {
+    public Map<String, Map<String, Integer>> getSearchRankingResults() {
         return searchRankingResults;
     }
 
-    public void setSearchRankingResults(Map<String, Map<String, String>> searchRankingResults) {
+    public void setSearchRankingResults(Map<String, Map<String, Integer>> searchRankingResults) {
         this.searchRankingResults = searchRankingResults != null ? searchRankingResults : new HashMap<>();
     }
 

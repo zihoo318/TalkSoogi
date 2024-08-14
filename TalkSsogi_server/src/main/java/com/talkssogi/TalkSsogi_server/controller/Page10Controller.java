@@ -29,7 +29,7 @@ public class Page10Controller {
     private PythonController pythonController;
 
     @GetMapping("/caller-prediction")
-    public ResponseEntity<String> getCallerPrediction(@RequestParam Integer crnum, @RequestParam String keyword) {
+    public ResponseEntity<String> getCallerPrediction(@RequestParam("crnum") Integer crnum, @RequestParam("keyword") String keyword) {
         ResponseEntity<String> response = pythonController.getCallerPrediction(crnum, keyword);
 
         logger.info("Caller Prediction 결과 for keyword와 crnum {}, {}: {}", keyword, crnum, response.getBody());

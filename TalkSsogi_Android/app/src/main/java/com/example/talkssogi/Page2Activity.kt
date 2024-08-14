@@ -210,7 +210,7 @@ class Page2Activity : AppCompatActivity() {
                 viewModel.updateFile(selectedCrnum, uri,
                     onSuccess = { crnum ->
                         // 파일 업로드 성공 후 분석 요청
-                        viewModel.requestBasicPythonAnalysis(crnum) { result ->
+                        viewModel.requestBasicPythonAnalysis(crnum, this) { result ->
                             when (result) {
                                 in 0..Int.MAX_VALUE -> {
                                     // 분석 성공
@@ -221,7 +221,7 @@ class Page2Activity : AppCompatActivity() {
                                     dialog.dismiss() // 다이얼로그 닫기
                                     viewModel.fetchChatRooms() // 다이얼로그 꺼지면 2페이지 목록 새로고침
                                     lifecycleScope.launch {
-                                        activityviewModel.fetchAndSetActivityAnalysis(crnum)
+                                        activityviewModel.startBasicActivityAnalysis(crnum)
                                         Log.d("Page9", "업데이트 후 기본제공 분석 시작")
                                     }
                                 }

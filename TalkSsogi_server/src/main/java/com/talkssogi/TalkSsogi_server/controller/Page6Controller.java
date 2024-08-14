@@ -33,7 +33,7 @@ public class Page6Controller {
     }
 
     @GetMapping("/members/{crnum}")
-    public ResponseEntity<List<String>> getChattingRoomMembers(@PathVariable Integer crnum) {
+    public ResponseEntity<List<String>> getChattingRoomMembers(@PathVariable("crnum") Integer crnum) {
         List<String> members = null;
         try {
             members = chattingRoomService.getChattingRoomMembers(crnum);
