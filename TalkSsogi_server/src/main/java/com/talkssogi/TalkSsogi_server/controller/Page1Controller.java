@@ -1,5 +1,8 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
+import com.talkssogi.TalkSsogi_server.controller.LoginRequest;
+import com.talkssogi.TalkSsogi_server.controller.RegisterRequest;
 import com.talkssogi.TalkSsogi_server.domain.User;
 import com.talkssogi.TalkSsogi_server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-/*
-Page1Service를 모든 유저의 id를 저장한 배열을 만드는 함수를 포함해서 만들어줘 이 함수를 사용해서 Page1Controller에서 api로 보내도록
-Page1Service랑 Page1Controller 만들기!!
- */
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -20,27 +18,49 @@ public class Page1Controller {
 
     private final UserService userService;
 
-
     @Autowired
     public Page1Controller(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/userIds")  // 기존에 있는 아이디들 목록으로 보내주기(for 아이디 중복 확인)
-    public ResponseEntity<List<String>> getAllUserIds() {
-        List<String> userIds = userService.getAllUserIds();
-        return new ResponseEntity<>(userIds, HttpStatus.OK);
+    @PostMapping("/userId")
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+        String userId = user.getUserId();
+        if (userService.userIdExistsForPage1(userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User ID already exists");
+        }
+        User newUser = new User(userId);
+        userService.addUser(newUser);
+        return ResponseEntity.ok("User created successfully");
     }
 
-    @PostMapping("/userId")
-    public ResponseEntity<String> createUser(@RequestParam("userId") String userId) {
-        // 새로운 사용자 객체를 생성
-        User newUser = new User(userId);
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        String userId = loginRequest.getUserId();
+        if (userService.userIdExists(userId)) {
+            return ResponseEntity.ok("Success");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid ID");
+        }
+    }
 
-        // UserService를 통해 사용자 저장
-        userService.addUser(newUser);
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        String userId = registerRequest.getUserId();
+        if (userService.userIdExists(userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already taken");
+        } else {
+            userService.registerUser(userId);
+            return ResponseEntity.ok("Registration successful");
+        }
+    }
 
-        // 성공 응답 반환
-        return ResponseEntity.ok("User created successfully");
+    @GetMapping("/checkUserId")
+    public ResponseEntity<String> checkUserId(@RequestParam String userId) {
+        if (userService.userIdExistsForPage1(userId)) {
+            return ResponseEntity.ok("Username is already in use");
+        } else {
+            return ResponseEntity.ok("Username is available");
+        }
     }
 }

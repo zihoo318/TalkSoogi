@@ -11,13 +11,13 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toBottomOf="@+id/user_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/undo" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,43 +37,115 @@
 
         <ImageView
             android:id="@+id/imgResult"
-            android:layout_width="350dp"
-            android:layout_height="400dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="16dp"
+            android:layout_width="0dp"
+            android:layout_height="460dp"
+            android:layout_marginTop="12dp"
             android:scaleType="centerCrop"
             android:src="@drawable/rank_board"
+            app:layout_constraintBottom_toTopOf="@+id/BtnGotoPage9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/txtViewResult"
-            android:layout_width="170dp"
+            android:id="@+id/messageCount"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="결과 내용!!"
+            android:layout_marginTop="150dp"
+            android:text="메시지 수가 가장 많았던 날 :"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="@id/imgResult"
-            app:layout_constraintBottom_toBottomOf="@id/imgResult"
-            app:layout_constraintStart_toStartOf="@id/imgResult"
-            app:layout_constraintEnd_toEndOf="@id/imgResult"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintHorizontal_bias="0.5" />
+            app:layout_constraintBottom_toTopOf="@+id/messageCountResult"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/messageCountResult"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="잠시만 기다려주세요."
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/zeroCount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/messageCount" />
+
+        <TextView
+            android:id="@+id/zeroCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="대화를 하지 않은 날 :"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/zeroCountResult"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/messageCountResult" />
+
+        <TextView
+            android:id="@+id/zeroCountResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="잠시만 기다려주세요."
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/hourlyCount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/zeroCount" />
+
+        <TextView
+            android:id="@+id/hourlyCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="평균적으로 가장 활발한 시간대 :"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/hourlyCountResult"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/zeroCountResult" />
+
+        <TextView
+            android:id="@+id/hourlyCountResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:text="잠시만 기다려주세요."
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hourlyCount" />
 
         <ImageView
             android:id="@+id/BtnGotoPage9"
             android:layout_width="400dp"
-            android:layout_height="250dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="4dp"
-            app:layout_constraintTop_toBottomOf="@id/imgResult"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="200dp"
+            android:src="@drawable/result"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:src="@drawable/result"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imgResult" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

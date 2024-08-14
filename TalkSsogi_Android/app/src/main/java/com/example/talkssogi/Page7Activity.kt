@@ -8,6 +8,8 @@ class Page7Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page7)
 
+        val crnum = intent.getIntExtra("crnum", -1) //intent로 채팅방 번호 받음
+
         if (savedInstanceState == null) {
             val fragment = fragmentPage7()
             supportFragmentManager.beginTransaction()

@@ -1,5 +1,18 @@
 package com.talkssogi.TalkSsogi_server.controller;
 
+import com.talkssogi.TalkSsogi_server.service.ChattingRoomService;
+import com.talkssogi.TalkSsogi_server.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /*
 page8 서버에서 가져올 데이터
 -메세지 수가 가장 많았던 날
@@ -11,5 +24,22 @@ page8 서버에서 가져올 데이터
 ->컨트롤러에서 api만들어서 매핑
 =>안드로이드 스튜디오에서 만든 코드 다시 보고 어떤 형태로 데이터를 넘겨줘야하는지 고려해서 api만들기
  */
+@RestController
+@RequestMapping("/api/basics")
 public class Page8Controller {
+
+    private final ChattingRoomService chattingRoomService;
+    private final UserService userService;
+
+    @Autowired
+    public Page8Controller(ChattingRoomService chattingRoomService, UserService userService) {
+        this.chattingRoomService = chattingRoomService;
+        this.userService = userService;
+    }
+
+    // db에 저장된 리스트를 전달
+    @GetMapping("/activityAnalysis")
+    public List<String> getActivityAnalysis(@RequestParam("crnum") int crnum) {
+        return chattingRoomService.getBasicActivityAnalysis(crnum);
+    }
 }
