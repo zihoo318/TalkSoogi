@@ -34,11 +34,11 @@ public class PythonController {
     private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/LG/AppData/Local/Programs/Python/Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Talkssogi_Workspace/TalkSsogi/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Talkssogi_Workspace/TalkSsogi/page9python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
-    private static final String PYTHON_newimage_PATH = "C:/Talkssogi_Workspace/TalkSsogi"; // page9python후에 생길 이미지 파일 저장할 경로
+    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/KYJ/AppData/Local/Programs/Python/Python312/python.exe";
+    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi/page9python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_newimage_PATH = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi"; // page9python후에 생길 이미지 파일 저장할 경로
 
     @Autowired
     public PythonController(ChattingRoomService chattingRoomService, UserService userService, PythonResultProcessor pythonResultProcessor) { //, S3Uploader s3Uploader 추가

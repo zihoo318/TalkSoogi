@@ -33,7 +33,7 @@ import java.util.Map;
 public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
-    private static final String UPLOAD_DIR = "C:/Talkssogi_Workspace/TalkSsogi";
+    private static final String UPLOAD_DIR = "C:/Users/KYJ/Talkssogi_Workspace/TalkSsogi";
     //테스트용 경로
 
     @Autowired
