@@ -95,8 +95,8 @@ class Page3Activity : AppCompatActivity() {
             }
         })
 
-        // 기타 초기화 작업 수행
-        imageView.setImageResource(R.drawable.smile)
+        /*// 기타 초기화 작업 수행 -> 삭제
+        imageView.setImageResource(R.drawable.smile)*/
     }
 
     private fun checkForNulls() {
