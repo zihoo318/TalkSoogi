@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 
 class Page9RecyclerViewAdapter(private val itemList: List<ImageURL>) :
@@ -15,12 +14,12 @@ class Page9RecyclerViewAdapter(private val itemList: List<ImageURL>) :
         val imageView: ImageView = itemView.findViewById(R.id.item_image)
 
         fun bind(imageURL: ImageURL) {
+            // 이미지 로드
             Picasso.get()
                 .load(imageURL.imageUrl)
                 .placeholder(R.drawable.happy2) // 로딩 중 보여줄 이미지
                 .error(R.drawable.error) // 에러 발생 시 보여줄 이미지
                 .into(imageView)
-
         }
     }
 

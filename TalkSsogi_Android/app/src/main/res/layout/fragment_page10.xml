@@ -7,11 +7,33 @@
     tools:context=".MainActivity"
     android:background="@color/white">
 
+    <!-- 상단 이미지뷰 및 텍스트뷰 -->
+    <ImageView
+        android:id="@+id/undo_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/undo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_ranking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="발신자 예측"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/undo_button"
+        app:layout_constraintStart_toEndOf="@+id/undo_button"
+        app:layout_constraintTop_toTopOf="@+id/undo_button" />
+
     <ImageView
         android:id="@+id/notice"
-        android:layout_width="358dp"
-        android:layout_height="237dp"
+        android:layout_width="246dp"
+        android:layout_height="192dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
         android:src="@drawable/notice_1"
         android:translationZ="1dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,8 +41,8 @@
 
     <ImageView
         android:id="@+id/searchPicture"
-        android:layout_width="364dp"
-        android:layout_height="296dp"
+        android:layout_width="316dp"
+        android:layout_height="252dp"
         android:layout_marginTop="200dp"
         android:src="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,9 +51,9 @@
 
     <SearchView
         android:id="@+id/searchView"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="309dp"
+        android:layout_width="186dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="293dp"
         android:iconifiedByDefault="false"
         android:queryHint="Search here"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,30 +63,29 @@
 
     <ImageView
         android:id="@+id/TalkSsogi_png"
-        android:layout_width="170dp"
-        android:layout_height="175dp"
+        android:layout_width="123dp"
+        android:layout_height="114dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="540dp"
         android:src="@drawable/smile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/whoMessage" />
 
     <ImageView
         android:id="@+id/whoMessage"
-        android:layout_width="261dp"
-        android:layout_height="213dp"
+        android:layout_width="263dp"
+        android:layout_height="192dp"
         android:layout_marginStart="124dp"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="50dp"
         android:src="@drawable/notice"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/fragment_container" />
 
     <!-- 프래그먼트를 교체할 컨테이너 역할을 하는 FrameLayout -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -86,3 +107,4 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
