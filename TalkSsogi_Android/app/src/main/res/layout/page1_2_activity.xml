@@ -55,8 +55,8 @@
 
     <TextView
         android:id="@+id/IDConfirm"
-        android:layout_width="250dp"
-        android:layout_height="42dp"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:text="사용 가능한 아이디 입니다."
         android:textSize="20sp"
         android:textStyle="bold"
@@ -83,28 +83,28 @@
         android:id="@+id/btnCheckRedundancy"
         android:layout_width="180dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="316dp"
+        android:layout_marginBottom="232dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/upload_file"
         android:padding="16dp"
         android:src="@drawable/checkredundancy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.969"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/btnSignUp"
         android:layout_width="252dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="224dp"
+        android:layout_marginBottom="136dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/upload_file"
         android:padding="16dp"
         android:src="@drawable/signup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.553"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
