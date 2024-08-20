@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -32,9 +33,8 @@ class Page1Activity : AppCompatActivity() {
         val etID: EditText = findViewById(R.id.etID)
         val idConfirm: TextView = findViewById(R.id.IDConfirm)
         val idConfirm2: TextView = findViewById(R.id.IDConfirm2)
-        val btnUploadName: ImageButton = findViewById(R.id.btnUploadName)
-        val btnMoveToSignUpPage: ImageButton =
-            findViewById(R.id.btnMoveToSignUpPage) // 회원가입 페이지로 이동하는 버튼 추가
+        val btnUploadName: Button = findViewById(R.id.btnUploadName)
+        val btnMoveToSignUpPage: Button = findViewById(R.id.btnMoveToSignUpPage) // 회원가입 페이지로 이동하는 버튼 추가
 
         // Check ID existence on text change
         // EditText에 입력된 텍스트의 변화를 감지하는 TextWatcher 추가

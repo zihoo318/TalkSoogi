@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/light_green"/> <!-- 버튼 배경 색상 -->
+    <corners android:radius="40dp"/> <!-- 버튼 모서리 둥글기 (옵션) -->
+    <!-- 추가적인 테두리 설정이나 기타 스타일 설정 가능 -->
+</shape>

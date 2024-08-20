@@ -6,6 +6,11 @@
     <color name="gray">#808080</color>
     <color name="red">#BD0040</color>
     <color name="light_gray">#e8e8e8</color>
-
+    <color name="light_green">#CCFFCC</color> <!-- 새 색상 추가 -->
+    <color name="colorPrimaryDark">#feffe0</color> <!-- 상태 표시줄 색상 -->
+    <color name="colorOnSecondary">#CCFFCC</color>
+    <color name="Majenta">#de12d0</color>  <!-- 마젠티-->
+    <color name="Majenta2">#b20fc7</color>
 
 </resources>
+

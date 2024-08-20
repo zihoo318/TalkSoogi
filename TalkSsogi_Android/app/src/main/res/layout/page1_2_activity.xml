@@ -1,110 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="#FCFFF3">
 
-    <!-- 상단 이미지뷰 및 텍스트뷰 -->
+
     <ImageView
         android:id="@+id/undo_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="98dp"
+        android:layout_height="90dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/happy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/happy" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="56dp"
         android:text="회원가입"
+        android:textColor="#0B614B"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/undo_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/ID"
-        android:layout_width="120dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="320dp"
-        android:text="아이디:"
-        android:textSize="35sp"
-        android:textStyle="bold"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="30dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="9dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toBottomOf="@id/user_name">
 
-    <EditText
-        android:id="@+id/etID"
-        android:layout_width="240dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="320dp"
-        android:background="@drawable/border"
-        android:hint="아이디 입력"
-        app:layout_constraintStart_toEndOf="@id/ID"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content_area"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/IDConfirm"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:text="사용 가능한 아이디 입니다."
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#FF0000"
-        app:layout_constraintStart_toStartOf="@id/etID"
-        app:layout_constraintTop_toBottomOf="@id/etID"
-        android:layout_marginTop="1dp"
-        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/IDConfirm2"
-        android:layout_width="250dp"
-        android:layout_height="42dp"
-        android:text="사용중인 아이디 입니다."
-        android:textColor="#FF0000"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/IDConfirm"
-        app:layout_constraintTop_toBottomOf="@id/IDConfirm"
-        android:layout_marginTop="2dp"
-        android:visibility="gone" />
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="350dp"
+                android:layout_height="85dp"
+                android:layout_marginTop="44dp"
+                android:src="@drawable/talkSsogi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btnCheckRedundancy"
-        android:layout_width="180dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="232dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/upload_file"
-        android:padding="16dp"
-        android:src="@drawable/checkredundancy"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/ID"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="208dp"
+                android:text="아이디:"
+                android:textColor="#0B614B"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints" />
 
-    <ImageButton
-        android:id="@+id/btnSignUp"
-        android:layout_width="252dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="136dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/upload_file"
-        android:padding="16dp"
-        android:src="@drawable/signup"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.553"
-        app:layout_constraintStart_toStartOf="parent" />
+            <EditText
+                android:id="@+id/etID"
+                android:layout_width="230dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="196dp"
+                android:background="@drawable/border"
+                android:hint="아이디 입력"
+                android:paddingStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/ID"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:id="@+id/IDConfirm"
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="1dp"
+                android:text="사용 가능한 아이디 입니다."
+                android:textColor="#ea5757"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/etID"
+                app:layout_constraintTop_toBottomOf="@id/etID" />
+
+            <TextView
+                android:id="@+id/IDConfirm2"
+                android:layout_width="250dp"
+                android:layout_height="42dp"
+                android:layout_marginTop="2dp"
+                android:text="사용중인 아이디 입니다."
+                android:textColor="#ea5757"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/IDConfirm"
+                app:layout_constraintTop_toBottomOf="@id/IDConfirm" />
+
+            <!-- 중복 확인 버튼 (ImageButton을 Button으로 대체) -->
+
+            <!-- 회원가입 버튼 (ImageButton을 Button으로 대체) -->
+
+            <android.widget.Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="252dp"
+                android:layout_height="70dp"
+                android:layout_marginBottom="100dp"
+                android:background="@drawable/button_background"
+                android:text="회원가입"
+                android:textColor="#0B614B"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.606"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <android.widget.Button
+                android:id="@+id/btnCheckRedundancy"
+                android:layout_width="160dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="112dp"
+                android:background="@drawable/button_background"
+                android:text="중복 확인"
+                android:textColor="#0B614B"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/btnSignUp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.921"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/etID"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

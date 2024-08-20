@@ -3,7 +3,11 @@
     <style name="Base.Theme.TalkSsogi" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#CCFFCC</item>
     </style>
+
+
 
     <style name="Theme.TalkSsogi" parent="Base.Theme.TalkSsogi" />
 </resources>

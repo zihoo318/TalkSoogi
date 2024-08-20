@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#ffffff">
 
+    <!-- 기존의 UI 요소들 -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
@@ -40,9 +41,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:padding="16dp"
-        android:text="날짜"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:text="날짜"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/from"
@@ -62,9 +63,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:padding="16dp"
-        android:text="날짜"
-        app:layout_constraintStart_toEndOf="@+id/from"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:text="날짜"
+            app:layout_constraintStart_toEndOf="@+id/from"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/until"
@@ -84,9 +85,9 @@
             android:layout_marginStart="36dp"
             android:layout_marginTop="16dp"
             android:padding="16dp"
-        android:contentDescription="검색 옵션"
-        app:layout_constraintStart_toEndOf="@+id/until"
-        app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
+            android:contentDescription="검색 옵션"
+            app:layout_constraintStart_toEndOf="@+id/until"
+            app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
 
         <Spinner
             android:id="@+id/results_spinner"
@@ -95,9 +96,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:padding="16dp"
-        android:contentDescription="결과 옵션"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/until" />
+            android:contentDescription="결과 옵션"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/until" />
 
         <TextView
             android:id="@+id/of"
@@ -114,14 +115,27 @@
             android:id="@+id/create"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:layout_marginStart="85dp"
-            android:layout_marginTop="40dp"
-            android:scaleType="fitCenter"
+            android:layout_marginStart="168dp"
+            android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/magnifier"
             android:contentDescription="검색 버튼"
-        app:layout_constraintStart_toEndOf="@+id/results_spinner"
-        app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/magnifier"
+            app:layout_constraintStart_toEndOf="@+id/results_spinner"
+            app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+            android:layout_width="350dp"
+            android:layout_height="400dp"
+            android:indeterminateDrawable="@drawable/animation_loding"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -136,7 +150,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:contentDescription="아이템 목록"
-            tools:listitem="@layout/recyclerview_layout" />
+                tools:listitem="@layout/recyclerview_layout" />
         </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

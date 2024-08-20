@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/white">
+    android:background="#FCFFF3"
+    tools:context=".MainActivity">
 
-    <!-- 상단 이미지뷰 및 텍스트뷰 -->
     <ImageView
-        android:id="@+id/undo_button"
+        android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="0dp"
         android:src="@drawable/undo"
+        app:layout_constraintBottom_toBottomOf="@+id/title_ranking"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,66 +21,101 @@
         android:id="@+id/title_ranking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="발신자 예측"
         android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/undo_button"
-        app:layout_constraintStart_toEndOf="@+id/undo_button"
-        app:layout_constraintTop_toTopOf="@+id/undo_button" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
 
-    <ImageView
-        android:id="@+id/notice"
-        android:layout_width="246dp"
-        android:layout_height="192dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="80dp"
-        android:src="@drawable/notice_1"
-        android:translationZ="1dp"
+    <!-- 첫 번째 CardView: SearchView가 들어가는 부분 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_search"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_margin="30dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="9dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/searchPicture"
-        android:layout_width="316dp"
-        android:layout_height="252dp"
-        android:layout_marginTop="200dp"
-        android:src="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_ranking">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:background="@drawable/search_view_background"
+                android:iconifiedByDefault="false"
+                android:queryHint="Search here"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 두 번째 CardView: 나머지 요소들이 들어가는 부분 -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_content"
+        android:layout_width="0dp"
+        android:layout_height="500dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="9dp"
+        app:layout_constraintTop_toBottomOf="@id/cardView_search"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="186dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="293dp"
-        android:iconifiedByDefault="false"
-        android:queryHint="Search here"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content_area"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
 
+            <ImageView
+                android:id="@+id/notice"
+                android:layout_width="375dp"
+                android:layout_height="222dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/who"
+                android:translationZ="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/TalkSsogi_png"
-        android:layout_width="123dp"
-        android:layout_height="114dp"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/smile"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whoMessage" />
+            <ImageView
+                android:id="@+id/whoMessage"
+                android:layout_width="199dp"
+                android:layout_height="127dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/notice"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.85"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notice" />
 
-    <ImageView
-        android:id="@+id/whoMessage"
-        android:layout_width="263dp"
-        android:layout_height="192dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/notice"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fragment_container" />
+            <ImageView
+                android:id="@+id/TalkSsogi_png"
+                android:layout_width="152dp"
+                android:layout_height="168dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="64dp"
+                android:src="@drawable/smile2"
+                app:layout_constraintEnd_toStartOf="@+id/whoMessage"
+                app:layout_constraintHorizontal_bias="0.588"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/whoMessage" />
 
-    <!-- 프래그먼트를 교체할 컨테이너 역할을 하는 FrameLayout -->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
@@ -88,11 +123,9 @@
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!--분석 중 띄우기-->
+    <!-- 분석 중 띄우기 -->
     <ProgressBar
         android:id="@+id/loadingIndicator"
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
@@ -104,7 +137,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
