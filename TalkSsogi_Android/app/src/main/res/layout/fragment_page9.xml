@@ -124,17 +124,6 @@
             app:layout_constraintStart_toEndOf="@+id/results_spinner"
             app:layout_constraintTop_toBottomOf="@+id/button_open_calendar2" />
 
-        <ProgressBar
-            android:id="@+id/loadingIndicator"
-            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
-            android:layout_width="350dp"
-            android:layout_height="400dp"
-            android:indeterminateDrawable="@drawable/animation_loding"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
 
         <FrameLayout
@@ -146,12 +135,25 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_graph"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="300dp"
                 android:layout_gravity="center"
                 android:contentDescription="아이템 목록"
                 tools:listitem="@layout/recyclerview_layout" />
+
         </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+            android:layout_width="350dp"
+            android:layout_height="400dp"
+            android:indeterminateDrawable="@drawable/animation_loding"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

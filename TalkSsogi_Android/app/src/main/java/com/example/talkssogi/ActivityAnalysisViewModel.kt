@@ -58,7 +58,13 @@ class ActivityAnalysisViewModel : ViewModel() {
 
     private val _participants = MutableLiveData<List<String>>() // 페이지9 대화 참가자 이름 리스트
     val participants: LiveData<List<String>> get() = _participants
+//
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> get() = _loading
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
+//
     // 페이지6 워드 클라우드 이미지 URL, LiveData 변수를 초기화
     private val _wordCloudImageUrl = MutableLiveData<List<ImageURL>>(emptyList()) // 빈 리스트로 초기화
     val wordCloudImageUrl: LiveData<List<ImageURL>> get() = _wordCloudImageUrl
@@ -80,6 +86,8 @@ class ActivityAnalysisViewModel : ViewModel() {
         resultsItem: String,
         crnum: Int
     ) {
+        _loading.value = true // 로딩 시작
+
         if (startDate != null && endDate != null && searchWho.isNotEmpty() && resultsItem.isNotEmpty()) {
             apiService.getActivityAnalysisImage(startDate, endDate, searchWho, resultsItem, crnum)
                 .enqueue(object : Callback<String> {
@@ -87,6 +95,7 @@ class ActivityAnalysisViewModel : ViewModel() {
                         call: Call<String>,
                         response: Response<String>
                     ) {
+                        _loading.value = false // 로딩 끝
                         if (response.isSuccessful) {
                             val imageUrl = response.body()
                             imageUrl?.let {
@@ -94,17 +103,23 @@ class ActivityAnalysisViewModel : ViewModel() {
                             }
                             Log.d("Page9", "이미지 생성 및 전달 받기 성공 : $imageUrl")
                         } else {
+                            _error.value = "이미지 생성 및 전달 받기 실패: ${response.errorBody()?.string()}"
                             Log.d("Page9", "이미지 생성 및 전달 받기 실패: ${response.errorBody()?.string()}")
                         }
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
+                        _loading.value = false // 로딩 끝
+                        _error.value = "네트워크 에러: ${t.message}"
                         Log.d("Page9", "이미지 생성 및 전달 받기 실패 네트워크 에러: ${t.message}")
                         t.printStackTrace()
                     }
                 })
+        } else {
+            _loading.value = false // 로딩 끝
         }
     }
+
 
     // 채팅방 대화 참여자 이름 가져와서 리스트로 변환
     fun loadParticipants(crnum: Int) {
