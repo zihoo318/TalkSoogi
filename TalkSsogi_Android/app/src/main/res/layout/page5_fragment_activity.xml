@@ -5,99 +5,200 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FragmentActivity"
-    android:background="#ffffff">
+    android:background="#FCFFF3">
 
-    <!-- 기존 옵션들을 포함할 ConstraintLayout -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!-- ImageView를 CardView 외부에 위치 -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="top|start"
+        android:src="@drawable/undo" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/undo" />
 
-        <!-- 왼쪽 세로로 나란하게 배치된 2개의 선택지 -->
-        <TextView
-            android:id="@+id/option_1"
-            android:layout_width="170dp"
-            android:layout_height="158dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginTop="35dp"
-            android:background="@drawable/leaf_yellow"
-            android:gravity="start|top"
-            android:paddingStart="50dp"
-            android:paddingTop="63dp"
-            android:text="워드 클라우드\n      생성"
-            app:layout_constraintBottom_toTopOf="@+id/option_2"
-            app:layout_constraintEnd_toStartOf="@+id/option_4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- 전체를 감싸는 CardView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="370dp"
+        android:layout_height="600dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="116dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="9dp">
 
-        <TextView
-            android:id="@+id/option_2"
-            android:layout_width="170dp"
-            android:layout_height="158dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginTop="1dp"
-            android:background="@drawable/leaf_green"
-            android:gravity="start|top"
-            android:paddingStart="65dp"
-            android:paddingTop="63dp"
-            android:text="랭킹"
-            app:layout_constraintBottom_toTopOf="@+id/imgResult"
-            app:layout_constraintEnd_toStartOf="@+id/option_4"
-            app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/option_1" />
+        <!-- 기존 옵션들을 포함할 ConstraintLayout -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="657dp">
 
-        <!-- 오른쪽 세로로 엇갈리게 배치된 2개의 선택지 -->
-        <TextView
-            android:id="@+id/option_4"
-            android:layout_width="170dp"
-            android:layout_height="158dp"
-            android:layout_marginTop="120dp"
-            android:background="@drawable/leaf_neon"
-            android:gravity="center"
-            android:text="활동 분석"
-            app:layout_constraintBottom_toTopOf="@+id/option_3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/option_1"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!-- 첫 번째 CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView_1"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="9dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/option_3"
-            android:layout_width="170dp"
-            android:layout_height="158dp"
-            android:layout_marginBottom="1dp"
-            android:background="@drawable/leaf_blue"
-            android:gravity="start|top"
-            android:paddingStart="56dp"
-            android:paddingTop="63dp"
-            android:text="발신자 예측\n   (RNN)"
-            app:layout_constraintBottom_toTopOf="@+id/imgResult"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/option_2"
-            app:layout_constraintTop_toBottomOf="@+id/option_4" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#CCFFCC">
 
-        <!-- 하단에 화분이 + 말풍선 -->
-        <ImageView
-            android:id="@+id/imgResult"
-            android:layout_width="0dp"
-            android:layout_height="118dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:srcCompat="@drawable/talk_select" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/option_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="워드 클라우드\n   생성"
+                        android:textColor="#0B614B"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-    <!-- 프래그먼트를 위한 컨테이너 -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+            <!-- 두 번째 CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView_2"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="9dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardView_1">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#e3fcf6">
+
+                    <TextView
+                        android:id="@+id/option_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="랭킹"
+                        android:textColor="#0B614B"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 세 번째 CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView_3"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="120dp"
+                android:layout_marginEnd="15dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="9dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView_2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cardView_1"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#eae7fd">
+
+                    <TextView
+                        android:id="@+id/option_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="활동 분석"
+                        android:textColor="#0B614B"
+                        android:textSize="23sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 네 번째 CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView_4"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_marginBottom="90dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="9dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cardView_2"
+                app:layout_constraintTop_toBottomOf="@id/cardView_3">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="174dp"
+                    android:background="#faecfd">
+
+                    <TextView
+                        android:id="@+id/option_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="6dp"
+                        android:text="발신자 예측\n   (RNN)"
+                        android:textColor="#0B614B"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 하단에 화분이 + 말풍선 -->
+            <ImageView
+                android:id="@+id/imgResult"
+                android:layout_width="160dp"
+                android:layout_height="110dp"
+                android:layout_marginBottom="512dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.952"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:srcCompat="@drawable/talk_select2" />
+
+            <ImageView
+                android:id="@+id/imgResult2"
+                android:layout_width="188dp"
+                android:layout_height="153dp"
+                android:layout_marginBottom="116dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:srcCompat="@drawable/happy2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+
 </FrameLayout>

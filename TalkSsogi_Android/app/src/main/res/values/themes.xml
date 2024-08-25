@@ -4,7 +4,10 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">#FCFFF3</item>
+        <item name="android:statusBarColor">#73D37A</item>
     </style>
+
+
+
     <style name="Theme.TalkSsogi" parent="Base.Theme.TalkSsogi" />
 </resources>

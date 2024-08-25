@@ -22,7 +22,7 @@ class Page7Activity : AppCompatActivity() {
         }
 
         // 상단 이미지뷰 클릭 리스너 설정
-        findViewById<ImageView>(R.id.imageView).setOnClickListener {
+        findViewById<ImageView>(R.id.undo_button).setOnClickListener {
             // 뒤로가기 동작 또는 다른 로직
             onBackPressed()
         }

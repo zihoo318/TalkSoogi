@@ -61,10 +61,14 @@ public class PythonController {
     }
 
     // 기본분석으로 생긴 텍스트 파일들 s3에 업로드하는 함수(api호출해야해서 분리)
-    private void uploadFilesToS3(String[] resultLines, int headcount, int crnum) throws IOException {
+    private void uploadFilesToS3(String[] resultLines, int headcount, int crnum, String originalFilePath) throws IOException {
         logger.info("Starting uploadFilesToS3 with resultLines length: " + resultLines.length);
 
         List<File> filesToUpload = new ArrayList<>();
+
+        // 원본 파일을 S3에 업로드
+        File originalFile = new File(originalFilePath);
+        filesToUpload.add(originalFile);
 
         // group 파일 경로 추가
         filesToUpload.add(new File(resultLines[3]));
@@ -108,8 +112,11 @@ public class PythonController {
                 } else {
                     prefix = "other-files/";
                 }
-                String key = prefix + crnum + "_" + file.getName();
+                // 원본 파일일 경우 이름을 "original.txt"로 설정
+                String key = file.equals(originalFile) ? prefix + crnum + "_original.txt" : prefix + crnum + "_" + file.getName();
                 s3DownLoader.uploadFile(key, fileStream, contentType); // 프리픽스 포함하여 업로드
+
+                // 프리픽스 포함하여 업로드
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -243,7 +250,22 @@ public class PythonController {
 
             logger.info("여기여여여여여여겨고ㅑ 분석한 결과부터 이상하게 저장되었는가 : {}", chattingRoom.getChatroomName());
 
-            uploadFilesToS3(resultLines, headcount, chattingRoom.getCrNum());
+            uploadFilesToS3(resultLines, headcount, chattingRoom.getCrNum(), filePath);
+
+            // 사용자가 업로드한 초기 텍스트 파일 삭제
+            File originalFileToDelete = new File(filePath); // filePath는 실제 원본 파일의 경로입니다
+            File renamedOriginalFile = new File(originalFileToDelete.getParent(), "original.txt"); // original.txt로 변경된 파일 경로를 설정
+
+            if (renamedOriginalFile.exists()) {
+                boolean isDeleted = renamedOriginalFile.delete();
+                if (isDeleted) {
+                    logger.info("Successfully deleted file: " + renamedOriginalFile.getAbsolutePath());
+                } else {
+                    logger.error("Failed to delete file: " + renamedOriginalFile.getAbsolutePath());
+                }
+            } else {
+                logger.warn("삭제하려는 파일이 존재하지 않습니다: " + renamedOriginalFile.getAbsolutePath());
+            }
 
             // 사용자가 업로드한 초기 텍스트 파일 삭제
             File fileToDelete = new File(filePath);

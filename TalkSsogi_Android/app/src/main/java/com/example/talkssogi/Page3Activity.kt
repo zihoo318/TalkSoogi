@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 //가을 추가 코두
 import android.graphics.drawable.AnimationDrawable
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -33,13 +34,13 @@ class Page3Activity : AppCompatActivity() {
 
     private lateinit var tvPeople: TextView
     private lateinit var etPeopleCount: EditText
-    private lateinit var btnPeople: ImageButton
+    private lateinit var btnPeople: Button
     private lateinit var tvSelectedFile: TextView
     private lateinit var imageView: ImageView
     private lateinit var textView: TextView
     private lateinit var pot: ImageView
     private lateinit var speech_bubble: ImageView
-    private lateinit var btnUploadFile: ImageButton
+    private lateinit var btnUploadFile: Button
     private lateinit var loadingIndicator: ProgressBar // 분석 중 띄우는 바
     private val viewModel: MyViewModel by lazy { //공유 뷰모델
         (application as MyApplication).viewModel
