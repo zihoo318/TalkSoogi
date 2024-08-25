@@ -14,9 +14,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.talkssogi.model.ChatRoom
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -30,7 +33,12 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.TimeUnit
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 class MyApplication : Application() {
@@ -69,9 +77,9 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
     private val client = OkHttpClient.Builder()
         .addInterceptor(logging)
         .addInterceptor(HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
     var gson: Gson = GsonBuilder()
@@ -282,112 +290,167 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
-    // 파일 업로드 api 실행 메서드 페이지
+    // 파일 압축하기
+    fun compressFile(file: File): File {
+        val compressedFile = File(file.absolutePath + ".zip")
+        ZipOutputStream(FileOutputStream(compressedFile)).use { zos ->
+            FileInputStream(file).use { fis ->
+                val zipEntry = ZipEntry(file.name)
+                zos.putNextEntry(zipEntry)
+                val buffer = ByteArray(1024)
+                var len: Int
+                while (fis.read(buffer).also { len = it } > 0) {
+                    zos.write(buffer, 0, len)
+                }
+                zos.closeEntry()
+            }
+        }
+
+        // 압축된 파일이 실제로 생성되었는지 확인하는 로그 추가
+        if (compressedFile.exists()) {
+            Log.e("fetchChatRooms", "압축된 파일이 생성되었습니다: ${compressedFile.absolutePath}")
+        } else {
+            Log.e("fetchChatRooms", "압축된 파일 생성 실패")
+        }
+
+        // 압축된 파일을 반환
+        return compressedFile
+    }
+
+    // 1차 파일 업로드 시도 함수(업로드 시 실패하면 압축해서 다시 업로드 시도하게 함)
     fun uploadFile(fileUri: Uri, userId: String, headcount: Int, callback: (Int) -> Unit) {
-        // Uri에서 Path 만들기
+        // Uri에서 파일 경로를 가져옴
         val filePath = getPathFromUri(fileUri)
         val file = filePath?.let { File(it) }
 
-        // null인지 확인
+        // 파일이 존재하면 업로드 시도
         if (file != null && file.exists()) {
-            // RequestBody로 바꾸기
-            val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-            Log.i("fetchChatRooms", "api보내기 직전 파일 업로드 전, crnum: ${_uploadResult.value}")
-
-            // API 호출
-            apiService.uploadFile(body, userId, headcount)
-                .enqueue(object : Callback<Map<String, Any>> {
-                    override fun onResponse(
-                        call: Call<Map<String, Any>>,
-                        response: Response<Map<String, Any>>
-                    ) {
-                        Log.i("fetchChatRooms", "api호출")
-                        if (response.isSuccessful) {
-                            val responseBody = response.body()
-                            Log.i("fetchChatRooms", "API 응답 내용: $responseBody")
-                            // 응답에서 'crNum' 값을 추출
-                            val crNumRaw = responseBody?.get("crNum")
-                            // 'crnum' 값이 Double인지 확인하고 정수로 변환
-                            val crnum = (crNumRaw as? Number)?.toInt()
-                            Log.i("fetchChatRooms", "파일 업로드 직후 변수에 넣기전, crnum: ${crnum}")
-                            if (crnum != null) {
-                                Log.i("fetchChatRooms", "파일 업로드 성공하고 아직 분석 전, crnum: $crnum")
-                                callback(crnum) // 업로드 성공 결과를 콜백으로 전달
-                            } else {
-                                Log.e("FileUpload", "crnum을 찾을 수 없음")
-                                callback(-1) // 업로드 실패 코드 전달
-                            }
-                        } else {
-                            Log.e("FileUpload", "파일 업로드 실패: ${response.errorBody()?.string()}")
-                            callback(-1) // 업로드 실패 코드 전달
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                        Log.e("FileUpload", "네트워크 오류: ${t.message}")
-                        callback(-2) // 네트워크 오류 코드 전달
-                    }
-                })
+            // 1차 파일 업로드 시도
+            performFileUpload(file, userId, headcount) { result ->
+                if (result < 0) {
+                    // 업로드 실패 시 파일을 압축하고 재시도
+                    Log.e("fetchChatRooms", "1차 파일 업로드 실패 및 압축 시도 직전")
+                    compressAndRetryUpload(file, userId, headcount, callback)
+                } else {
+                    // 업로드 성공 시 결과를 콜백으로 전달
+                    callback(result)
+                }
+            }
         } else {
-            Log.e("FileUpload", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
+            // 파일 경로가 잘못되었거나 파일이 존재하지 않을 때 오류 처리
+            Log.e("fetchChatRooms", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
             callback(-3) // 파일 경로 오류 코드 전달
         }
     }
 
+    // 1차 파일 업로드 api 실행 메서드 페이지
+    fun performFileUpload(file: File, userId: String, headcount: Int, callback: (Int) -> Unit) {
+        // 파일을 RequestBody로 변환
+        val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-    // 파일 업로드 api 실행 메서드 페이지
+        // API 호출
+        apiService.uploadFile(body, userId, headcount).enqueue(object : Callback<Map<String, Any>> {
+            override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                if (response.isSuccessful) {
+                    // 응답이 성공적일 때
+                    Log.e("fetchChatRooms", "파일 업로드 성공")
+                    val responseBody = response.body()
+                    val crNumRaw = responseBody?.get("crNum")
+                    val crnum = (crNumRaw as? Number)?.toInt()
+                    if (crnum != null) {
+                        // 업로드 성공 시 결과를 콜백으로 전달
+                        callback(crnum)
+                    } else {
+                        // crNum이 null일 때 실패 처리
+                        callback(-1)
+                    }
+                } else {
+                    // 업로드 실패 시 실패 코드 전달
+                    callback(-1)
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                // 네트워크 오류 발생 시 오류 코드 전달
+                callback(-2)
+            }
+        })
+    }
+
+
+    // 1차 파일 업로드 실패시 호출될 재시도 함수(압축 후 재시도하는 함수)
+    private fun compressAndRetryUpload(file: File, userId: String, headcount: Int, callback: (Int) -> Unit) {
+        viewModelScope.launch {
+            try {
+                // 파일 압축
+                val compressedFile = compressFile(file)
+
+                // 압축된 파일 경로를 로그로 출력
+                Log.e("fetchChatRooms", "압축 성공 압축된 파일 경로: ${compressedFile.absolutePath}")
+
+                // 압축된 파일을 업로드 시도
+                performFileUpload(compressedFile, userId, headcount) { result ->
+                    // 업로드가 끝난 후 압축된 파일 삭제
+                    if (compressedFile.exists()) {
+                        compressedFile.delete()
+                        Log.e("fetchChatRooms", "압축된 파일 삭제 완료")
+                    }
+
+                    // 업로드 결과를 콜백으로 전달
+                    callback(result)
+                }
+            } catch (e: IOException) {
+                // 파일 압축 오류 처리
+                Log.e("fetchChatRooms", "파일 압축 오류: ${e.message}")
+                callback(-4) // 압축 오류 코드 전달
+            }
+        }
+    }
+
+
+    // 파일 업데이트(페이지2)
     fun updateFile(crnum: Int, fileUri: Uri, onSuccess: (Int) -> Unit, onFailure: () -> Unit) {
-        // URI에서 File 객체를 가져옵니다.
+        // Uri에서 파일 경로를 가져옴
         val filePath = getPathFromUri(fileUri)
         val file = filePath?.let { File(it) }
 
-        // 파일이 null이거나 존재하지 않을 경우 처리
+        // 파일이 존재하면 업데이트를 시도
         if (file != null && file.exists()) {
-            // RequestBody와 MultipartBody.Part를 생성합니다.
+            // 파일을 RequestBody로 변환
             val requestFile = file.asRequestBody("application/octet-stream".toMediaType())
             val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-            Log.i("SelectedChatRoom", "업데이트 API 호출 전, crnum: $crnum")
-
             // API 호출
-            apiService.updateFile(crnum, body)
-                .enqueue(object : Callback<Map<String, Any>> {
-                    override fun onResponse(
-                        call: Call<Map<String, Any>>,
-                        response: Response<Map<String, Any>>
-                    ) {
-                        Log.i("SelectedChatRoom", "API 호출")
-                        if (response.isSuccessful) {
-                            val responseBody = response.body()
-                            Log.i("SelectedChatRoom", "API 응답 내용: $responseBody")
-                            // 응답에서 'filePath'와 'crNum' 값을 추출
-                            val filePath = responseBody?.get("filePath") as? String
-                            val crNumRaw = responseBody?.get("crNum")
-                            // 'crNum' 값을 Double인지 확인하고 정수로 변환
-                            val crNum = (crNumRaw as? Number)?.toInt()
-                            Log.i("SelectedChatRoom", "파일 업데이트 성공 후 응답에 있는 파일 경로: $filePath + crNum: $crNum")
-
-                            if (crNum != null) {
-                                onSuccess(crNum) // 파일 업로드 성공 후 crNum 전달
-                            } else {
-                                onFailure() // crNum이 null일 경우 실패 처리
-                            }
+            apiService.updateFile(crnum, body).enqueue(object : Callback<Map<String, Any>> {
+                override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                    if (response.isSuccessful) {
+                        // 응답이 성공적일 때
+                        val responseBody = response.body()
+                        val filePath = responseBody?.get("filePath") as? String
+                        val crNumRaw = responseBody?.get("crNum")
+                        val crNum = (crNumRaw as? Number)?.toInt()
+                        if (crNum != null) {
+                            // 업데이트 성공 시 결과를 콜백으로 전달합니다.
+                            onSuccess(crNum)
                         } else {
-                            Log.e("SelectedChatRoom", "파일 업데이트 실패: ${response.errorBody()?.string()}")
-                            onFailure() // 파일 업데이트 실패
+                            // crNum이 null일 때 실패 처리
+                            onFailure()
                         }
+                    } else {
+                        // 업데이트 실패 시 실패 처리
+                        onFailure()
                     }
+                }
 
-                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                        Log.e("SelectedChatRoom", "네트워크 오류: ${t.message}")
-                        onFailure() // 네트워크 오류 처리
-                    }
-                })
+                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                    // 네트워크 오류 발생 시 실패 처리
+                    onFailure()
+                }
+            })
         } else {
-            Log.e("SelectedChatRoom", "파일 경로가 잘못되었거나 파일이 존재하지 않습니다.")
-            onFailure() // 파일 경로 오류 처리
+            // 파일이 존재하지 않을 때 실패 처리
+            onFailure()
         }
     }
 

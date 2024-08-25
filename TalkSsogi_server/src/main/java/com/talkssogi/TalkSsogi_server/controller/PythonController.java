@@ -27,6 +27,8 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -133,6 +135,9 @@ public class PythonController {
     // 처음 파일 업로드할 때 진행되는 기본 데이터 분석
     @GetMapping(value = "/basic-python", produces = "application/json; charset=utf8")
     public ResponseEntity<String> runBasicPythonAnalysis(@RequestParam(value = "crnum") int crnum) {
+        File originalZipFile = null;
+        File fileToProcess = null;
+        int isFileZip=0; // 0 = 일반 파일, 1 = zip파일
         try {
             // ChattingRoom을 찾아서 파일 경로를 가져온다
             ChattingRoom chattingRoom = chattingRoomService.findByCrNum(crnum);
@@ -143,6 +148,31 @@ public class PythonController {
             if (filePath == null || filePath.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File path is not set.");
             }
+
+            // ZIP 파일인지 확인하고 압축 해제
+            if (filePath.endsWith(".zip")) {
+                isFileZip=1;
+                originalZipFile = new File(filePath); // 원본 ZIP 파일
+                fileToProcess = unzipFile(filePath);
+                if (fileToProcess == null) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to unzip the file.");
+                }
+                filePath = fileToProcess.getAbsolutePath(); // 압축 해제된 파일 경로로 업데이트
+
+                // 원본 ZIP 파일 삭제
+                if (originalZipFile.exists()) {
+                    boolean isDeleted = originalZipFile.delete();
+                    if (isDeleted) {
+                        logger.info("Successfully deleted original zip file: " + originalZipFile.getAbsolutePath());
+                    } else {
+                        logger.error("Failed to delete original zip file: " + originalZipFile.getAbsolutePath());
+                    }
+                }
+            } else {
+                // ZIP 파일이 아닌 경우 fileToProcess는 원본 파일
+                fileToProcess = new File(filePath);
+            }
+
             int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 명령어 설정
@@ -237,6 +267,25 @@ public class PythonController {
                 logger.warn("삭제하려는 파일이 존재하지 않습니다: " + renamedOriginalFile.getAbsolutePath());
             }
 
+            // 사용자가 업로드한 초기 텍스트 파일 삭제
+            File fileToDelete = new File(filePath);
+            if (fileToDelete.exists()) {
+                boolean isDeleted = fileToDelete.delete();
+                if (isDeleted) {
+                    logger.info("Successfully deleted file: " + filePath);
+                } else {
+                    logger.error("Failed to delete file: " + filePath);
+                }
+            } else {
+                logger.warn("삭제하려는 파일이 존재하지 않습니다: " + filePath);
+            }
+
+            if (isFileZip==1){
+                // zip파일인 경우 8페이지 미리 시작
+                logger.info("Page8 commonPythonScript start 8페이지기본제공분석내용완성~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                commonPythonScript(crnum);
+            }
+
             return ResponseEntity.ok("Success");
         } catch (EntityNotFoundException e) {
             logger.error("Entity not found: ", e);
@@ -248,6 +297,40 @@ public class PythonController {
             logger.error("예상치 못한 오류 발생: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예상치 못한 오류 발생: " + e.getMessage());
         }
+    }
+
+    // ZIP 파일을 해제하는 메소드
+    private File unzipFile(String zipFilePath) throws IOException {
+        File destDir = new File(new File(zipFilePath).getParent(), "unzipped");
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        File textFile = null;
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zis.getNextEntry()) != null) {
+                File newFile = new File(destDir, zipEntry.getName());
+                if (zipEntry.isDirectory()) {
+                    if (!newFile.exists()) {
+                        newFile.mkdir();
+                    }
+                } else {
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                    // 텍스트 파일을 찾았으면
+                    if (newFile.getName().endsWith(".txt")) {
+                        textFile = newFile;
+                    }
+                }
+                zis.closeEntry();
+            }
+        }
+        return textFile;
     }
 
     // 페이지6 워드클라우드 이미지 url전달
