@@ -101,7 +101,7 @@ class Page3Activity : AppCompatActivity() {
         })
 
         // 기타 초기화 작업 수행
-        imageView.setImageResource(R.drawable.smile)
+        //imageView.setImageResource(R.drawable.smile)
     }
 
     private fun checkForNulls() {
@@ -184,17 +184,6 @@ class Page3Activity : AppCompatActivity() {
         }
     }
 
-//    private fun analyzeFile(crNum: Int) {
-//        viewModel.requestBasicPythonAnalysis(crNum) { result ->
-//            if (result >= 0) {
-//                hideLoadingIndicator()
-//                startActivity(Intent(this, Page2Activity::class.java))
-//            } else {
-//                handleUploadError(result)
-//                hideLoadingIndicator()
-//            }
-//        }
-//    }
     private fun analyzeFile(crNum: Int) {
         viewModel.requestBasicPythonAnalysis(crNum, this) { result ->
             if (result >= 0) {
