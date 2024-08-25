@@ -10,8 +10,8 @@
     <!-- 이전 버튼, 인디케이터, 다음 버튼을 나란히 배치 -->
     <ImageButton
         android:id="@+id/button_previous"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="39dp"
+        android:layout_height="37dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="64dp"
         android:background="@android:color/transparent"
@@ -35,8 +35,8 @@
 
     <ImageButton
         android:id="@+id/button_next"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="39dp"
+        android:layout_height="37dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
