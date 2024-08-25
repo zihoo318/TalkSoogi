@@ -1,5 +1,5 @@
 package com.example.talkssogi
 
 object Constants {
-    const val BASE_URL = "http://192.168.244.144:8080/"
+    const val BASE_URL = "http://54.180.247.10:8080/"
 }

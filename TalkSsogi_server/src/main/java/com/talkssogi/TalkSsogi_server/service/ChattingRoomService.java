@@ -2,6 +2,7 @@ package com.talkssogi.TalkSsogi_server.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.talkssogi.TalkSsogi_server.StorageUploader.S3DownLoader;
 import com.talkssogi.TalkSsogi_server.controller.PythonController;
 import com.talkssogi.TalkSsogi_server.domain.ChattingRoom;
 import com.talkssogi.TalkSsogi_server.domain.User;
@@ -21,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +37,8 @@ public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
     private static final String UPLOAD_DIR = "C:/Users/KJH/TalkSsogi_Workspace/"; // "/"까지 해야됨!
+    private final S3DownLoader s3DownLoader;
+
     //테스트용 경로
 
     @Autowired
@@ -45,7 +49,8 @@ public class ChattingRoomService {
     private PythonResultProcessor pythonResultProcessor;
 
     @Autowired
-    public ChattingRoomService(ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
+    public ChattingRoomService(S3DownLoader s3DownLoader, ChattingRoomRepository chattingRoomRepository, UserRepository userRepository) {
+        this.s3DownLoader = s3DownLoader;
         this.chattingRoomRepository = chattingRoomRepository;
         this.userRepository = userRepository;
     }
@@ -183,9 +188,13 @@ public class ChattingRoomService {
             return Collections.emptyMap();
         }
 
-        String filePath = chattingRoom.getFilePath(); // chat file path를 설정해야 함
+        String filePath = s3DownLoader.getFileUrl(String.format("text-files/%d_original.txt", crnum));
+
+        // 파일 경로를 로그로 출력
+        logger.info("Generated S3 File Path: " + filePath);
         String searchResultsFilePath = UPLOAD_DIR + "search_ranking_results.json"; // 파이썬 스크립트가 생성하는 파일 경로
         String pythonFilePath = UPLOAD_DIR + "search_ranking_result.py";
+
 
         ProcessBuilder processBuilder = new ProcessBuilder("python", pythonFilePath , filePath, keyword);
         processBuilder.redirectErrorStream(true);

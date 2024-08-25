@@ -75,10 +75,10 @@ class Page1_2Activity : AppCompatActivity() {
     }
 }
 
-    /*private fun goToNextActivity(userId: String) {
-    // 다음 화면으로 이동하는 Intent 생성
-    val intent = Intent(this, Page2Activity::class.java) // Page2로 이동
-    startActivity(intent)
-    // 현재 액티비티 종료
-    finish()
+/*private fun goToNextActivity(userId: String) {
+// 다음 화면으로 이동하는 Intent 생성
+val intent = Intent(this, Page2Activity::class.java) // Page2로 이동
+startActivity(intent)
+// 현재 액티비티 종료
+finish()
 }*/
