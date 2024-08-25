@@ -12,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -73,6 +74,9 @@ class fragmentPage9 : Fragment() {
             Log.d("FragmentPage9", "선택된 항목의 값을 확인 Search Item: $selectedSearchItem")
             Log.d("FragmentPage9", "선택된 항목의 값을 확인 Results Item: $selectedResultsItem")
 
+            // 이전 결과를 가리기 위해 RecyclerView의 어댑터를 null로 설정
+            recyclerView.adapter = null
+
             // 로딩 인디케이터 표시
             showLoadingIndicator()
 
@@ -85,15 +89,36 @@ class fragmentPage9 : Fragment() {
                 crnum
             )
 
-            // 이미지 URL을 LiveData로 관찰하여 업데이트
+            // LiveData를 관찰하여 이미지 URL을 업데이트
             activityAnalysisViewModel.imageUrls.observe(viewLifecycleOwner, { imageUrls ->
                 Log.d("FragmentPage9", "이미지 생성 후에 변할 url변수의 옵저버 안에 들어옴")
-                val adapter = Page9RecyclerViewAdapter(imageUrls)
-                recyclerView.adapter = adapter
-                // 로딩 인디케이터 숨김
-                hideLoadingIndicator()
+                if (imageUrls.isNotEmpty()) {
+                    // 새로운 이미지 리스트가 있으면 어댑터 설정
+                    val adapter = Page9RecyclerViewAdapter(imageUrls)
+                    recyclerView.adapter = adapter
+                }
+            })
+
+            // 로딩 상태를 관찰하여 로딩 인디케이터 표시/숨기기
+            activityAnalysisViewModel.loading.observe(viewLifecycleOwner, { isLoading ->
+                if (!isLoading) {
+                    hideLoadingIndicator()
+                }
+            })
+
+            // 오류를 관찰하여 사용자에게 알림 및 로딩 인디케이터 숨기기
+            activityAnalysisViewModel.error.observe(viewLifecycleOwner, { error ->
+                if (error != null) {
+                    // 오류 발생 시 사용자에게 알림
+                    Toast.makeText(context, "서버 오류 발생: $error", Toast.LENGTH_LONG).show()
+                }
             })
         }
+
+
+
+
+
 
         // 스피너 아이템 설정
         activityAnalysisViewModel.loadParticipants(crnum)

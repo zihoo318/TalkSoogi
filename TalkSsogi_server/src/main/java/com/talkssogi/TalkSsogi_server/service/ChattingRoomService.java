@@ -36,7 +36,7 @@ import java.util.Optional;
 public class ChattingRoomService {
 
     private static final Logger logger = LoggerFactory.getLogger(PythonController.class); // 로그 출력
-    private static final String UPLOAD_DIR = "C:/TalkSsogi_Workspace/TalkSsogi/"; // "/"까지 해야됨!
+    private static final String UPLOAD_DIR = "C:/Users/KJH/TalkSsogi_Workspace/"; // "/"까지 해야됨!
     private final S3DownLoader s3DownLoader;
 
     //테스트용 경로

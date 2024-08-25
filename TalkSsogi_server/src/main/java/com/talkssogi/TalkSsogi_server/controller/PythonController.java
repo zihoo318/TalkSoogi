@@ -43,13 +43,13 @@ public class PythonController {
     private final PythonResultProcessor pythonResultProcessor;  // 추가
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_FILE_PATH = "C:/TalkSsogi_Workspace/TalkSsogi"; // workspace 밑에 저장된 파이썬 파일 경로
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/LG/AppData/Local/Programs/Python//Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/TalkSsogi_Workspace/TalkSsogi/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/TalkSsogi_Workspace/TalkSsogi/page9python.py";
-    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/TalkSsogi_Workspace/TalkSsogi/page8python.py";
-    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/TalkSsogi_Workspace/TalkSsogi/page6python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/TalkSsogi_Workspace/TalkSsogi/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace"; // workspace 밑에 저장된 파이썬 파일 경로
+    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/KJH/AppData/Local/Programs/Python/Python312/python.exe";
+    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/KJH/TalkSsogi_Workspace/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page9python.py";
+    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page8python.py";
+    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page6python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
 
 
     @Autowired
