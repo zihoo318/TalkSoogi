@@ -34,27 +34,29 @@
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_margin="30dp"
+        android:layout_marginTop="30dp"
         app:cardCornerRadius="30dp"
         app:cardElevation="9dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_ranking">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <SearchView
                 android:id="@+id/searchView"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
                 android:background="@drawable/search_view_background"
                 android:iconifiedByDefault="false"
                 android:queryHint="Search here"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -67,10 +69,10 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="30dp"
         app:cardElevation="9dp"
+        app:layout_constraintTop_toBottomOf="@id/cardView_search"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView_search">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_area"
@@ -105,8 +107,8 @@
                 android:layout_width="152dp"
                 android:layout_height="168dp"
                 android:layout_marginTop="64dp"
-                android:layout_marginEnd="140dp"
-                android:src="@drawable/smile"
+                android:layout_marginEnd="160dp"
+                android:src="@drawable/smile2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/whoMessage" />

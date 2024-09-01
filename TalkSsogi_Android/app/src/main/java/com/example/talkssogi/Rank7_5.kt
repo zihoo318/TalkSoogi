@@ -42,7 +42,7 @@ class Rank7_5 : Fragment() {
         rankingRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         rankingViewModel.basicRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            val messageRankings = results["오타"]
+            val messageRankings = results["비속어"]
             messageRankings?.let {
                 val displayList = it.entries
                     .sortedByDescending { entry -> entry.value }

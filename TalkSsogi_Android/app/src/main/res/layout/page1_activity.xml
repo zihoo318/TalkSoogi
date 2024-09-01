@@ -34,7 +34,7 @@
             android:id="@+id/content_area"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+           >
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -50,24 +50,24 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="30dp"
-                android:layout_marginTop="75dp"
+                android:layout_marginTop="165dp"
                 android:text="아이디:"
                 android:textColor="#0B614B"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/etID"
                 android:layout_width="240dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="148dp"
                 android:background="@drawable/border"
                 android:hint="   아이디 입력"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+                app:layout_constraintStart_toEndOf="@id/ID"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/IDConfirm"
@@ -99,13 +99,14 @@
                 android:id="@+id/btnUploadName"
                 android:layout_width="252dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="88dp"
                 android:background="@drawable/button_background"
                 android:text="로그인"
                 android:textColor="#0B614B"
                 android:textSize="25dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/etID"
+                app:layout_constraintHorizontal_bias="0.583"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etID" />
 
@@ -113,15 +114,16 @@
                 android:id="@+id/btnMoveToSignUpPage"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
-                android:layout_marginBottom="150dp"
+                android:layout_marginTop="64dp"
                 android:background="@drawable/button_background"
                 android:text="회원가입"
-                android:textColor="#0B614B"
                 android:textSize="20dp"
+                android:textColor="#0B614B"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintEnd_toEndOf="@+id/btnUploadName"
+                app:layout_constraintHorizontal_bias="0.463"
+                app:layout_constraintStart_toStartOf="@+id/btnUploadName"
+                app:layout_constraintTop_toBottomOf="@+id/btnUploadName" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

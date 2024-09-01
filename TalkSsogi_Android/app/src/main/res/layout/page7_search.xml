@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FCFFF3"
     tools:context=".Page7_search_Activity">
 
     <!-- 상단 이미지뷰 및 텍스트뷰 -->
@@ -25,6 +24,7 @@
         android:layout_marginStart="16dp"
         android:text="@string/title_ranking"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/fragment_container"
         app:layout_constraintStart_toEndOf="@+id/undo_button"
         app:layout_constraintTop_toTopOf="parent" />
