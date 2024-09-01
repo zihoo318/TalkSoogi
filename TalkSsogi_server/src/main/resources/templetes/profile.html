@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 정보</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FCFFF3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* 네비게이션 바 스타일 */
+        .navbar {
+            width: 100%;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* 로고 스타일 */
+        .navbar .logo {
+            margin-left: 10px; /* 기존 margin-left 수정 */
+        }
+
+        .navbar .logo img {
+            max-height: 60px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-right: 40px; /* 오른쪽 여백 */
+        }
+
+        .navbar .nav-links form {
+            display: inline-block;
+        }
+
+        .navbar .nav-links button {
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+            padding: 5px 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+        }
+
+        .navbar .nav-links button:hover {
+            color: #007bff;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-top: 400px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-info h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .user-info .logout-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FF6B6B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .user-info .logout-button:hover {
+            background-color: #FF3B3B;
+        }
+
+        .chat-list {
+            margin-top: 20px;
+        }
+
+        .chat-list h3 {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .chat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #F7F7F7;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-item img {
+            max-height: 60px;
+            border-radius: 10px;
+        }
+
+        .chat-details {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .chat-details h4 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+
+        .chat-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-actions button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #73d37a;
+            color: white;
+        }
+
+        .chat-actions button:hover {
+            background-color: #4CAF50;
+        }
+
+        .delete-button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-button img {
+            max-height: 24px;
+        }
+
+        .delete-button:hover img {
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<div class="navbar">
+    <div class="logo">
+        <img src="/static/images/logo.png" alt="톡쏙이 로고">
+    </div>
+    <div class="nav-links">
+        <form action="/login" method="get">
+            <button type="submit">로그인</button>
+        </form>
+        <form action="/profile" method="get">
+            <button type="submit">내 정보</button>
+        </form>
+        <form action="/help" method="get">
+            <button type="submit">이용안내</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="user-info">
+        <h2>사용자 님</h2>
+        <button class="logout-button" onclick="logout()">로그아웃</button>
+    </div>
+
+    <div class="chat-list">
+        <h3>채팅방 목록</h3>
+
+        <!-- 채팅방 목록을 표시할 부분 -->
+        <div id="chat-container"></div>
+
+    </div>
+</div>
+
+<script>
+    // 채팅방 데이터를 리스트로 정의
+    const chatRooms = [
+        { name: "채팅방 이름 1", img: "/static/images/profile_placeholder.jpg" },
+        { name: "채팅방 이름 2", img: "/static/images/profile_placeholder.jpg" },
+        { name: "채팅방 이름 3", img: "/static/images/profile_placeholder.jpg" },
+        { name: "채팅방 이름 4", img: "/static/images/profile_placeholder.jpg" },
+        { name: "채팅방 이름 5", img: "/static/images/profile_placeholder.jpg" }
+    ];
+
+    // 채팅방 목록을 동적으로 생성
+    function loadChatRooms() {
+        const chatContainer = document.getElementById('chat-container');
+        chatRooms.forEach((room, index) => {
+            const chatItem = document.createElement('div');
+            chatItem.className = 'chat-item';
+
+            chatItem.innerHTML = `
+                <img src="${room.img}" alt="채팅방 이미지">
+                <div class="chat-details">
+                    <h4>${room.name}</h4>
+                </div>
+                <div class="chat-actions">
+                    <button class="delete-button" onclick="deleteChat(${index})">
+                        <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+                    </button>
+                    <button onclick="viewResult()">결과보기</button>
+                </div>
+            `;
+
+            chatContainer.appendChild(chatItem);
+        });
+    }
+
+    // 페이지 로드 시 채팅방 목록을 불러옴
+    window.onload = loadChatRooms;
+
+    function logout() {
+        // 로그아웃 로직
+        window.location.href = '/logout';
+    }
+
+    function deleteChat(index) {
+        // 채팅방 삭제 로직
+        chatRooms.splice(index, 1);
+        alert('채팅방이 삭제되었습니다.');
+        document.getElementById('chat-container').innerHTML = ''; // 기존 목록 초기화
+        loadChatRooms(); // 새로운 목록 로드
+    }
+
+    function viewResult() {
+        // 결과보기 로직
+        window.location.href = '/result'; // 결과 페이지로 이동
+    }
+</script>
+
+</body>
+</html>
+
+<!--&lt;!&ndash; 채팅방 아이템 &ndash;&gt;
+<div class="chat-item">
+  <img src="/static/images/profile_placeholder.jpg" alt="채팅방 이미지">
+  <div class="chat-details">
+    <h4>채팅방 이름 1</h4>
+  </div>
+  <div class="chat-actions">
+    <button class="delete-button" onclick="deleteChat()">
+      <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+    </button>
+    <button onclick="viewResult()">결과보기</button>
+  </div>
+</div>
+
+&lt;!&ndash; 채팅방 아이템 2 &ndash;&gt;
+<div class="chat-item">
+  <img src="/static/images/profile_placeholder.jpg" alt="채팅방 이미지">
+  <div class="chat-details">
+    <h4>채팅방 이름 2</h4>
+  </div>
+  <div class="chat-actions">
+    <button class="delete-button" onclick="deleteChat()">
+      <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+    </button>
+    <button onclick="viewResult()">결과보기</button>
+  </div>
+</div>
+
+&lt;!&ndash; 채팅방 아이템 3 &ndash;&gt;
+<div class="chat-item">
+  <img src="/static/images/profile_placeholder.jpg" alt="채팅방 이미지">
+  <div class="chat-details">
+    <h4>채팅방 이름 3</h4>
+  </div>
+  <div class="chat-actions">
+    <button class="delete-button" onclick="deleteChat()">
+      <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+    </button>
+    <button onclick="viewResult()">결과보기</button>
+  </div>
+</div>
+
+&lt;!&ndash; 채팅방 아이템 4 &ndash;&gt;
+<div class="chat-item">
+  <img src="/static/images/profile_placeholder.jpg" alt="채팅방 이미지">
+  <div class="chat-details">
+    <h4>채팅방 이름 4</h4>
+  </div>
+  <div class="chat-actions">
+    <button class="delete-button" onclick="deleteChat()">
+      <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+    </button>
+    <button onclick="viewResult()">결과보기</button>
+  </div>
+</div>
+
+&lt;!&ndash; 채팅방 아이템 5 &ndash;&gt;
+<div class="chat-item">
+  <img src="/static/images/profile_placeholder.jpg" alt="채팅방 이미지">
+  <div class="chat-details">
+    <h4>채팅방 이름 5</h4>
+  </div>
+  <div class="chat-actions">
+    <button class="delete-button" onclick="deleteChat()">
+      <img src="/static/images/delete_chatroom.png" alt="채팅방 삭제">
+    </button>
+    <button onclick="viewResult()">결과보기</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function logout() {
+    // 로그아웃 로직
+    window.location.href = '/logout';
+}
+
+function deleteChat() {
+    // 채팅방 삭제 로직
+    alert('채팅방이 삭제되었습니다.');
+}
+
+function viewResult() {
+    // 결과보기 로직
+    window.location.href = '/result'; // 결과 페이지로 이동
+}
+</script>
+
+</body>
+</html>
+-->

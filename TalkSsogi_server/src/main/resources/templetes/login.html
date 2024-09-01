@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 톡쏙이</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FCFFF3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .login-container input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #73d37a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-container button:hover {
+            background-color: #4CAF50;
+        }
+
+        .login-container .link {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .login-container .link a {
+            text-decoration: none;
+            color: #007bff;
+            margin: 0 10px;
+        }
+
+        .login-container .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+<body>
+<div class="login-container">
+    <h1>로그인</h1>
+    <form action="/login" method="post">
+        <input type="text" name="username" placeholder="아이디" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button type="submit">로그인</button>
+    </form>
+    <div class="link">
+        <a href="/signup">회원가입</a> | <a href="/help">이용안내</a>
+    </div>
+</div>
+</body>
+</html>
