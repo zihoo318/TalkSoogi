@@ -1,1 +1,1 @@
-ALTER TABLE chattingroom MODIFY basic_ranking_results LONGTEXT;
+ALTER TABLE chattingroom ALTER COLUMN basic_ranking_results LONGTEXT;

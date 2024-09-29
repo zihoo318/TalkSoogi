@@ -57,7 +57,12 @@ public class ChattingRoomService {
 
     @Transactional
     public void save(ChattingRoom chattingRoom) {
+        logger.info("세이브 전 basicActivityAnalysis: " + chattingRoom.getBasicActivityAnalysis());
+
         chattingRoomRepository.save(chattingRoom);
+
+        logger.info("세이브 후 basicActivityAnalysis: " + chattingRoom.getBasicActivityAnalysis());
+
     }
 
     public void saveRankingResults(Integer crNum, String jsonResults) {
@@ -233,6 +238,7 @@ public class ChattingRoomService {
             Map<String, Map<String, Integer>> rankingResultsMap = mapper.readValue(jsonString, new TypeReference<Map<String, Map<String, Integer>>>(){});
 
             chattingRoom.setSearchRankingResults(rankingResultsMap);
+
             this.save(chattingRoom); // chattingRoomService.save(chattingRoom) 대신 this.save(chattingRoom) 사용
 
             return rankingResultsMap;

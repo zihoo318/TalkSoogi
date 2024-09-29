@@ -55,7 +55,7 @@ public class ChattingRoom {
     @Column(name = "search_ranking_results") // Column name updated to match MySQL schema
     private Map<String, Map<String, Integer>> searchRankingResults = new HashMap<>(); // 빈 맵으로 초기화
 
-    @Column(name = "caller_prediction") // 발신자 예측 결과값 저장
+    @Column(name = "caller_prediction", columnDefinition = "LONGTEXT", length = 10000) // 발신자 예측 결과값 저장
     private String callerPrediction;
 
 
@@ -113,7 +113,7 @@ public class ChattingRoom {
     }
 
     public void setBasicActivityAnalysis(List<String> basicActivityAnalysis) {
-        this.basicActivityAnalysis = basicActivityAnalysis != null ? basicActivityAnalysis : new ArrayList<>();
+        this.basicActivityAnalysis = basicActivityAnalysis;
     }
 
     public String getActivityAnalysisImageUrl() {

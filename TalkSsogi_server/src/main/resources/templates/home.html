@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/smile.png" type="image/png">
+    <title>톡쏙이</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FCFFF3;
+            margin-top: 25px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #wordcloud h2 {
+            margin-left: 550px;
+            color:#1e8e3e;
+            font-weight: bold;
+        }
+        #ranking h2 {
+            margin-left: 550px;
+            color:#1e8e3e;
+            font-weight: bold;
+        }
+        #activity h2 {
+            margin-left: 550px;
+            color:#1e8e3e;
+            font-weight: bold;
+        }
+        #custom-analysis h3 {
+            margin-left: 550px;
+            color:#1e8e3e;
+            font-weight: bold;
+        }
+        #basic-analysis h3 {
+            margin-left: 550px;
+            color:#1e8e3e;
+            font-weight: bold;
+        }
+        #prediction h2 {
+            margin-left: 550px;
+            color:#da3ed5;
+            font-weight: bold;
+        }
+
+        /* 랭킹 font size 변경 */
+        #resultText {
+            font-size: 15px; /* 원하는 폰트 크기로 변경 */
+        }
+
+        /* 로딩 이미지 */
+        #loading-spinner-img {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        #loading-image {
+            width: 500px; /* 원하는 크기로 설정 */
+            height: 500px;
+        }
+
+
+
+        /* 네비게이션 바 스타일 */
+        .navbar {
+            width: 100%;
+            background-color: #fff;
+            padding: 5px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar .logo {
+            position: relative;
+            margin-left: -10px;
+            margin-right: 10px;
+            margin-top: 10px;
+            weight:30px;
+        }
+
+        .navbar .logo img {
+            max-height: 40px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-right: 40px;
+        }
+
+        .navbar .nav-links button {
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+            padding: 5px 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+        }
+
+        .navbar .nav-links button:hover {
+            color: #007bff;
+        }
+
+        .button-wrapper {
+            position: relative; /* relative로 설정하여 transform 사용 */
+            margin-top: 20px; /* 위쪽 여백 추가 */
+            right: -300px; /* 왼쪽으로 이동 */
+        }
+
+
+
+        .purple-button {
+            background-color: #bf5ab1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .purple-button:hover {
+            background-color: #ea75db;
+        }
+
+
+        .container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-top: 80px;
+        }
+
+        .mascot-section {
+            flex: 1;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        .mascot-section img {
+            max-width: 100%;
+            height: auto;
+            width: 150%;
+            max-width: 350px;
+            margin-left: 15px;
+            margin-top:20px;
+        }
+
+        .text-section {
+            flex: 2;
+            text-align: left;
+            padding-right: 20px;
+        }
+
+        .text-section h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .text-section p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .upload-section input[type="file"] {
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .upload-section button {
+            padding: 15px 25px;
+            font-size: 18px;
+            background-color: #73d37a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .upload-section button:hover {
+            background-color: #4CAF50;
+        }
+
+        .button-section {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 10px;
+            justify-items: center;
+
+
+        }
+
+        .button-section .feature-button {
+            padding: 15px 20px;
+            font-size: 18px;
+            background-color: #CCFFCC;
+            color: #333;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #CCFFCC;
+            cursor: pointer;
+            width: 80%;
+        }
+
+        .button-section .feature-button:hover {
+            background-color: #80EB88;
+            border-color: #80EB88;
+        }
+
+        /* 드롭다운 메뉴 */
+        .dropdown-content {
+            display: none;
+            position: fixed; /* 버튼 아래에 위치시킴 */
+            background-color: #aef7b2;
+            color: #1e8e3e; /* 어두운 연두색 */
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 100px;
+            font-size: 14px;
+            top: 360px; /* 링크 아래에 위치 */
+            left: 40px;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #1e8e3e; /* 어두운 연두색 */
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            background-color: #eaf7e7;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #c1e1c1;
+        }
+
+        /* 스티키 사이드바 */
+        .sidebar {
+            position: fixed; /* 위치를 고정 */
+            top: 80px;
+            left: 0; /* 왼쪽 정렬 */
+            width: 200px;
+            background-color: #FCFFF3;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: calc(100vh - 80px);
+            border-radius: 10px;
+            margin-right: 20px;
+            display: none; /* 기본적으로 숨김 */
+        }
+
+        .sidebar a {
+            display: block;
+            margin-bottom: 70px;
+            font-weight: bold;
+            font-size: 16px;
+            text-decoration: none;
+            padding: 10px 15px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #aef7b2;
+            color: #1e8e3e; /* 어두운 연두색 */
+        }
+
+        .sidebar a:hover {
+            background-color: #7CE49A; /* 현재 페이지를 나타내는 버튼의 배경색 */
+            border-color: #80EB88;
+            color: #333;
+        }
+
+
+        //워드 클라우드
+
+
+              /* 워드 클라우드 박스 스타일 */
+          .wordcloud-container {
+              display: flex;
+              width: 100%;
+              height: 450px; /* 박스 높이 조정 */
+          }
+
+        .wordcloud-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            left: -220px; /* 전체를 왼쪽으로 100px 이동 */
+            top: 85px; /* 숫자 크면 내려감! */
+        }
+
+        .wordcloud-left .speech-bubble-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wordcloud-left .speech-bubble {
+            width: 80%;
+            max-width: 600px;
+            height: auto;
+            position: relative;
+            z-index: 1;
+            left: 50px; /* 숫자 크면 오른쪽 */
+        }
+
+        .wordcloud-left .dropdown-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .wordcloud-speech-bubble-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 70%;
+            max-width: 800px;
+            /* 이동을 위한 추가 margin */
+            /*margin-left: 20px; !* 왼쪽 여백 추가 *!*/
+        }
+
+        .wordcloud-speech-bubble {
+            width: 100% !important; /* 원하는 너비를 비율로 설정하거나, */
+            max-width: 800px; /* 최대 너비를 설정하여 화면 크기에 따라 유동적으로 조절 */
+            height: auto; /* 높이는 자동으로 조절 */
+            position: relative;
+            z-index: 1; /* 이미지가 가장 뒤에 위치하도록 설정 */
+        }
+
+        .wordcloud-dropdown-container {
+            position: absolute;
+            top: 48%; /* 드롭다운,텍스트,돋보기 상하 위치 조절 */
+            left: 35%; /* 드롭다운,텍스트,돋보기 좌우 위치 조절 */
+            transform: translate(-50%, -50%) translateX(100px); /* 드롭다운과 텍스트, 돋보기를 오른쪽으로 이동 */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2; /* 드롭다운과 텍스트, 돋보기가 이미지 위에 위치하도록 설정 */
+        }
+
+        .wordcloud-dropdown select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .wordcloud-dropdown .label {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .wordcloud-left .magnifier {
+            cursor: pointer; /* 클릭할 수 있는 요소임을 나타내는 커서 */
+            max-width: 30px; /* 이미지 최대 너비 설정 */
+            height: auto; /* 이미지 높이 자동 조절 */
+            margin-left: 10px; /* 드롭다운과의 간격 조절 */
+        }
+
+        .wordcloud-left .rounded-box {
+            width: 50%;
+            max-width: 600px;
+            background-color: #CCFFCC;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px; /* 위쪽 박스와의 간격 조정 */
+            margin-left: 80px; /* 오른쪽으로 이동시키기 위한 여백 추가 */
+        }
+
+        .wordcloud-right {
+            display: flex;
+            justify-content: center;
+            position: relative; /* 부모 요소에 상대적 위치를 설정 */
+            left: 350px; /* 숫자 작을수록 왼쪽임! 기존의 말풍선 박스와 겹치지 않도록 조정 (필요에 따라 값 조정 가능) */
+            top: -250px;
+        }
+
+        .wordcloud-image-container {
+            position: relative; /* 자식 요소들에 대한 절대 위치 설정 */
+        }
+
+        .wordcloud-board {
+            max-width: 60%;
+            height: auto;
+        }
+
+        .wordcloud-overlay {
+            position: absolute; /* 절대 위치 설정 */
+            top: 12%; /* 부모 컨테이너의 상단에서 10% 아래로 이동 */
+            left: 7.5%; /* 부모 컨테이너의 왼쪽에서 10% 오른쪽으로 이동 */
+            width: 35%; /* 부모 컨테이너의 너비의 40%로 설정 */
+            height: 45%; /* 부모 컨테이너의 높이의 40%로 설정 */
+            object-fit: contain; /* 이미지 비율을 유지하면서 크기 조정 */
+            transform: translate(10%, 65%) !important;; /* 추가적으로 오른쪽과 아래로 이동 */
+        }
+
+        .wordcloud-right img {
+            max-width: 70%;
+            height: auto;
+            transform: translate(-10%, -5%);
+        }
+
+
+
+        //랭킹
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #FCFFF3;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center; /* 중앙 정렬 */
+              align-items: center; /* 수직 중앙 정렬 */
+              height: 100vh; /* 전체 높이 */
+          }
+
+        .card {
+            width: 900px; /* 카드 너비를 더 넓게 설정 */
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 9px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 230px;
+        }
+
+        .card3 {
+            width: 900px; /* 카드 너비를 더 넓게 설정 */
+            height: 430px;
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 9px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 230px;
+        }
+
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center; /* 버튼 그룹 가운데 정렬 */
+        }
+
+        .button-group button, .search-input {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #73d37a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 258px; /* 버튼 크기 일치 */
+        }
+
+        .button-group button:hover {
+            background-color: #4CAF50;
+        }
+
+        .search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 238px; /* 버튼 크기 일치 */
+            background-color: #cfff9e;
+            color: #333;
+        }
+
+        .result-section {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            width: 100%;
+        }
+
+        .result-section img {
+
+            height: auto;
+            width: 100%;
+            max-width: 350px;
+            border-radius: 10px;
+        }
+
+        .result-section .result-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #555;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+
+        //발신자 예측
+          body {
+              font-family: Arial, sans-serif;
+              background-size: cover;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+          }
+
+
+        .card1 {
+            width: 900px; /* 카드 너비를 더 넓게 설정 */
+            background-image: url('/images/purple.png'); /* 배경 이미지 설정 */
+            border-radius: 30px;
+            box-shadow: 0 4px 9px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 230px;
+            margin-bottom: 30px; /* 발신자 예측 카드와 화면 사이 여백 조정 */
+        }
+
+        .balloon-container1 {
+            position: relative;
+            width: 100%;
+            text-align: center;
+            margin-top: 30px; /* 카드 내부에서 balloon 위치 아래로 조정 */
+            margin-bottom: 10px; /* 카드 크기 줄이기 위해 아래 여백 조정 */
+        }
+
+        .balloon-container1 img {
+            width: 700px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .balloon-container1 .search-input {
+            position: absolute; /* 말풍선 안의 위치를 절대 위치로 조정 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-115%, -140%);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            min-width: 140px;
+            background-color: #fff0fd;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .balloon-container1 .balloon-text {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translate(-10%, -260%);
+            font-size: 18px;
+            color: #fff0fd;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .prediction-container img {
+            width: 90%; /* 이미지가 컨테이너의 너비를 가득 채우도록 설정 */
+            transform: translate(6%, -10%);
+            height: auto; /* 높이를 자동으로 조정하여 비율을 유지 */
+            border-radius: 10px;
+        }
+
+
+
+        .button-wrapper {
+            position: relative; /* relative로 설정하여 transform 사용 */
+            margin-top: 20px; /* 위쪽 여백 추가 */
+            right: -300px; /* 왼쪽으로 이동 */
+        }
+
+
+
+        .purple-button {
+            background-color: #bf5ab1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .purple-button:hover {
+            background-color: #ea75db;
+        }
+
+
+
+
+
+
+        /* 로딩 설정 */
+        .spinner-wordcloud {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #73D37A; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .spinner-custom-analysis {
+            border: 8px solid #f3f3f3; /* 회색 바깥 테두리 */
+            border-top: 8px solid #73D37A; /* 초록색 회전 부분 */
+            border-radius: 50%;
+            width: 100px;  /* 스피너의 너비 (기존보다 크게) */
+            height: 100px; /* 스피너의 높이 (기존보다 크게) */
+            animation: spin 1s linear infinite; /* 회전 애니메이션 */
+            position: fixed;  /* 'absolute'에서 'fixed'로 변경하여 화면 전체에 고정 */
+            top: 50%;  /* 화면 중앙으로 */
+            left: 50%;  /* 화면 중앙으로 */
+            transform: translate(-50%, -50%);  /* 중앙에 위치 */
+            z-index: 2000;  /* 다른 요소 위에 표시되도록 더 큰 값 설정 */
+            background-color: rgba(255, 255, 255, 0.8); /* 약간의 반투명 배경 추가로 가시성 향상 */
+        }
+
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+
+
+        #loading-spinner {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5); /* Transparent white background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        /* 로딩 설정 */
+
+
+
+
+        .card2 {
+            width: 900px; /* 카드 너비를 더 넓게 설정 */
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 9px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 230px;
+            height: 500px; /* 고정된 높이 설정 */
+        }
+        .basic-analysis-left {
+            flex: 1;
+            text-align: left;
+            padding: 0px;
+            position: relative;
+        }
+
+        .basic-analysis-left .basic-analysis-half {
+            width: 350px; /* 고정된 크기로 설정 */
+            max-width: 350px; /* 기본적으로 적용되는 max-width를 무시 */
+            height: 250px; /* 고정된 크기로 설정 */
+            margin: 0; /* 모든 여백 제거 */
+            position: relative; /* 부모 컨테이너의 하단에 고정 */
+            bottom: -200px; /* 부모 컨테이너의 하단에 위치 */
+            left: -260px; /* 왼쪽에 붙이기 */
+        }
+
+        .basic-analysis-right {
+            flex: 1.8;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .basic-analysis-right .basic-analysis-speechbubble {
+            width: 500px; /* 고정된 크기로 설정 */
+            max-width: 700px; /* 기본적으로 적용되는 max-width를 무시 */
+            height: 250px; /* 고정된 크기로 설정 */
+            position: relative;
+            margin-left: 300px; /* 이미지가 오른쪽으로 이동하도록 설정 */
+            margin-top:-600px;
+
+        }
+
+        .basic-analysis-right .basic-analysis-speechbubble-content {
+            position: absolute;
+            top: -120%;
+            left: 56%;
+            right: 10%;
+            bottom: 10%;
+            padding: 20px;
+            font-size: 15px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+
+        /* 네 번째 박스 스타일 */
+
+
+        .custom-analysis-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 33%;
+            margin-bottom: 20px;
+            padding-left: -90px; /* 날짜 선택 버튼과 드롭다운 메뉴를 오른쪽으로 20px 이동 */
+        }
+
+        .date-selection-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* 좌측상단위 두줄 사이 간격 */
+        }
+
+        .date-row,
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* 좌측상단위 선택지들 사이 간격 */
+        }
+
+        .date-button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #CCFFCC;
+            color: #333;
+            cursor: pointer;
+            width: auto;
+            /* 두 줄 시작하는 위치 딱 맞출거면 주석풀기 margin: 0 10px; /* 버튼 간의 간격 조정 */
+        }
+
+        .date-button:hover {
+            background-color: #80EB88;
+            border-color: #80EB88;
+        }
+
+        .custom-dropdown-container1,
+        .custom-dropdown-container2 {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 10px; /* 드롭다운과 텍스트, 돋보기 아이콘 간격 조정 */
+        }
+
+        .magnifier2 {
+            cursor: pointer;
+            max-width: 25px;
+            height: auto;
+        }
+
+        .custom-image-container {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .custom-analysis-half2 {
+            width: 300px; /* 고정된 크기로 설정 */
+            max-width: none; /* 기본적으로 적용되는 max-width를 무시 */
+            height: 190px; /* 고정된 크기로 설정 */
+            transform: translateX(80px); /* 박스를 왼쪽으로 약간 이동 */
+        }
+
+        .custom-analysis-bottom {
+            display: flex;
+            justify-content: space-between;
+            height: 67%;
+        }
+
+        .custom-analysis-half1 {
+            width: 190px; /* 고정된 크기로 설정 */
+            max-width: none; /* 기본적으로 적용되는 max-width를 무시 */
+            height: 300px; /* 고정된 크기로 설정 */
+            margin-left: 0; /* 박스의 왼쪽 벽에 공백 없이 딱 붙도록 설정 */
+            transform: translateX(-354px); /* 박스를 왼쪽으로 약간 이동 */
+        }
+
+        .custom-rect-box {
+            flex: 2.5;
+            background-color: #CCFFCC;
+            border-radius: 10px;
+            padding: 50px;
+            margin-left: 70px;
+            margin-top:-300px;
+            width: 500px; /* 박스의 너비에 맞게 조절 */
+            height: 200px; /* 높이는 비율에 맞게 자동 조절 */
+        }
+
+        .custom-analysis-result {
+            width: 500px; /* 박스의 너비에 맞게 조절 */
+            height: 240px; /* 높이는 비율에 맞게 자동 조절 */
+            border-radius: 10px; /* 필요에 따라 둥근 모서리 적용 */
+            transform: translateX(0px); /* 사진을 오른쪽으로 약간 이동 */
+            margin-top:-20px;
+        }
+
+        html {
+            scroll-behavior: smooth; /* 부드러운 스크롤 효과 */
+        }
+
+        h2, h3 {
+            margin-top: 50px; /* 타이틀 위에 여백 추가 */
+            padding-top: 10px; /* 타이틀 아래 여백 추가 */
+            position: relative;
+        }
+
+        h2::before, h3::before {
+            content: "";
+            display: block;
+            height: 1px;
+            margin-top: -50px; /* 위치 조정 */
+            visibility: hidden;
+        }
+
+        #custom-analysis, #basic-analysis {
+            scroll-margin-top: 100px; /* 맞춤 분석과 기본 분석의 타이틀도 맞추기 */
+        }
+
+
+        // 가을 추가 코드
+        //가을 추가 코드
+
+          .feature-button a {
+              color: black;
+              text-decoration: none;
+          }
+
+        /* 마우스를 올렸을 때 */
+        .feature-button a:hover {
+            color: green; /* 마우스를 올렸을 때 초록색 */
+        }
+
+        /* 클릭했을 때 (활성화 상태) */
+        .feature-button a:active {
+            color: darkgreen; /* 클릭했을 때 어두운 초록색 */
+        }
+
+        /* a 태그의 밑줄을 없애고 스타일 적용 */
+        .help-button {
+            background-color: transparent; /* 배경을 투명하게 설정 */
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 16px;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            display: inline-block; /* 버튼처럼 보이게 설정 */
+        }
+
+        /* 마우스 오버 시 글씨 색상 변경 */
+        .help-button:hover {
+            color: #47C83E; /* 마우스 오버 시 초록색 글씨 */
+            text-decoration: none; /* 마우스 오버 시에도 밑줄 제거 유지 */
+        }
+
+        /* 공통 스타일 적용 */
+        .nav-link {
+            text-decoration: none; /* 링크 밑줄 제거 */
+            color: #22741C; /* 기본 글씨 색상 */
+            font-weight: bold; /* 굵은 글씨 */
+            transition: color 0.3s; /* 색상 전환 애니메이션 */
+        }
+
+        /* 마우스 오버 시 색상 변경 */
+        .nav-link:hover {
+            color: #1e8e3e; /* 마우스 오버 시 초록색 */
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<div class="navbar">
+    <div class="logo">
+        <img src="/images/logo.png" alt="톡쏙이 로고">
+
+    </div>
+    <div class="nav-links">
+        <!--        <form action="login.html" method="get">-->
+        <!--            <button type="submit">로그인</button>-->
+        <!--        </form>-->
+        <!--        <form action="profile.html" method="get">-->
+        <!--            <button type="submit">내 정보</button>-->
+        <!--        </form>-->
+        <a href="/help" class="help-button">
+            <div>이용안내</div>
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="mascot-section">
+        <img src="/images/smile.png" alt="화분이">
+    </div>
+
+    <div class="text-section">
+        <h1>톡쏙이 - 카카오톡 대화 분석</h1>
+        <p>톡쏙이를 통해 카카오톡 대화를 분석하고 다양한 결과를 확인해보세요! <br>파일을 업로드하면 분석이 시작됩니다.</p>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept=".txt">
+            <button onclick="uploadFile()">분석 시작</button>
+            <div id="loading-spinner-img" style="display: none;">
+                <img id="loading-image" src="/images/analysis1.png" alt="Loading">
+            </div>
+        </div>
+        <div class="button-section">
+            <div class="feature-button">
+                <a href="#wordcloud" class="nav-link">워드 클라우드</a>
+            </div>
+            <div class="feature-button">
+                <a href="#ranking" class="nav-link">랭킹 분석</a>
+            </div>
+            <div class="feature-button">
+                <a href="#activity" class="nav-link" onmouseover="showDropdown(event)" onmouseout="hideDropdown()">활동 분석</a>
+            </div>
+            <div class="feature-button">
+                <a href="#prediction" class="nav-link">발신자 예측</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- 분석 결과 섹션 -->
+    <div id="analysisResults" style="display:none;">
+        <!-- 스티키 네비게이션 -->
+        <div id="stickyNav" class="sidebar">
+            <a href="#wordcloud">워드 클라우드</a>
+            <a href="#ranking">랭킹 분석</a>
+            <a href="#activity" onmouseover="showDropdown(event)" onmouseout="hideDropdown()">활동 분석</a>
+            <div id="dropdown-content-sticky" class="dropdown-content">
+                <a href="#custom-analysis">맞춤 분석</a>
+                <a href="#basic-analysis">기본 분석</a>
+            </div>
+            <a href="#prediction">발신자 예측</a>
+            <a href="#top">맨 위로</a>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <div id="wordcloud">
+            <h2>워드 클라우드</h2>
+            <!-- 워드 클라우드 내용 -->
+            <div class="card3">
+                <div class="wordcloud-left">
+                    <div class="wordcloud-speech-bubble-container">
+                        <img src="/images/wordcloud_speechbubble.png" alt="말풍선" class="speech-bubble">
+                        <div class="wordcloud-dropdown-container">
+                            <select id="participantSelect" onchange="updateWordCloud()">
+                                <!-- 추가적인 참여자 옵션들 -->
+                            </select>
+                            <span class="label" id="wordCloudLabel">의 워드 클라우드</span>
+                            <img src="/images/magnifier.png" alt="돋보기" class="magnifier" onclick="showWordCloud()">
+                        </div>
+                    </div>
+                    <div class="rounded-box">
+                        <b>워드 클라우드란?</b> <br>
+                        단어나 문구 등의 중요도에 따라 크기나 색상 등을 다르게 표현하여 강조하고 싶은 내용을 직관적으로 파악할 수 있도록 하는 시각화 기법.
+                    </div>
+                </div>
+                <div class="wordcloud-right">
+                    <div class="wordcloud-image-container">
+                        <img src="/images/wordcloud_board.png" alt="워드 클라우드 배경" class="wordcloud-board">
+                        <img src="/images/wordcloud.png" alt="워드 클라우드" class="wordcloud-overlay">
+                        <!-- 로딩 화면 (처음에는 숨겨져 있다가 나중에 보여지도록 설정) -->
+                        <div id="loading-spinner" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                            <!-- 로딩 스피너 또는 이미지 -->
+                            <div class="spinner-wordcloud"></div> <!-- 이 부분에 실제 로딩 이미지를 넣으면 됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <br>
+        </div>
+        <div id="ranking">
+            <h2>랭킹 분석</h2>
+            <!-- 랭킹 분석 내용 -->
+            <div class="card">
+                <div class="button-container">
+                    <div class="button-group">
+                        <button onclick="fetchRankingResults(1)">가장 많이 카톡을 보낸 사람</button>
+                        <button onclick="fetchRankingResults(2)">가장 많이 사진을 보낸 사람</button>
+                        <button onclick="fetchRankingResults(3)">가장 많이 이모티콘을 쓴 사람</button>
+                        <button onclick="fetchRankingResults(4)">가장 긴 카톡을 보낸 사람</button>
+                        <button onclick="fetchRankingResults(5)">가장 많이 비속어를 쓴 사람</button>
+                    </div>
+                    <div class="result-section">
+                        <img id="resultImage" src="/images/rank_board.png" alt="결과 이미지">
+                        <div id="resultText" class="result-text">결과를 선택하세요.</div>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="fetchRankingResults(6)">가장 많이 태그된 사람</button>
+                        <button onclick="fetchRankingResults(7)">가장 많이 초성을 쓴 사람</button>
+                        <button onclick="fetchRankingResults(8)">가장 많이 언급한 사람</button>
+                        <button onclick="fetchRankingResults(9)">가장 많이 카톡을 삭제한 사람</button>
+                        <input type="text" id="searchInput" class="search-input" placeholder="검색...">
+                        <button onclick="searchRanking()">검색</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div id="activity">
+            <h2>활동 분석</h2>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="custom-analysis">
+                <h3>맞춤 분석</h3>
+
+                <!-- 네 번째 박스 -->
+                <div class="card2">
+                    <!-- 윗부분 1/3 -->
+                    <div class="custom-analysis-top">
+                        <div class="date-selection-section">
+                            <!-- 날짜 선택 버튼과 드롭다운 메뉴 두 줄 -->
+                            <div class="date-row">
+                                <input type="date" id="startDate" class="date-button">
+                                <span>부터</span>
+                                <input type="date" id="endDate" class="date-button">
+                                <span>까지 중에서</span>
+                            </div>
+                            <div class="filter-row">
+                                <select id="participantSelect_custom_analysis" class="custom-dropdown-container1">
+                                    <!-- 추가적인 참여자 옵션들 -->
+                                </select>
+                                <span>의</span>
+                                <select id="OptionSelect" class="custom-dropdown-container2">
+                                    <option value="보낸 메시지 수 그래프">보낸 메시지 수 그래프</option>
+                                    <option value="활발한 시간대 그래프">활발한 시간대 그래프</option>
+                                    <option value="대화를 보내지 않은 날짜">대화를 보내지 않은 날짜</option>
+                                </select>
+                                <img src="/images/magnifier.png" alt="돋보기" class="magnifier2">
+                            </div>
+                        </div>
+                        <div class="custom-image-container">
+                            <img src="/images/custom_analysis_half2.png" alt="맞춤 분석 캐릭터 2" class="custom-analysis-half2">
+
+                        </div>
+                    </div>
+
+                    <div class="custom-image-container">
+                        <img src="/images/custom_analysis_half1.png" alt="맞춤 분석 캐릭터 1" class="custom-analysis-half1">
+                    </div>
+                    <div class="custom-rect-box">
+                        <img src="/images/custom_analysis_result.png" alt="맞춤 분석 결과" class="custom-analysis-result">
+                        <!-- 스피너 추가 -->
+                        <div id="custom-analysis-spinner" class="spinner-custom-analysis" style="display: none;"></div>
+                    </div>
+                </div>
+
+
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+            </div><div id="basic-analysis">
+            <h3>기본 분석</h3>
+            <!-- 세 번째 박스 -->
+            <div class="card2">
+                <div class="basic-analysis-left">
+                    <img src="/images/basic_analysis_half.png" alt="기본 분석 캐릭터" class="basic-analysis-half">
+                </div>
+                <div class="basic-analysis-right">
+                    <img src="/images/basic_analysis_speechbubble.png" alt="기본 분석 말풍선" class="basic-analysis-speechbubble">
+                    <div class="basic-analysis-speechbubble-content">
+                        <!-- 여기에 기본 분석 텍스트를 추가합니다 -->
+                        <p id="analysis-results">
+                            <b>메시지 수가 가장 많았던 날:</b> <br>
+                            <b id="most-messages-date">20XX-XX-XX(XXXX건)</b> <br><br>
+                            <b>대화를 하지 않은 날:</b> <br>
+                            <b id="no-conversation-date">20XX-XX-XX</b> <br><br>
+                            <b>평균적으로 가장 활발한 시간대:</b> <br>
+                            <b id="most-active-time">XX-XX(XXX건)</b>
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+        </div>
+        <div id="prediction">
+            <h2>발신자 예측</h2>
+            <!-- 발신자 예측 내용 -->
+            <div class="card1">
+                <div class="balloon-container1">
+                    <img src="/images/ballon.png" alt="말풍선">
+                    <input type="text" id="search-input" class="search-input" placeholder="검색창">
+
+                    <!-- 버튼을 감싸는 div 추가 -->
+                    <div class="button-wrapper">
+                        <button class="purple-button" onclick="getPrediction()">예측하기</button>
+                    </div>
+
+
+                    <div id="balloon-text" class="balloon-text">을(를) 말했을 사람은 말이지..</div>
+                </div>
+                <div class="prediction-container">
+                    <img src="/images/predicter.png" alt="예측 결과">
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+    <script>
+
+        // 전역 변수로 crNum 선언
+        let crNum = 1;
+
+        document.querySelectorAll('#stickyNav a, #dropdown-content-sticky a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const yOffset = -100; // 오프셋 값 (필요에 따라 조정)
+                    const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            });
+        });
+
+
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            var dropdownContent = document.getElementById('dropdown-content');
+            var isDisplayed = dropdownContent.classList.contains('show');
+            if (!isDisplayed) {
+                dropdownContent.classList.add('show');
+            } else {
+                dropdownContent.classList.remove('show');
+            }
+        }
+
+        function showDropdown(event) {
+            event.stopPropagation();
+            var dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.classList.add('show');
+        }
+
+        function hideDropdown(event) {
+            var dropdownContent = document.getElementById('dropdown-content');
+            // 드롭다운 메뉴가 클릭되었거나, 마우스가 드롭다운 메뉴 위에 있을 때는 숨기지 않음
+            if (!dropdownContent.contains(event.relatedTarget) && !event.target.classList.contains('feature-button')) {
+                dropdownContent.classList.remove('show');
+            }
+        }
+
+        function closeAllDropdowns() {
+            var dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(function(dropdown) {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        document.addEventListener('click', function() {
+            closeAllDropdowns();
+        });
+
+        function showStickyNav() {
+            document.getElementById('stickyNav').style.display = 'block';
+        }
+
+        let imageIndex = 0;
+        const images = [
+            '/images/analysis1.png',
+            '/images/analysis2.png',
+            '/images/analysis3.png',
+            '/images/analysis4.png'
+        ];
+
+        function startImageRotation() {
+            const loadingImage = document.getElementById('loading-image');
+
+            // 이미지 번갈아 표시하는 함수
+            setInterval(() => {
+                imageIndex = (imageIndex + 1) % images.length;  // 이미지 인덱스 순환
+                loadingImage.src = images[imageIndex];
+            }, 500);  // 0.5초 간격으로 변경
+        }
+
+        // 로딩 화면 표시와 이미지 순환 시작(분석 시작)
+        function showLoadingImageSpinner() {
+            document.getElementById('loading-spinner-img').style.display = 'flex';
+            startImageRotation();  // 이미지 순환 시작
+        }
+
+        // 로딩 화면 숨기기
+        function hideLoadingImageSpinner() {
+            document.getElementById('loading-spinner-img').style.display = 'none';
+        }
+
+        // 로딩 화면 표시(스피너, 워드클라우드)
+        function showLoadingWordCloudSpinner() {
+            document.getElementById('loading-spinner').style.display = 'block';
+        }
+
+        // 로딩 화면 숨기기
+        function hideLoadingWordCloudSpinner() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+
+        // 로딩 화면 표시(스피너, 맞춤분석)
+        function showLoadingSpinner() {
+            console.log('스피너 표시');
+            document.getElementById('custom-analysis-spinner').style.display = 'block';
+        }
+
+        // 로딩 화면 숨기기
+        function hideLoadingSpinner() {
+            console.log('스피너 숨기기');
+            document.getElementById('custom-analysis-spinner').style.display = 'none';
+        }
+
+
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+
+            if (fileInput.files.length === 0) {
+                alert('파일을 선택하세요.');
+                return;
+            }
+            // 로딩 화면 표시
+            showLoadingImageSpinner();
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', 'exampleUserId');  // 예시 userId, 실제 유저 ID를 넣어야 합니다.
+            formData.append('headcount', 0);  // 예시 headcount, 실제 값으로 대체해야 합니다.
+
+            try {
+                // 파일 업로드 API 호출
+                const response = await fetch('/api/uploadfile', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data && data.crNum) {
+                    // 전역 변수로 crNum을 설정
+                    crNum = data.crNum;
+                    console.log("업로드 성공. crNum:", crNum);
+
+                    // 파일 업로드가 성공적으로 완료되면 분석 API 호출
+                    await startBasicAnalysis(crNum); // crNum을 전달
+                    await loadMemberNames(crNum); // crNum을 전달
+                    await loadWordCloudMemberNames(crNum)
+
+                    console.log('기본 분석이 완료되었습니다!');
+                    document.getElementById('analysisResults').style.display = 'block';
+                    showStickyNav();  // 스티키 네비게이션 표시
+
+                    // 기본 분석 후 db에 저장
+                    fetch(`/api/analysis/basicActivityAnalysis?crnum=${crNum}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // 첫 번째 요청의 데이터 처리
+                            console.log('첫 번째 데이터:', data);
+
+                            // 첫 번째 요청이 완료된 후 두 번째 요청을 수행
+                            return fetch(`/api/basics/activityAnalysis?crnum=${crNum}`);
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length >= 3) {
+                                document.getElementById('most-messages-date').innerHTML = data[0];
+                                document.getElementById('no-conversation-date').innerHTML = data[1];
+                                document.getElementById('most-active-time').innerHTML = data[2];
+                            } else {
+                                console.error('첫 번째 데이터의 길이가 예상보다 짧습니다.');
+                            }
+                        })
+                        .catch(error => console.error('데이터를 가져오는 중 오류 발생:', error));
+
+                    // 추가 API 호출: /caller-prediction-exante
+                    const callerPredictionResponse = await fetch(`/api/caller-prediction-exante?crnum=${crNum}`);
+
+                    if (!callerPredictionResponse.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const callerPredictionData = await callerPredictionResponse.text(); // 텍스트로 응답을 처리
+                    console.log('Caller prediction data:', callerPredictionData);
+
+
+                } else {
+                    alert('파일 분석 중 문제가 발생했습니다.');
+                    console.error('응답 데이터:', data);
+                }
+            } catch (error) {
+                alert('파일 업로드 중 오류가 발생했습니다.');
+                console.error('Error:', error);
+            } finally {
+                // 로딩 화면 숨기기
+                hideLoadingImageSpinner();
+            }
+        }
+
+
+
+        // crNum이 null이 아닌지 확인한 후 실행
+        function checkCrNumAndExecute(fn) {
+            if (crNum !== null) {
+                fn();
+            } else {
+                console.log('crNum이 아직 설정되지 않았습니다.');
+            }
+        }
+
+        async function startBasicAnalysis(crNum) {
+            console.log('기본 분석 시작, crNum:', crNum);
+
+            try {
+                const response = await fetch(`/api/analysis/basic-python?crnum=${crNum}`);
+                const data = await response.text();  // 응답을 텍스트로 처리
+
+                if (data === "Success") {
+                    // alert('분석이 완료되었습니다!');
+                    document.getElementById('analysisResults').style.display = 'block';
+                    showStickyNav();  // 스티키 네비게이션 표시
+                } else {
+                    throw new Error('Unexpected response:', data);
+                }
+            } catch (error) {
+                alert('분석 중 오류가 발생했습니다.');
+                console.error('Error during analysis:', error);
+            }
+        }
+
+        document.querySelector('#stickyNav a[href="#top"]').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        async function loadMemberNames(crNum) {
+            try {
+                // API 호출로 crNum에 해당하는 멤버 이름 가져오기
+                const response = await fetch(`/members/${crNum}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const memberNames = await response.json();
+                updateMemberDropdown(memberNames);
+            } catch (error) {
+                console.error('멤버 이름을 가져오는 중 오류 발생:', error);
+            }
+        }
+
+        function updateMemberDropdown(memberNames) {
+            const participantSelect = document.getElementById('participantSelect');
+            participantSelect.innerHTML = ''; // 기존 옵션 제거
+
+            // '전체' 옵션 추가
+            const optionAll = document.createElement('option');
+            optionAll.value = 'all';
+            optionAll.textContent = '전체';
+            participantSelect.appendChild(optionAll);
+
+            // 멤버 이름 추가
+            memberNames.forEach((name, index) => {
+                const option = document.createElement('option');
+                option.value = `participant${index}`;
+                option.textContent = name; // 멤버 이름으로 텍스트 설정
+                participantSelect.appendChild(option);
+            });
+        }
+
+
+        //워드 클라우드
+
+        // 워드 클라우드 멤버 목록을 로드
+        async function loadWordCloudMemberNames(crNum) {
+            try {
+                // API 호출로 crNum에 해당하는 멤버 이름 가져오기
+                const response = await fetch(`/api/members/${crNum}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const memberNames = await response.json();
+                updateWordCloudMemberDropdown(memberNames);
+            } catch (error) {
+                console.error('워드 클라우드 멤버 이름을 가져오는 중 오류 발생:', error);
+            }
+        }
+
+        // 드롭다운 옵션 업데이트
+        function updateWordCloudMemberDropdown(memberNames) {
+            const participantSelect = document.getElementById('participantSelect');
+            participantSelect.innerHTML = ''; // 기존 옵션 제거
+
+            // 멤버 이름 추가
+            memberNames.forEach((name) => {
+                const option = document.createElement('option');
+                option.value = name; // 멤버 이름을 값으로 설정
+                option.textContent = name; // 텍스트에도 멤버 이름 표시
+                participantSelect.appendChild(option);
+            });
+        }
+
+        // 워드 클라우드 이미지 업데이트
+        async function showWordCloud() {
+            showLoadingWordCloudSpinner()
+            // 선택된 멤버 또는 '전체'를 가져옴
+            const selectedMember = document.getElementById('participantSelect').value;
+
+            // 서버에 선택된 멤버에 맞는 워드 클라우드 데이터를 요청
+            try {
+                const wordCloudImage = document.querySelector('.wordcloud-overlay');
+
+
+
+                // 선택된 멤버가 '전체'일 때에는 userId가 없는 URL을 사용
+                const url = selectedMember === '전체' ?
+                    `/api/analysis/wordCloudImageUrl/${crNum}/group` :
+                    `/api/analysis/wordCloudImageUrl/${crNum}?searchWho=${encodeURIComponent(selectedMember)}`;
+
+                const response = await fetch(url); // URL 동적으로 설정
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const wordCloudImageUrl = await response.text(); // 서버에서 URL을 응답으로 받음
+
+                // 워드 클라우드 이미지를 새 URL로 업데이트
+                wordCloudImage.src = wordCloudImageUrl;
+            } catch (error) {
+                console.error('워드 클라우드 이미지를 가져오는 중 오류 발생:', error);
+            } finally {
+                hideLoadingWordCloudSpinner()
+            }
+        }
+
+        // 페이지 로드 시 멤버 목록을 불러옴
+        window.onload = function() {
+            loadWordCloudMemberNames(crNum); // crNum은 전역 변수로 가정
+        };
+        //워드 클라우드
+
+
+
+
+        document.querySelector('#stickyNav a[href="#top"]').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        async function loadMemberNames(crNum) {
+            try {
+                // API 호출로 crNum에 해당하는 멤버 이름 가져오기
+                const response = await fetch(`/members/${crNum}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const memberNames = await response.json();
+                updateMemberDropdown(memberNames);
+            } catch (error) {
+                console.error('멤버 이름을 가져오는 중 오류 발생:', error);
+            }
+        }
+
+        function updateMemberDropdown(memberNames) {
+            const participantSelect = document.getElementById('participantSelect');
+            participantSelect.innerHTML = ''; // 기존 옵션 제거
+
+            // '전체' 옵션 추가
+            const optionAll = document.createElement('option');
+            optionAll.value = 'all';
+            optionAll.textContent = '전체';
+            participantSelect.appendChild(optionAll);
+
+            // 멤버 이름 추가
+            memberNames.forEach((name, index) => {
+                const option = document.createElement('option');
+                option.value = `participant${index}`;
+                option.textContent = name; // 멤버 이름으로 텍스트 설정
+                participantSelect.appendChild(option);
+            });
+        }
+
+
+        //랭킹
+        // 기본 랭킹 결과를 가져와서 화면에 표시하는 함수
+        // crNum을 확인한 후 랭킹 결과를 가져오는 함수
+        function fetchRankingResults(type) {
+            if (crNum === null) {
+                alert('crNum이 설정되지 않았습니다. 파일 업로드 후에 실행하세요.');
+                return;
+            }
+
+            fetch(`/api/rankings/basicRankingResults?crnum=${crNum}`)
+                .then(response => response.json())
+                .then(data => {
+                    // type(주제)에 맞는 결과 표시
+                    displayRankingResults(data, type);
+                })
+                .catch(error => {
+                    console.error('기본 랭킹 결과를 가져오는 중 오류:', error);
+                });
+        }
+
+        // 검색 기능을 위한 함수
+        function searchRanking() {
+            var keyword = document.getElementById('searchInput').value;
+
+            // 서버로 검색 요청
+            fetch(`/api/rankings/searchRankingResults?crnum=${crNum}&keyword=${encodeURIComponent(keyword)}`)
+                .then(response => response.json())
+                .then(data => {
+                    displaySearchResults(data); // 검색 결과를 화면에 출력하는 함수 호출
+                })
+                .catch(error => {
+                    console.error('검색 랭킹 결과를 가져오는 중 오류:', error);
+                });
+        }
+
+        // 결과를 화면에 표시하는 함수
+        function displayRankingResults(data, type) {
+            var resultText = document.getElementById('resultText');
+            var result = ''; // 초기화된 결과 텍스트
+            var unit = ''; // 단위 설정
+
+            // 선택된 랭킹 유형에 따라 데이터 처리
+            if (type) {
+                let sortedData = [];
+
+                switch (type) {
+                    case 1:
+                        sortedData = Object.entries(data['메시지']).sort((a, b) => b[1] - a[1]);
+                        unit = '개'; // 메시지 수
+                        break;
+                    case 2:
+                        sortedData = Object.entries(data['사진']).sort((a, b) => b[1] - a[1]);
+                        unit = '장'; // 사진 수
+                        break;
+                    case 3:
+                        sortedData = Object.entries(data['이모티콘']).sort((a, b) => b[1] - a[1]);
+                        unit = '개'; // 이모티콘 개수
+                        break;
+                    case 4:
+                        sortedData = Object.entries(data['평균 길이']).sort((a, b) => b[1] - a[1]);
+                        unit = '글자'; // 평균 글자 수
+                        break;
+                    case 5:
+                        sortedData = Object.entries(data['비속어']).sort((a, b) => b[1] - a[1]);
+                        unit = '번'; // 비속어 사용 횟수
+                        break;
+                    case 6:
+                        sortedData = Object.entries(data['언급된']).sort((a, b) => b[1] - a[1]);
+                        unit = '번'; // 태그된 횟수
+                        break;
+                    case 7:
+                        sortedData = Object.entries(data['초성']).sort((a, b) => b[1] - a[1]);
+                        unit = '개'; // 초성 사용 개수
+                        break;
+                    case 8:
+                        sortedData = Object.entries(data['언급한']).sort((a, b) => b[1] - a[1]);
+                        unit = '번'; // 언급한 횟수
+                        break;
+                    case 9:
+                        sortedData = Object.entries(data['삭제']).sort((a, b) => b[1] - a[1]);
+                        unit = '번'; // 삭제한 횟수
+                        break;
+                    default:
+                        console.error('유효하지 않은 유형입니다.');
+                        return;
+                }
+
+                // 정렬된 데이터를 순위별로 출력
+                sortedData.forEach((entry, index) => {
+                    result += `${index + 1}등 ${entry[0]}: ${entry[1]}${unit}<br>`;
+                });
+            }
+
+            resultText.innerHTML = result; // 텍스트 대신 HTML로 출력
+        }
+
+        // 검색 결과를 화면에 출력하는 함수
+        function displaySearchResults(data) {
+            var resultText = document.getElementById('resultText');
+            var result = ''; // 초기화된 결과 텍스트
+
+            // 데이터가 있는지 확인하고, 있으면 결과 출력
+            if (data && data['검색어']) {
+                Object.entries(data['검색어']).forEach((entry, index) => {
+                    result += `${index + 1}등 ${entry[0]}: ${entry[1]}번<br>`;
+                });
+            } else {
+                result = '검색 결과가 없습니다.';
+            }
+
+            resultText.innerHTML = result; // 결과를 화면에 출력
+        }
+
+
+
+        //랭킹
+
+
+
+        //발신자 예측
+        function getPrediction() {
+            const keyword = document.getElementById('search-input').value;
+            // const crnum = 1; // 실제 crnum 설정
+
+            fetch(`/api/analysis/caller-prediction?crnum=${crNum}&keyword=${encodeURIComponent(keyword)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // JSON이 아니라 텍스트로 응답을 처리
+                })
+                .then(data => {
+                    const balloonText = document.getElementById('balloon-text');
+                    balloonText.textContent = `라고 말한 사람은 ${data}야!`;
+                })
+                .catch(error => {
+                    console.error('오류:', error);
+                });
+        }
+
+
+        //맞춤분석
+        // 날짜 형식을 "yyyy년 MM월 dd일"로 변환하는 함수
+        function formatDateToKorean(dateStr) {
+            const date = new Date(dateStr);
+            if (isNaN(date)) {
+                console.error('날짜 형식 오류:', dateStr);
+                throw new Error('Invalid date format');
+            }
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}년 ${month}월 ${day}일`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 페이지 로드 시 참여자 목록 업데이트
+            // const crNum = 0; // 실제 채팅방 번호로 대체
+
+            // 참여자 목록을 가져오는 함수 호출
+            loadMemberNames(crNum);
+
+            // 맞춤 분석 버튼 클릭 이벤트
+            document.querySelector('.magnifier2').addEventListener('click', function() {
+                showLoadingSpinner()
+                // 입력값 가져오기
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const participant = document.getElementById('participantSelect_custom_analysis').value;
+                const option = document.getElementById('OptionSelect').value;
+
+                // 날짜 값 로그 출력
+                console.log('시작 날짜:', startDate);
+                console.log('종료 날짜:', endDate);
+
+                try {
+                    // 요청 파라미터
+                    const params = new URLSearchParams({
+                        startDate: formatDateToKorean(startDate),
+                        endDate: formatDateToKorean(endDate),
+                        searchWho: participant,
+                        resultsItem: option,
+                        crnum: crNum // 실제 crNum 사용
+                    });
+
+                    // 서버에 POST 요청 보내기
+                    fetch('/api/analysis/personalActivityAnalysisImage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()
+                    })
+                        .then(response => response.text()) // JSON 대신 text로 응답 처리
+                        .then(data => {
+                            console.log('서버 응답:', data);
+
+                            // 기존 이미지 제거
+                            const existingImage = document.querySelector('.custom-rect-box img');
+                            if (existingImage) {
+                                existingImage.remove();
+                            }
+
+                            // 새 이미지 요소 생성
+                            const newImage = document.createElement('img');
+                            newImage.className = 'custom-analysis-result';
+                            newImage.alt = '맞춤 분석 결과';
+
+                            // S3에서 전달받은 이미지 URL 설정
+                            newImage.src = data || ''; // 응답 데이터가 이미지 URL로 직접 사용됨
+
+                            // 새 이미지 DOM에 추가
+                            const container = document.querySelector('.custom-rect-box');
+                            container.appendChild(newImage);
+                        })
+                        .catch(error => {
+                            console.error('요청 오류:', error);
+                        });
+                } catch (error) {
+                    console.error('날짜 형식 오류:', error);
+                } finally {
+                    hideLoadingSpinner()
+                }
+            });
+        });
+
+        // 서버에서 참여자 목록을 가져오는 함수
+        async function loadMemberNames(crNum) {
+            try {
+                const response = await fetch(`/api/members/${crNum}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const memberNames = await response.json();
+                updateMemberDropdown(memberNames);
+            } catch (error) {
+                console.error('멤버 이름을 가져오는 중 오류 발생:', error);
+            }
+        }
+
+        // 드롭다운을 업데이트하는 함수
+        function updateMemberDropdown(memberNames) {
+            const participantSelect = document.getElementById('participantSelect_custom_analysis');
+            participantSelect.innerHTML = ''; // 기존 옵션 제거
+
+
+
+            // 멤버 이름 추가
+            memberNames.forEach((name) => {
+                participantSelect.appendChild(new Option(name, name));  // value를 멤버 이름으로 설정
+            });
+        }
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>

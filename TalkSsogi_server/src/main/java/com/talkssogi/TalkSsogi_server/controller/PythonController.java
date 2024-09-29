@@ -11,19 +11,17 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -40,16 +38,18 @@ public class PythonController {
     private final UserService userService;
     private final S3DownLoader s3DownLoader;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final PythonResultProcessor pythonResultProcessor;  // 추가
+    private final PythonResultProcessor pythonResultProcessor;
 
     // Python 인터프리터와 스크립트의 경로를 상수로 선언
-    private static final String PYTHON_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace"; // workspace 밑에 저장된 파이썬 파일 경로
-    private static final String PYTHON_INTERPRETER_PATH = "C:/Users/KJH/AppData/Local/Programs/Python/Python312/python.exe";
-    private static final String PYTHON_SCRIPT_basic_PATH = "C:/Users/KJH/TalkSsogi_Workspace/basic-python.py";
-    private static final String PYTHON_SCRIPT_PAGE9_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page9python.py";
-    private static final String PYTHON_SCRIPT_PAGE8_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page8python.py";
-    private static final String PYTHON_SCRIPT_PAGE6_PATH = "C:/Users/KJH/TalkSsogi_Workspace/page6python.py";
-    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "C:/Users/KJH/TalkSsogi_Workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+    private static final String PYTHON_FILE_PATH = "/home/ec2-user/workspace/"; // workspace 밑에 저장된 파이썬 파일 경로
+    private static final String PYTHON_INTERPRETER_PATH = "/Python-3.12.0/python";
+    private static final String PYTHON_SCRIPT_basic_PATH = "/home/ec2-user/workspace/basic-python.py";
+    private static final String PYTHON_SCRIPT_PAGE9_PATH = "/home/ec2-user/workspace/page9python.py";
+    private static final String PYTHON_SCRIPT_PAGE8_PATH = "/home/ec2-user/workspace/page8python.py";
+    private static final String PYTHON_SCRIPT_PAGE6_PATH = "/home/ec2-user/workspace/page6python.py";
+    private static final String PYTHON_BASIC_RESULT_FILE_PATH = "/home/ec2-user/workspace/"; // basic-python후에 생길 분석을 위한 파일들을 찾기 위한 경로
+
+
 
 
     @Autowired
@@ -57,7 +57,7 @@ public class PythonController {
         this.chattingRoomService = chattingRoomService;
         this.userService = userService;
         this.s3DownLoader = s3DownLoader;
-        this.pythonResultProcessor = pythonResultProcessor;  // 추가
+        this.pythonResultProcessor = pythonResultProcessor;
     }
 
     // 기본분석으로 생긴 텍스트 파일들 s3에 업로드하는 함수(api호출해야해서 분리)
@@ -137,7 +137,7 @@ public class PythonController {
     public ResponseEntity<String> runBasicPythonAnalysis(@RequestParam(value = "crnum") int crnum) {
         File originalZipFile = null;
         File fileToProcess = null;
-        int isFileZip=0; // 0 = 일반 파일, 1 = zip파일
+        int isFileZip = 0; // 0 = 일반 파일, 1 = zip파일
         try {
             // ChattingRoom을 찾아서 파일 경로를 가져온다
             ChattingRoom chattingRoom = chattingRoomService.findByCrNum(crnum);
@@ -151,7 +151,7 @@ public class PythonController {
 
             // ZIP 파일인지 확인하고 압축 해제
             if (filePath.endsWith(".zip")) {
-                isFileZip=1;
+                isFileZip = 1;
                 originalZipFile = new File(filePath); // 원본 ZIP 파일
                 fileToProcess = unzipFile(filePath);
                 if (fileToProcess == null) {
@@ -173,7 +173,7 @@ public class PythonController {
                 fileToProcess = new File(filePath);
             }
 
-            int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
+            // int headcount = chattingRoom.getHeadcount(); // headcount 가져오기
 
             // 명령어 설정
             String command = String.format("%s %s %s", PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_basic_PATH, filePath);
@@ -208,9 +208,9 @@ public class PythonController {
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
             logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
-            if (exitCode != 0) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
-            }
+//            if (exitCode != 0) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
+//            }
 
             // 결과 처리
             String[] resultLines = result.toString().split("\n");
@@ -240,12 +240,15 @@ public class PythonController {
             // 분석 결과를 저장
             String chatroomName = resultLines[0];
             List<String> memberNames = List.of(resultLines[1].split(","));
+            String headcountStr = resultLines[2];
+            Integer headcount = Integer.parseInt(headcountStr);
             logger.info("제대로 파이썬 결과를 받았는가???? chatroomName: " + chatroomName);
             logger.info("제대로 파이썬 결과를 받았는가???? memberNames: " + memberNames);
 
             // ChattingRoom 업데이트
             chattingRoom.setChatroomName(chatroomName);
             chattingRoom.setMemberNames(memberNames);
+            chattingRoom.setHeadcount(headcount);
             chattingRoomService.save(chattingRoom);
 
             logger.info("여기여여여여여여겨고ㅑ 분석한 결과부터 이상하게 저장되었는가 : {}", chattingRoom.getChatroomName());
@@ -280,7 +283,7 @@ public class PythonController {
                 logger.warn("삭제하려는 파일이 존재하지 않습니다: " + filePath);
             }
 
-            if (isFileZip==1){
+            if (isFileZip == 1) {
                 // zip파일인 경우 8페이지 미리 시작
                 logger.info("Page8 commonPythonScript start 8페이지기본제공분석내용완성~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 commonPythonScript(crnum);
@@ -290,9 +293,9 @@ public class PythonController {
         } catch (EntityNotFoundException e) {
             logger.error("Entity not found: ", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found: " + e.getMessage());
-        } catch (IOException e) {
-            logger.error("분석 후 파일 생성 중에 headcount 불일치 발견: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인원 수가 불일치합니다.");
+//        } catch (IOException e) {
+//            logger.error("분석 후 파일 생성 중에 headcount 불일치 발견: ", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인원 수가 불일치합니다.");
         } catch (Exception e) {
             logger.error("예상치 못한 오류 발생: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예상치 못한 오류 발생: " + e.getMessage());
@@ -333,17 +336,116 @@ public class PythonController {
         return textFile;
     }
 
+
+    // 페이지6 워드클라우드 이미지 url전달(userId 없는 버전//
+
+    @GetMapping("/wordCloudImageUrl/{crnum}")
+    public ResponseEntity<String> getWordCloudImageUrlNoUserId(@PathVariable("crnum") Integer crnum,
+                                                               @RequestParam("searchWho") String searchWho) {
+        try {
+            // SearchWho 값 처리
+            String finalSearchWho = "전체".equals(searchWho) ? "group" : searchWho;
+            Integer searchWhoIndex = "group".equals(finalSearchWho) ? null : chattingRoomService.getMemberIndexByName(crnum, finalSearchWho);
+
+            // file_path 설정
+            String filePath = s3DownLoader.getFileUrl(String.format("text-files/%d%s",
+                    crnum,
+                    "group".equals(finalSearchWho) ? "_group.txt" : "_" + searchWhoIndex + "_personal.txt"
+            ));
+
+            // 명령어 설정
+            String command = String.format(
+                    "%s %s %s",
+                    PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_PAGE6_PATH, filePath
+            );
+            logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
+
+            // ProcessBuilder를 사용하여 프로세스 생성
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.redirectErrorStream(true);
+            processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
+
+            // 프로세스 시작
+            Process process = processBuilder.start();
+
+            // 프로세스의 출력 읽기
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream())); // 표준 오류 스트림 읽기
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
+
+            // 표준 오류 스트림 읽기
+            StringBuilder errorResult = new StringBuilder();
+            while ((line = errorReader.readLine()) != null) {
+                errorResult.append(line).append("\n");
+            }
+
+            // 프로세스 종료 대기
+            int exitCode = process.waitFor();
+            logger.error("Python script error output: " + errorResult.toString());
+
+            if (exitCode != 0) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
+            }
+
+            // 결과 처리
+            String imgName = result.toString().trim();
+            if (imgName.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
+            }
+
+            // 분석 결과 파일 경로 추출
+            File localResultFile = new File(PYTHON_BASIC_RESULT_FILE_PATH + imgName);
+
+            logger.info("파이썬 결과로 받은 주소 출력: " + imgName);
+
+            // S3에 파일 업로드
+            try (InputStream fileStream = new FileInputStream(localResultFile)) {
+                String key = "image-files/" + imgName;
+                String contentType = Files.probeContentType(localResultFile.toPath());
+                s3DownLoader.uploadFile(key, fileStream, contentType);
+                // S3 URL 생성
+                String resultUrl = s3DownLoader.getFileUrl(key);
+                logger.info("Generated S3 URL: " + resultUrl);
+
+                // 로컬 파일 삭제
+                if (localResultFile.exists() && !localResultFile.delete()) {
+                    logger.warn("Failed to delete local file: " + localResultFile.getAbsolutePath());
+                }
+                logger.info("s3에 이미지 업로드 후 출력할 이미지의 주소 출력: " + resultUrl);
+                return ResponseEntity.ok(resultUrl);
+            } catch (IOException e) {
+                logger.error("워드클라우드 이미지 s3에 업로드 실패 IO Exception occurred: " + e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("워드클라우드 이미지 s3에 업로드 실패");
+            }
+
+        } catch (IOException e) {
+            logger.error("IO Exception occurred: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An IO exception occurred.");
+        } catch (InterruptedException e) {
+            logger.error("Process interrupted: " + e.getMessage(), e);
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted.");
+        }
+    }
+
+    // 페이지6 워드클라우드 이미지 url전달(userId 없는 버전//
+
+
     // 페이지6 워드클라우드 이미지 url전달
     @GetMapping("/wordCloudImageUrl/{crnum}/{userId}")
     public ResponseEntity<String> getWordCloudImageUrl(@PathVariable("crnum") Integer crnum, @PathVariable("userId") String userId) {
         try {
             // userId 값 처리
             String searchWho = "전체".equals(userId) ? "group" : userId;
-            Integer searchWhoIndex = chattingRoomService.getMemberIndexByName(crnum,searchWho);
+            Integer searchWhoIndex = chattingRoomService.getMemberIndexByName(crnum, searchWho);
 
             // file_path 설정
             // S3에서 가져오기
-            String filePath = s3DownLoader.getFileUrl(String.format("text-files/"+crnum + (searchWho.equals("group") ? "_group.txt" : "_" + searchWhoIndex + "_personal.txt")));
+            String filePath = s3DownLoader.getFileUrl(String.format("text-files/" + crnum + (searchWho.equals("group") ? "_group.txt" : "_" + searchWhoIndex + "_personal.txt")));
             //String filePath = PYTHON_newimage_PATH + crnum + (searchWho.equals("group") ? "_group.txt" : "_" + searchWho + "_personal.txt"); // 테스트용
 
             // 명령어 설정
@@ -563,8 +665,10 @@ public class PythonController {
                 // 데이터베이스에서 ChattingRoom 가져오기
                 ChattingRoom chattingRoom = chattingRoomService.findByCrNum(crnum);
                 if (chattingRoom != null) {
+                    logger.info("기본 제공 분석 저장 전 " + chattingRoom.getBasicActivityAnalysis());
                     chattingRoom.setBasicActivityAnalysis(outputList);
                     chattingRoomService.save(chattingRoom);
+                    logger.info("기본 제공 분석 저장 후 " + chattingRoom.getBasicActivityAnalysis());
                     return ResponseEntity.ok(outputList);
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -592,6 +696,10 @@ public class PythonController {
         return targetFormat.format(date);
     }
 
+
+
+
+
     // 페이지9에서 결과 이미지 생성 및 전달
     @PostMapping(value = "/personalActivityAnalysisImage", produces = "text/plain; charset=utf-8")
     public ResponseEntity<String> getActivityAnalysisImage(
@@ -607,7 +715,7 @@ public class PythonController {
 
             // SearchWho 값 처리
             String SearchWho = "전체".equals(searchWho) ? "group" : searchWho;
-            Integer searchWhoIndex = "group".equals(SearchWho) ? null : chattingRoomService.getMemberIndexByName(crnum,searchWho);
+            Integer searchWhoIndex = "group".equals(SearchWho) ? null : chattingRoomService.getMemberIndexByName(crnum, searchWho);
 
             // URL 디코딩
             resultsItem = URLDecoder.decode(resultsItem, StandardCharsets.UTF_8.name());
@@ -616,22 +724,26 @@ public class PythonController {
 
             // crnum을 가지고 s3에서 파일 찾고 가져오는 과정
             String filePath = null; // 검색할 파일
+            Integer item = null;
             // resultsItem에 따라 파일 경로를 설정
             switch (resultsItem) {
                 case "보낸 메시지 수 그래프":
                     filePath = "group".equals(SearchWho) ?
                             s3DownLoader.getFileUrl(String.format("%d_group_daily_message_count.txt", crnum)) :
                             s3DownLoader.getFileUrl(String.format("%d_%d_daily_message_count.txt", crnum, searchWhoIndex));
+                    item=0;
                     break;
                 case "활발한 시간대 그래프":
                     filePath = "group".equals(SearchWho) ?
                             s3DownLoader.getFileUrl(String.format("%d_group_daily_hourly_message_count.txt", crnum)) :
                             s3DownLoader.getFileUrl(String.format("%d_%d_daily_hourly_message_count.txt", crnum, searchWhoIndex));
+                    item=1;
                     break;
                 case "대화를 보내지 않은 날짜":
                     filePath = "group".equals(SearchWho) ?
                             s3DownLoader.getFileUrl(String.format("%d_group_daily_message_count.txt", crnum)) :
                             s3DownLoader.getFileUrl(String.format("%d_%d_daily_message_count.txt", crnum, searchWhoIndex));
+                    item=2;
                     break;
                 default:
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("resultsItem이 이상함 Unknown resultsItem: " + resultsItem);
@@ -639,10 +751,12 @@ public class PythonController {
 
             // 명령어 설정
             String command = String.format(
-                    "%s %s \"%s\" \"%s\" \"%s\" \"%s\" %s %d",
-                    PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_PAGE9_PATH, startDateFormatted, endDateFormatted, SearchWho, resultsItem, filePath, crnum
+                    "%s %s \'%s\' \'%s\' \'%s\' %d \'%s\' %d",
+                    PYTHON_INTERPRETER_PATH, PYTHON_SCRIPT_PAGE9_PATH, startDateFormatted, endDateFormatted, SearchWho, item, filePath, crnum
             );
+
             logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
+
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
@@ -659,6 +773,7 @@ public class PythonController {
             String line;
             while ((line = reader.readLine()) != null) {
                 result.append(line).append("\n");
+                logger.error("result: " + result);
             }
 
             // 표준 오류 스트림 읽기
@@ -671,9 +786,10 @@ public class PythonController {
             int exitCode = process.waitFor();
             logger.error("Python script error output: " + errorResult.toString());
 
-            if (exitCode != 0) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
-            }
+//            if (exitCode != 0) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
+//            }
+            logger.error("exitCode: " + exitCode);
 
             // 결과 처리
             String imgName = result.toString().trim();
@@ -681,8 +797,12 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected script output.");
             }
 
+            logger.info("파이썬 결과로 받은 주소 출력: " + imgName);
+
             // 분석 결과 파일 경로 추출
             File localResultFile = new File(PYTHON_BASIC_RESULT_FILE_PATH + imgName);
+
+
 
             // S3에 파일 업로드
             try (InputStream fileStream = new FileInputStream(localResultFile)) {
@@ -697,6 +817,7 @@ public class PythonController {
                 if (localResultFile.exists() && !localResultFile.delete()) {
                     logger.warn("Failed to delete local file: " + localResultFile.getAbsolutePath());
                 }
+                logger.info("s3에 이미지 업로드 후 출력할 이미지의 주소 출력: " + resultUrl);
                 return ResponseEntity.ok(resultUrl);
             }
         } catch (IOException e) {
@@ -713,10 +834,14 @@ public class PythonController {
     }
 
 
-    public ResponseEntity<String> getCallerPrediction(@RequestParam("crnum") int crnum, String keyword) {
+    @GetMapping(value = "/caller-prediction", produces = "text/plain; charset=utf-8")
+    public ResponseEntity<String> getCallerPrediction(@RequestParam("crnum") int crnum, @RequestParam("keyword") String keyword) {
+
         try {
             // ChattingRoom을 찾아서 파일 경로를 가져온다
             ChattingRoom chattingRoom = chattingRoomService.findByCrNum(crnum);
+            logger.info("getCallerPrediction 실행 바로 시작지금 basicactivityanalysis: " + chattingRoom.getBasicActivityAnalysis());
+
             if (chattingRoom == null || chattingRoom.getCrNum() == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ChattingRoom not found or invalid.");
             }
@@ -725,61 +850,79 @@ public class PythonController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File path is not set.");
             }
 
-            String predictPythonPath = PYTHON_FILE_PATH + "/caller_prediction.py";
+            String predictPythonPath = PYTHON_FILE_PATH + "caller_prediction2.py";
 
             // 명령어 설정
-            String command = String.format("%s %s %s %s", PYTHON_INTERPRETER_PATH, predictPythonPath, filePath, keyword);
-            logger.info("제대로 파이썬 명령어를 사용하고 있는가???? Executing command: " + command);
-
+            String command = String.format("%s %s %s", PYTHON_INTERPRETER_PATH, predictPythonPath, keyword);
+            logger.info("Executing Python command: " + command);
 
             // ProcessBuilder를 사용하여 프로세스 생성
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            processBuilder.redirectErrorStream(true);
-            processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
+            processBuilder.environment().put("TF_CPP_MIN_LOG_LEVEL", "3");  // TensorFlow 경고 메시지 억제
+            processBuilder.redirectErrorStream(true); // 표준 오류를 표준 출력으로 합침
+            processBuilder.environment().put("PYTHONIOENCODING", "UTF-8"); // UTF-8로 환경 설정
 
             // 프로세스 시작
             Process process = processBuilder.start();
 
-            // 프로세스의 출력 읽기
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream())); // 표준 오류 스트림 읽기
-            StringBuilder result = new StringBuilder();
+            // 표준 출력 및 표준 오류를 읽음
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+            StringBuilder outputBuilder = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line).append("\n");
-            }
-
-            // 표준 오류 스트림 읽기
-            StringBuilder errorResult = new StringBuilder();
-            while ((line = errorReader.readLine()) != null) {
-                errorResult.append(line).append("\n");
+            while ((line = outputReader.readLine()) != null) {
+                outputBuilder.append(line).append("\n");
+                logger.info("Python Output: " + line); // 각 줄을 로그로 출력
             }
 
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
-            logger.error("파이썬 에러 메세지!!! Python script error output: " + errorResult.toString());
+            logger.info("Python script exit code: " + exitCode); // 종료 코드 로그 출력
+
             if (exitCode != 0) {
+                logger.error("Python script execution failed with exit code: " + exitCode);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed.");
             }
 
-            // 결과 처리
-            String callerPrediction = result.toString().trim();
+            // 전체 출력 결과를 로그로 출력
+            String pythonResult = outputBuilder.toString().trim();
+            logger.info("Python script final result: " + pythonResult);
 
-            logger.info(keyword + "의Caller Prediction 결과: " + callerPrediction);
+            // 숫자만 추출하는 정규식 적용
+            String numericResult = pythonResult.replaceAll("[^0-9]", "");  // 숫자가 아닌 부분을 모두 제거
+            logger.info("Extracted numeric result: " + numericResult);
 
+            // 숫자를 인덱스로 변환
+            int index;
+            try {
+                index = Integer.parseInt(numericResult);
+            } catch (NumberFormatException e) {
+                logger.error("Invalid index format from Python script: " + numericResult, e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid index format.");
+            }
 
-            // ChattingRoom에 callerPrediction 저장
-            chattingRoom.setCallerPrediction(callerPrediction);
-            chattingRoomService.save(chattingRoom);
+            // DB에서 가져온 callerPrediction 값을 ,로 분리
+            String callerPrediction = chattingRoom.getCallerPrediction();  // DB에서 가져온 문자열
+            if (callerPrediction == null || callerPrediction.isEmpty()) {
+                logger.error("callerPrediction is null or empty");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid callerPrediction data.");
+            }
 
-            return ResponseEntity.ok("Success");
-        } catch (EntityNotFoundException e) {
-            logger.error("Entity not found: ", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Unexpected error: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
+            String[] predictions = callerPrediction.split(",");
+            if (index < 0 || index >= predictions.length) {
+                logger.error("Index out of bounds: " + index + ", predictions length: " + predictions.length);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Index out of bounds.");
+            }
+
+            // 인덱스에 해당하는 예측 결과 반환
+            String resultValue = predictions[index].trim();
+            logger.info("Caller Prediction result: " + resultValue);
+
+            return ResponseEntity.ok(resultValue);
+
+        } catch (IOException | InterruptedException e) {
+            logger.error("Python script execution encountered an error: ", e);
+            Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Script execution failed: " + e.getMessage());
         }
     }
-
 }

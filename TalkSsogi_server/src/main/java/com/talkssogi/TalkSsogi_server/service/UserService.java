@@ -60,7 +60,7 @@ public class UserService {
     }
 
     @Transactional
-    private int generateNextChattingRoomNumber(User user) {
+    public int generateNextChattingRoomNumber(User user) {
         Set<ChattingRoom> chatRooms = user.getChatList();
         int count = chatRooms.size();
         return count + 1;
