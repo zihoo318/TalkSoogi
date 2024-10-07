@@ -5,12 +5,14 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 object RankingRepository {
@@ -20,9 +22,16 @@ object RankingRepository {
         .setLenient()
         .create()
 
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)  // 연결 타임아웃 30초 설정
+        .readTimeout(30, TimeUnit.SECONDS)     // 읽기 타임아웃 30초 설정
+        .writeTimeout(30, TimeUnit.SECONDS)    // 쓰기 타임아웃 30초 설정
+        .build()
+
     init {
         val retrofit = Retrofit.Builder()
             .baseUrl(Constants.BASE_URL) // 실제 서버 주소로 변경
+            .client(okHttpClient)  // OkHttpClient를 Retrofit에 추가
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 

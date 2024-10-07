@@ -10,6 +10,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -38,11 +39,12 @@ class Page2Activity : AppCompatActivity() {
         (application as MyApplication).viewModel
     }
     private val activityviewModel: ActivityAnalysisViewModel by viewModels()
+    private val callerPredictionViewModel : CallerPredictionViewModel by viewModels()
 
     private lateinit var sharedPreferences: SharedPreferences
     private val PICK_FILE_REQUEST_CODE = 1
     private var selectedFileUri: Uri? = null
-    private lateinit var uploadButton: ImageButton
+    private lateinit var uploadButton: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var SelectedFileText: TextView
 
@@ -223,7 +225,15 @@ class Page2Activity : AppCompatActivity() {
                                     lifecycleScope.launch {
                                         activityviewModel.startBasicActivityAnalysis(crnum)
                                         Log.d("Page9", "업데이트 후 기본제공 분석 시작")
+
+                                        // 기본 제공 분석이 끝난 후 기존 데이터를 가져오거나 빈 리스트를 사용하여 호출
+                                        val existingBasicActivityAnalysis = activityviewModel.basicActivityAnalysis.value ?: emptyList()
+
+                                        // 기존 데이터와 함께 발신자 예측 매핑을 위한 API 호출
+                                        callerPredictionViewModel.fetchCallerPredictionExante(crnum, existingBasicActivityAnalysis)
+                                        Log.d("Page9", "기본제공 분석 후 발신자예측 매핑을 위한 분석 시작")
                                     }
+
                                 }
                                 -4 -> {
                                     // 분석 실패

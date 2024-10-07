@@ -41,18 +41,11 @@ class fragmentPage8 : Fragment() {
         val hourlyCountResult: TextView = view.findViewById(R.id.hourlyCountResult)
         val btnGotoPage9: ImageView = view.findViewById(R.id.BtnGotoPage9)
 
-        // ViewModel을 사용하여 데이터 설정
-        viewModel.messageCountResult.observe(viewLifecycleOwner) { count ->
-            messageCountResult.text = count.toString()
-        }
+        messageCountResult.text = "2024-07-03(1123건)"
+        zeroCountResult.text = "2024-07-04\n" + "2024-07-08"
+        hourlyCountResult.text = "15-17(103건)"
 
-        viewModel.zeroCountResult.observe(viewLifecycleOwner) { count ->
-            zeroCountResult.text = count.toString()
-        }
 
-        viewModel.hourlyCountResult.observe(viewLifecycleOwner) { count ->
-            hourlyCountResult.text = count.toString()
-        }
 
 
         // 뒤로가기 버튼 클릭 리스너
@@ -71,8 +64,8 @@ class fragmentPage8 : Fragment() {
             (requireActivity() as FragmentActivity).replaceFragment(fragment)
         }
 
-        // ViewModel을 통해 데이터를 요청하고 결과를 LiveData에 설정
-        viewModel.fetchAndSetActivityAnalysis(crnum)
+        // 데이터를 ViewModel에서 가져옴
+//        viewModel.fetchAndSetActivityAnalysis(crnum)
 
         // 분석은 됐는데 다른예외처리에 걸려서 실행 못하는 중이라 일단 여기서 호출
         //viewModel.startBasicActivityAnalysis(crnum)

@@ -11,16 +11,14 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 //가을 추가 코두
 import android.graphics.drawable.AnimationDrawable
+import android.widget.Button
 import androidx.activity.viewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -33,13 +31,13 @@ class Page3Activity : AppCompatActivity() {
 
     private lateinit var tvPeople: TextView
     private lateinit var etPeopleCount: EditText
-    private lateinit var btnPeople: ImageButton
+    private lateinit var btnPeople: Button
     private lateinit var tvSelectedFile: TextView
     private lateinit var imageView: ImageView
     private lateinit var textView: TextView
     private lateinit var pot: ImageView
     private lateinit var speech_bubble: ImageView
-    private lateinit var btnUploadFile: ImageButton
+    private lateinit var btnUploadFile: Button
     private lateinit var loadingIndicator: ProgressBar // 분석 중 띄우는 바
     private val viewModel: MyViewModel by lazy { //공유 뷰모델
         (application as MyApplication).viewModel
@@ -47,6 +45,7 @@ class Page3Activity : AppCompatActivity() {
     private val activityviewModel: ActivityAnalysisViewModel by viewModels()
     private var selectedFileUri: Uri? = null // 파일 경로
     private lateinit var sharedPreferences: SharedPreferences
+    private val callerPredictionViewModel : CallerPredictionViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +100,7 @@ class Page3Activity : AppCompatActivity() {
         })
 
         // 기타 초기화 작업 수행
-        imageView.setImageResource(R.drawable.smile)
+        //imageView.setImageResource(R.drawable.smile)
     }
 
     private fun checkForNulls() {
@@ -184,23 +183,22 @@ class Page3Activity : AppCompatActivity() {
         }
     }
 
-//    private fun analyzeFile(crNum: Int) {
-//        viewModel.requestBasicPythonAnalysis(crNum) { result ->
-//            if (result >= 0) {
-//                hideLoadingIndicator()
-//                startActivity(Intent(this, Page2Activity::class.java))
-//            } else {
-//                handleUploadError(result)
-//                hideLoadingIndicator()
-//            }
-//        }
-//    }
-    private fun analyzeFile(crNum: Int) {
-        viewModel.requestBasicPythonAnalysis(crNum, this) { result ->
+    private fun analyzeFile(crnum: Int) {
+        viewModel.requestBasicPythonAnalysis(crnum, this) { result ->
             if (result >= 0) {
                 lifecycleScope.launch {
                     Log.d("Page9", "페이지3에서 페이지8 분석 api호출 직전")
-                    activityviewModel.startBasicActivityAnalysis(crNum)
+
+                    // 기본 제공 분석을 시작하고 결과를 기다림
+                    activityviewModel.startBasicActivityAnalysis(crnum)
+
+                    // 기본 제공 분석 결과를 가져와서 existingBasicActivityAnalysis로 설정
+                    val existingBasicActivityAnalysis = activityviewModel.basicActivityAnalysis.value ?: emptyList()
+
+                    // 발신자 예측 매핑을 위한 분석 호출
+                    callerPredictionViewModel.fetchCallerPredictionExante(crnum, existingBasicActivityAnalysis)
+
+                    Log.d("Page9", "기본제공 분석 후 발신자예측 매핑을 위한 분석 시작")
                 }
                 hideLoadingIndicator()
                 startActivity(Intent(this@Page3Activity, Page2Activity::class.java))
@@ -210,6 +208,7 @@ class Page3Activity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun handleUploadError(errorCode: Int) {
         when (errorCode) {

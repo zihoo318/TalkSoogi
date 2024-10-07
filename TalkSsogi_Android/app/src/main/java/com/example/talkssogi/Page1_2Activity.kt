@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
@@ -30,8 +31,8 @@ class Page1_2Activity : AppCompatActivity() {
         val etID: EditText = findViewById(R.id.etID)
         val idConfirm: TextView = findViewById(R.id.IDConfirm)
         val idConfirm2: TextView = findViewById(R.id.IDConfirm2)
-        val btnCheckRedundancy: ImageButton = findViewById(R.id.btnCheckRedundancy)
-        val btnSignUp: ImageButton = findViewById(R.id.btnSignUp)
+        val btnCheckRedundancy: Button = findViewById(R.id.btnCheckRedundancy)
+        val btnSignUp: Button = findViewById(R.id.btnSignUp)
 
         // 중복 확인 버튼 클릭 시 실행되는 리스너 설정
         btnCheckRedundancy.setOnClickListener {

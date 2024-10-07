@@ -23,6 +23,11 @@ import kotlinx.coroutines.Dispatchers
 class ActivityAnalysisViewModel : ViewModel() {
     //private val BASE_URL = "http://10.0.2.2:8080/" // 실제 API 호스트 URL로 대체해야 됨 //에뮬레이터에서 호스트 컴퓨터의 localhost를 가리킴
     private val BASE_URL = "http://172.32.47.6:8080/"  // 실제 안드로이드 기기에서 실행 할 때
+    // 기본 분석 결과를 저장할 LiveData 변수
+    private val _basicActivityAnalysis = MutableLiveData<List<String>>()
+    val basicActivityAnalysis: LiveData<List<String>> get() = _basicActivityAnalysis
+
+    private var hasFetchedFromServer = false // 데이터를 한 번 가져왔는지 여부를 확인하는 플래그
 
     // 테스트 중 원인 분석을 위한 로그 보기 설정 (OkHttpClient 설정)
     val logging = HttpLoggingInterceptor().apply {
@@ -66,10 +71,34 @@ class ActivityAnalysisViewModel : ViewModel() {
     // 페이지8 기본제공 데이터 값
     private val _messageCountResult = MutableLiveData<String>()
     val messageCountResult: LiveData<String> get() = _messageCountResult
+
     private val _zeroCountResult = MutableLiveData<String>()
     val zeroCountResult: LiveData<String> get() = _zeroCountResult
-    private val _hourlyCountResult = MutableLiveData<String>()
+
+     val _hourlyCountResult = MutableLiveData<String>()
     val hourlyCountResult: LiveData<String> get() = _hourlyCountResult
+
+    private var tempMessageCount: String = ""
+    private var tempZeroCount: String = ""
+    private var tempHourlyCount: String = ""
+
+    // Getter 함수들
+    fun getTempMessageCount(): String {
+        return tempMessageCount
+    }
+
+    fun getTempZeroCount(): String {
+        return tempZeroCount
+    }
+
+    fun getTempHourlyCount(): String {
+        return tempHourlyCount
+    }
+
+    fun getMessageCountResultValue(): String? {
+        return _messageCountResult.value
+    }
+
 
 
     //페이지9에서 쓸 검색 정보 보내고 이미지 주소 받기
@@ -145,10 +174,18 @@ class ActivityAnalysisViewModel : ViewModel() {
     fun startBasicActivityAnalysis(crnum: Int) {
         Log.d("ActivityAnalysisViewModel", "파일 업로드 후 기본 분석 요청 실행 : $crnum")
         val call = apiService.getActivityAnalysis(crnum)
+        val analysisResult = listOf("Example data 1", "Example data 2") // 예시 데이터
+        _basicActivityAnalysis.value = analysisResult
         call.enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                 if (response.isSuccessful) {
                     Log.d("API Response", "Analysis started successfully")
+
+                    Log.e("Page8", "기본제공분석 성공 후 안드 변수에 저장해두기 직전")
+                    fetchAndSetActivityAnalysis(crnum)
+                    Log.e("Page8", "startBasicActivityAnalysis에서 값 넣고 나서 확인 "+_basicActivityAnalysis.value)
+                    Log.e("Page8", "startBasicActivityAnalysis에서 값 넣고 나서 확인 "+_basicActivityAnalysis.value)
+
                 } else {
                     Log.e("API Error", "Error Code: ${response.code()}")
                 }
@@ -190,14 +227,24 @@ class ActivityAnalysisViewModel : ViewModel() {
     }
 
 
-    // 위의 메서드를 통해 받은 리스트 데이터를 받아서 LiveData에 설정하는 메소드
+    // 서버에서 데이터를 처음 한 번만 가져오고 이후에는 캐시된 데이터를 반환하는 함수
     fun fetchAndSetActivityAnalysis(crnum: Int) {
-        // fetchActivityAnalysis 호출 시, 결과를 처리하기 위한 callback 정의
+        // 데이터가 이미 로드되었으면 캐시된 데이터를 사용
+        if (hasFetchedFromServer) {
+            Log.d("Page8", "데이터가 이미 로드되어 캐시된 데이터를 사용")
+            return
+        }
+
+        // 서버에서 데이터 가져오기
         fetchActivityAnalysis(crnum) { resultList ->
-            // 값이 있으면 각 LiveData에 설정
-            _messageCountResult.value = if (resultList.size > 0) resultList[0] else ""
-            _zeroCountResult.value = if (resultList.size > 1) resultList[1] else ""
-            _hourlyCountResult.value = if (resultList.size > 2) resultList[2] else ""
+            _messageCountResult.value = if (resultList.size > 0) resultList[0] else "데이터 없음"
+            _zeroCountResult.value = if (resultList.size > 1) resultList[1] else "데이터 없음"
+            _hourlyCountResult.value = if (resultList.size > 2) resultList[2] else "데이터 없음"
+
+            Log.d("Page8", "데이터 설정 완료: 메시지: ${_messageCountResult.value}, 제로 카운트: ${_zeroCountResult.value}, 시간별 카운트: ${_hourlyCountResult.value}")
+
+            // 데이터를 가져온 이후에는 플래그를 true로 설정하여 다시 호출하지 않도록 함
+            hasFetchedFromServer = true
         }
     }
 

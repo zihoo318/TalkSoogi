@@ -28,7 +28,7 @@ class fragmentPage7 : Fragment() {
         textView = view.findViewById(R.id.ranking_title)
 
         // Intent로부터 crnum 값 받기
-        val crnum = activity?.intent?.getIntExtra("crnum", -1) ?: -1
+        val crnum = arguments?.getInt("crnum", -1) ?: -1
 
         // ViewPager2 어댑터 설정
         val adapter = ViewPagerAdapter(requireActivity(), crnum)
@@ -37,7 +37,7 @@ class fragmentPage7 : Fragment() {
         // CircleIndicator3 설정
         indicator.setViewPager(viewPager2)
 
-        // 처음 페이지 제목 업데이트(앱 실행 시 첫 페이지 제목이 짤리는 현상 해결)
+        // 처음 페이지 제목 업데이트
         updateTextView(0)
 
         // 이전 버튼 클릭 리스너 설정
@@ -71,7 +71,7 @@ class fragmentPage7 : Fragment() {
             1 -> textView.text = "가장 많은 사진을 보낸 사람"
             2 -> textView.text = "가장 많이 이모티콘을 사용한 사람"
             3 -> textView.text = "가장 긴 메시지를 보낸 사람"
-            4 -> textView.text = "가장 많이 오타 내는 사람"
+            4 -> textView.text = "가장 많이 비속어를 사용한 사람"
             5 -> textView.text = "가장 많이 태그된 사람"
             6 -> textView.text = "가장 많이 초성을 사용한 사람"
             7 -> textView.text = "가장 다른 사람을 많이 언급한 사람"

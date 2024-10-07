@@ -34,12 +34,13 @@ tasks.named('jar') {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web' //Multipart 파일 업로드 처리
-	implementation 'mysql:mysql-connector-java:8.0.30'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' //Multipart 파일 업로드 처리
 	implementation 'org.springframework.boot:spring-boot-starter' // 로그 출력
 	implementation 'org.springframework.boot:spring-boot-starter-logging' // 로그 출력
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.340' // AWS SDK for S3
 	implementation 'com.amazonaws:aws-java-sdk-core:1.12.340' // AWS SDK Core
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'com.h2database:h2'

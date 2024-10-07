@@ -51,4 +51,12 @@ public class S3DownLoader {
         return s3Client.getUrl(bucketName, key).toString();
     }
 
+    // S3에서 파일을 가져오는 메서드를 추가합니다.
+    public InputStream getFileStream(String key) throws IOException {
+        // S3에서 파일을 가져옵니다.
+        S3Object s3Object = s3Client.getObject(new GetObjectRequest(bucketName, key));
+        // 파일의 콘텐츠(스트림)를 반환합니다.
+        return s3Object.getObjectContent();
+    }
+
 }

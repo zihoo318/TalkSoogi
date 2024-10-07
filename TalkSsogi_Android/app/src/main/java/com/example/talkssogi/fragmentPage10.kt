@@ -18,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.talkssogi.ApiService
 import com.example.talkssogi.CallerPredictionViewModel
-import com.example.talkssogi.CallerPredictionViewModelFactory
 import com.example.talkssogi.Constants
 import com.example.talkssogi.R
 import com.example.talkssogi.databinding.FragmentPage10Binding
@@ -62,9 +61,14 @@ class fragmentPage10 : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         crnum = arguments?.getInt("crnum") ?: -1
         Log.d("fragmentPage10", "crnum in fragmentPage10: $crnum") // crnum 값 로그 출력
-        initViewModel()
+        initViewModel() // ViewModel 초기화
         initSearchView()
         observeViewModel()
+    }
+
+    private fun initViewModel() {
+        // ViewModelProvider를 통해 ViewModel을 초기화합니다.
+        callerPredictionViewModel = ViewModelProvider(this).get(CallerPredictionViewModel::class.java)
     }
 
     // "분석 중" 상태를 표시하는 함수
@@ -84,34 +88,34 @@ class fragmentPage10 : Fragment() {
         (loadingIndicator.indeterminateDrawable as? AnimationDrawable)?.stop()
         loadingIndicator.visibility = View.GONE
     }
-
-    private fun initViewModel()  {
-        // OkHttpClient에 타임아웃 설정 추가
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .build()
-
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
-
-        // Retrofit 인스턴스 생성
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-
-        // ApiService 생성
-        val apiService: ApiService = retrofit.create(ApiService::class.java)
-
-        // ViewModelFactory 생성 및 ViewModel 초기화
-        val factory = CallerPredictionViewModelFactory(apiService)
-        callerPredictionViewModel = ViewModelProvider(this, factory).get(CallerPredictionViewModel::class.java)
-    }
+//
+//    private fun initViewModel()  {
+//        // OkHttpClient에 타임아웃 설정 추가
+//        val okHttpClient = OkHttpClient.Builder()
+//            .connectTimeout(60, TimeUnit.SECONDS)
+//            .readTimeout(60, TimeUnit.SECONDS)
+//            .writeTimeout(60, TimeUnit.SECONDS)
+//            .build()
+//
+//        val gson = GsonBuilder()
+//            .setLenient()
+//            .create()
+//
+//        // Retrofit 인스턴스 생성
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(Constants.BASE_URL)
+//            .client(okHttpClient)
+//            .addConverterFactory(ScalarsConverterFactory.create())
+//            .addConverterFactory(GsonConverterFactory.create(gson))
+//            .build()
+//
+//        // ApiService 생성
+//        val apiService: ApiService = retrofit.create(ApiService::class.java)
+//
+//        // ViewModelFactory 생성 및 ViewModel 초기화
+//        val factory = CallerPredictionViewModelFactory(apiService)
+//        callerPredictionViewModel = ViewModelProvider(this, factory).get(CallerPredictionViewModel::class.java)
+//    }
 
     // SearchView 설정
     private fun initSearchView() {
