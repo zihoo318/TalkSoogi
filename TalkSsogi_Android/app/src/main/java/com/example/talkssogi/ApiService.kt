@@ -58,6 +58,11 @@ interface ApiService {
         @Query("keyword") keyword: String      //keyword와 crnum을 넘겨준다.
     ): Call<Map<String, Map<String, Int>>>
 
+    @GET("/api/caller-prediction-exante")  //페이지10 발신자 예측
+    fun getCallerPredictionExante(
+        @Query("crnum") crnum: Int
+    ): Call<String>
+
     @GET("/api/analysis/caller-prediction")  //페이지10 발신자 예측
     fun getCallerPrediction(
         @Query("crnum") crnum: Int,
@@ -72,7 +77,7 @@ interface ApiService {
 
     @GET("/api/basics/activityAnalysis") // 저장해둔 결과 가져오는 api
     fun getBasicActivityAnalysis(
-            @Query("crnum") crnum: Int
+        @Query("crnum") crnum: Int
     ): Call<List<String>> // DB에서 결과를 가져오는 API
 
     @GET("/api/members/{crnum}") // 채팅방 멤버 목록 가져오기

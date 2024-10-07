@@ -38,7 +38,7 @@
                 android:layout_width="170dp"
                 android:layout_height="170dp"
                 android:layout_marginStart="18dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="60dp"
                 app:cardCornerRadius="30dp"
                 app:cardElevation="9dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -173,27 +173,6 @@
             </androidx.cardview.widget.CardView>
 
             <!-- 하단에 화분이 + 말풍선 -->
-            <ImageView
-                android:id="@+id/imgResult"
-                android:layout_width="160dp"
-                android:layout_height="110dp"
-                android:layout_marginBottom="512dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.952"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:srcCompat="@drawable/talk_select2" />
-
-            <ImageView
-                android:id="@+id/imgResult2"
-                android:layout_width="188dp"
-                android:layout_height="153dp"
-                android:layout_marginBottom="116dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:srcCompat="@drawable/happy2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

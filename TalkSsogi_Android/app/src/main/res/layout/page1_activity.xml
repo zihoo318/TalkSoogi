@@ -62,10 +62,10 @@
                 android:id="@+id/etID"
                 android:layout_width="240dp"
                 android:layout_height="60dp"
-                android:layout_marginStart="2dp"
                 android:layout_marginTop="148dp"
                 android:background="@drawable/border"
                 android:hint="   아이디 입력"
+                android:padding="10dp"
                 app:layout_constraintStart_toEndOf="@id/ID"
                 app:layout_constraintTop_toTopOf="parent" />
 

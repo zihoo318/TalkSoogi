@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FCFFF3"
     tools:context=".Page7_search_Activity">
 
     <!-- 상단 이미지뷰 및 텍스트뷰 -->

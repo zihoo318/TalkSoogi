@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--    중복돼서 주석처리 함 확인 후 삭제해도 되면 삭제 해주세요-->
-<!--    &lt;!&ndash; 인터넷 권한 추가 &ndash;&gt;-->
-<!--    <uses-permission android:name="android.permission.INTERNET" />-->
-<!--    &lt;!&ndash; 네트워크 상태 권한 추가 &ndash;&gt;-->
-<!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
+    <!--    &lt;!&ndash; 인터넷 권한 추가 &ndash;&gt;-->
+    <!--    <uses-permission android:name="android.permission.INTERNET" />-->
+    <!--    &lt;!&ndash; 네트워크 상태 권한 추가 &ndash;&gt;-->
+    <!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
 
     <application
         android:name=".MyApplication"
@@ -17,7 +17,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_whabooni_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TalkSsogi"
         tools:targetApi="31" >

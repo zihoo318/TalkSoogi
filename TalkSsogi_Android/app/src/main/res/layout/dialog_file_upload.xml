@@ -34,21 +34,21 @@
         app:layout_constraintTop_toBottomOf="@+id/title_analyze" />
 
     <!--분석 중 띄우기-->
-    <ImageButton
+    <android.widget.Button
         android:id="@+id/uploadButton"
-        android:layout_width="170dp"
+        android:layout_width="180dp"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/upload_file"
-        android:padding="16dp"
-        android:src="@drawable/upload"
+        android:layout_marginTop="70dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
+        android:text="업로드"
+        android:textColor="#0B614B"
+        android:textSize="25dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SelectedFileText" />
+        app:layout_constraintTop_toBottomOf="@+id/title_analyze" />
 
     <ProgressBar
         android:id="@+id/progressBar"

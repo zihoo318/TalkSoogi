@@ -17,7 +17,7 @@ class Page9RecyclerViewAdapter(private val itemList: List<ImageURL>) :
         fun bind(imageURL: ImageURL) {
             Picasso.get()
                 .load(imageURL.imageUrl)
-                .placeholder(R.drawable.happy2) // 로딩 중 보여줄 이미지
+                .placeholder(R.drawable.happy) // 로딩 중 보여줄 이미지
                 .error(R.drawable.error) // 에러 발생 시 보여줄 이미지
                 .into(imageView)
 

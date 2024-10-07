@@ -132,17 +132,18 @@ class fragmentPage7_search : Fragment() {
             hideLoadingIndicator()
             if (results != null) {
                 val messageRankings = results["검색어"]
-                messageRankings?.let {
-                    val displayText = it.entries
-                        .sortedByDescending { entry -> entry.value.toInt() }
-                        .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}개" }
+                if (messageRankings.isNullOrEmpty()) {
+                    // messageRankings가 null이거나 비어있을 경우
+                    binding.rankingResult.text = "해당 검색어를 보낸 사람이\n               없습니다."
+                } else {
+                    val displayText = messageRankings.entries
+                        .sortedByDescending { entry -> entry.value }
+                        .mapIndexed { index, entry -> "${index + 1}등: ${entry.key}  ${entry.value}개\n" }
                         .joinToString(separator = "\n")
                     binding.rankingResult.text = displayText
-                } ?: run {
-                    binding.rankingResult.text = "해당 검색어를 보낸 사람이 없습니다."
                 }
             } else {
-                binding.rankingResult.text = "해당 검색어를 보낸 사람이 없습니다."
+                binding.rankingResult.text = "해당 검색어를 보낸 사람이\n               없습니다."
             }
         })
 
@@ -153,6 +154,7 @@ class fragmentPage7_search : Fragment() {
             }
         })
     }
+
 
 
     companion object {

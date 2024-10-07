@@ -42,7 +42,7 @@ class Rank7_9 : Fragment() {
         rankingRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         rankingViewModel.basicRankingResults.observe(viewLifecycleOwner, Observer { results ->
-            val messageRankings = results["메시지"]
+            val messageRankings = results["평균 길이"]
             messageRankings?.let {
                 val displayList = it.entries
                     .sortedByDescending { entry -> entry.value }
